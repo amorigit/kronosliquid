@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Watch Liquid documentation" />
+  <title>Watch Liquid | Documentation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="docs-page">
+  <header class="header">
+    <a href="index.html" class="header-logo">
+      <img src="assets/logo.svg" alt="Watch Liquid" />
+    </a>
+    <nav class="header-nav">
+      <a href="index.html">Trade</a>
+      <a href="pool.html">Pool</a>
+      <a href="stats.html">Stats</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="docs.html" class="active">Docs</a>
+    </nav>
+    <div class="header-right">
+      <div class="header-stat">SOL: <span>12.45</span></div>
+      <button id="header-connect" class="btn-outline">Connect Wallet</button>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+    <nav class="docs-nav">
+      <div class="docs-nav-title">Documentation</div>
+      <a href="#overview">Overview</a>
+      <a href="#markets">Markets</a>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#trading">Trading</a>
+      <a href="#fees">Fees &amp; Costs</a>
+      <a href="#risk">Risk Management</a>
+      <a href="#oracle">Oracle</a>
+      <a href="#lp">Liquidity Pool</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#api">API Reference</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="docs-mobile-nav">
+      <select id="docs-select">
+        <option value="overview">Overview</option>
+        <option value="markets">Markets</option>
+        <option value="getting-started">Getting Started</option>
+        <option value="trading">Trading</option>
+        <option value="fees">Fees &amp; Costs</option>
+        <option value="risk">Risk Management</option>
+        <option value="oracle">Oracle</option>
+        <option value="lp">Liquidity Pool</option>
+        <option value="protocol">Protocol</option>
+        <option value="api">API Reference</option>
+        <option value="faq">FAQ</option>
+      </select>
+    </div>
+
+    <main class="docs-content">
+      <h2 id="overview" class="docs-h2">Overview</h2>
+      <p class="docs-p">Watch Liquid is the first on-chain perpetual futures DEX for luxury watches. Built on Solana using the Anchor framework, it lets traders go long or short on individual timepieces and watch indices with up to 10x leverage. Prices are sourced from WatchCharts market data via an automated aggregator with adaptive EWMA smoothing.</p>
+      <p class="docs-p">Live on Solana Mainnet with real USDC.</p>
+
+      <h2 id="markets" class="docs-h2">Current Markets</h2>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Market</th><th>Model</th><th>Brand</th><th>Reference</th><th>Live</th></tr></thead>
+          <tbody>
+            <tr><td>WL500-PERP</td><td>WL500 Index</td><td>Index</td><td>Top 500 Watches</td><td>Yes</td></tr>
+            <tr><td>ROLEX-SUB-PERP</td><td>Submariner</td><td>Rolex</td><td>126610LN</td><td>Yes</td></tr>
+            <tr><td>PATEK-NAUTILUS-PERP</td><td>Nautilus</td><td>Patek Philippe</td><td>5711/1A</td><td>Yes</td></tr>
+            <tr><td>AP-ROYAL-OAK-PERP</td><td>Royal Oak</td><td>Audemars Piguet</td><td>15500ST</td><td>Yes</td></tr>
+            <tr><td>OMEGA-SPEEDY-PERP</td><td>Speedmaster</td><td>Omega</td><td>310.30.42.50</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Network</h3>
+      <p class="docs-p">Solana Mainnet. All addresses are mainnet PDAs derived from the program.</p>
+
+      <h2 id="getting-started" class="docs-h2">Getting Started</h2>
+      <h3 class="docs-h3">1. Visit the app</h3>
+      <p class="docs-p">Go to <a href="index.html" class="docs-link">watchliquid.xyz</a> (demo).</p>
+      <h3 class="docs-h3">2. Create an account</h3>
+      <p class="docs-p">Click "Start Trading" on the landing page. You can create an account with email and password, or continue as a guest with no account.</p>
+      <h3 class="docs-h3">3. Session Wallet</h3>
+      <p class="docs-p">No browser wallet extension (Phantom, Solflare) is required. Watch Liquid automatically generates a Solana keypair stored in your browser's localStorage. This "session wallet" signs all transactions locally. If you create an account, your encrypted private key is stored server-side for email recovery (AES-256-GCM encryption).</p>
+      <h3 class="docs-h3">4. Deposit Collateral</h3>
+      <p class="docs-p">Click "DEPOSIT/WITHDRAW" and deposit USDC into your margin account. Your margin account is a PDA derived from your wallet address with the seed <code>margin</code>.</p>
+      <h3 class="docs-h3">5. Open a Position</h3>
+      <p class="docs-p">Select a market, choose Long or Short, set your collateral amount and leverage (1–10x), optionally set Stop Loss and Take Profit prices, then click to open your position.</p>
+      <h3 class="docs-h3">6. Password Reset</h3>
+      <p class="docs-p">If you forget your password, click "Forgot password?" on the login screen. Enter your email and you'll receive a reset link via email. The link expires in 1 hour and is single-use.</p>
+
+      <h2 id="trading" class="docs-h2">Trading</h2>
+      <h3 class="docs-h3">Opening a Position</h3>
+      <p class="docs-p">The <code>open_position</code> instruction accepts:</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>direction</td><td>Long | Short</td><td>Trade direction</td></tr>
+            <tr><td>collateral</td><td>u64</td><td>USDC collateral amount (6 decimals, e.g. 10_000_000 = $10)</td></tr>
+            <tr><td>leverage</td><td>u8</td><td>Leverage multiplier (1–10)</td></tr>
+            <tr><td>sl_price</td><td>Option&lt;u64&gt;</td><td>Optional stop-loss price (6 decimal scale)</td></tr>
+            <tr><td>tp_price</td><td>Option&lt;u64&gt;</td><td>Optional take-profit price (6 decimal scale)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="docs-p">Notional value = collateral × leverage. A 2% fee (200 bps) is deducted from collateral on open. The position is stored in your MarginAccount which supports up to 5 simultaneous positions.</p>
+      <h3 class="docs-h3">Order Types</h3>
+      <p class="docs-p">Currently only <strong>Market orders</strong> are supported on-chain. The frontend also shows Limit and Stop order UI, but these are executed as market orders when the price condition is met by the keeper.</p>
+      <h3 class="docs-h3">Closing a Position</h3>
+      <p class="docs-p">Call <code>close_position</code> with the position slot index (0–4). PnL is calculated as:</p>
+      <div class="docs-code">
+        <button class="docs-copy" data-copy="Long PnL  = notional * (exit_price - entry_price) / entry_price&#10;Short PnL = notional * (entry_price - exit_price) / entry_price">COPY</button>
+        <pre>Long PnL  = notional * (exit_price - entry_price) / entry_price
+Short PnL = notional * (entry_price - exit_price) / entry_price</pre>
+      </div>
+      <p class="docs-p">A 2% close fee is deducted. Profit is capped at the profit cap (500%, or 50,000 bps). The settlement amount (collateral + PnL - fees) is transferred from/to the fee vault.</p>
+      <h3 class="docs-h3">Stop Loss / Take Profit</h3>
+      <p class="docs-p">Set SL/TP on any open position via <code>set_sl_tp</code>. The keeper monitors prices and calls <code>execute_sl_tp</code> permissionlessly when conditions are met. The executor receives a <strong>0.1% reward</strong> (10 bps of position collateral) for executing the order.</p>
+      <h3 class="docs-h3">Multiple Positions</h3>
+      <p class="docs-p">Each MarginAccount supports up to <strong>5 simultaneous positions</strong> across any market. Positions are stored in a fixed-size array. MarginAccount size = 546 bytes.</p>
+
+      <h2 id="fees" class="docs-h2">Fees &amp; Costs</h2>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Fee</th><th>Rate</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Open Fee</td><td>2% (200 bps)</td><td>Deducted from collateral when opening</td></tr>
+            <tr><td>Close Fee</td><td>2% (200 bps)</td><td>Deducted from settlement when closing</td></tr>
+            <tr><td>Profit Cap</td><td>500% (50,000 bps)</td><td>Max profit per position</td></tr>
+            <tr><td>Min Position Size</td><td>$1.00 (1,000,000 raw)</td><td>Minimum collateral</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Trading Fee Distribution</h3>
+      <p class="docs-p">Trading fees collected on open and close are distributed:</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Destination</th><th>Share</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>LP Pool</td><td>50% (5,000 bps)</td><td>Distributed to liquidity providers</td></tr>
+            <tr><td>Insurance Fund</td><td>25% (2,500 bps)</td><td>Bad debt coverage</td></tr>
+            <tr><td>Platform</td><td>25%</td><td>Protocol revenue (stays in fee vault)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Funding Rate</h3>
+      <p class="docs-p">Funding is settled hourly by the keeper via <code>settle_funding</code> (permissionless crank). Only the <strong>majority side</strong> pays funding — the minority side pays nothing. The funding rate has two components:</p>
+      <div class="docs-code">
+        <button class="docs-copy" data-copy="Base Rate:  30 / 100,000 per hour = 0.03%/hr = 0.72%/day&#10;Skew Rate: skew_factor * (long_OI - short_OI) / (long_OI + short_OI)&#10;           where skew_factor = 1,000 / 100,000 = 1%&#10;&#10;Majority side pays: base_rate + skew_rate (per hour)&#10;Minority side pays: 0 (benefits from being on the less crowded side)">COPY</button>
+        <pre>Base Rate:  30 / 100,000 per hour = 0.03%/hr = 0.72%/day
+Skew Rate: skew_factor * (long_OI - short_OI) / (long_OI + short_OI)
+           where skew_factor = 1,000 / 100,000 = 1%
+
+Majority side pays: base_rate + skew_rate (per hour)
+Minority side pays: 0 (benefits from being on the less crowded side)</pre>
+      </div>
+      <h3 class="docs-h3">Funding Fee Distribution</h3>
+      <p class="docs-p">Funding fees collected from the majority side are distributed:</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Destination</th><th>Share</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>LP Pool</td><td>70% (7,000 bps)</td><td>Distributed to liquidity providers</td></tr>
+            <tr><td>Insurance Fund</td><td>20% (2,000 bps)</td><td>Bad debt coverage</td></tr>
+            <tr><td>Platform</td><td>10%</td><td>Protocol revenue (stays in fee vault)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="risk" class="docs-h2">Risk Management</h2>
+      <h3 class="docs-h3">Liquidation</h3>
+      <p class="docs-p">A position is liquidatable when its margin ratio falls below <strong>5% (500 bps)</strong>.</p>
+      <div class="docs-code">
+        <button class="docs-copy" data-copy="Margin Ratio = (collateral + unrealized_PnL) / notional&#10;&#10;Liquidation Price (Long):&#10;  entry_price * (1 - (collateral - notional * 0.05) / notional)&#10;&#10;Liquidation Price (Short):&#10;  entry_price * (1 + (collateral - notional * 0.05) / notional)">COPY</button>
+        <pre>Margin Ratio = (collateral + unrealized_PnL) / notional
+
+Liquidation Price (Long):
+  entry_price * (1 - (collateral - notional * 0.05) / notional)
+
+Liquidation Price (Short):
+  entry_price * (1 + (collateral - notional * 0.05) / notional)</pre>
+      </div>
+      <p class="docs-p">Liquidation is <strong>permissionless</strong> — anyone can call <code>liquidate</code>. The keeper checks every 10 seconds and liquidates undercollateralized positions.</p>
+      <h3 class="docs-h3">Liquidation Distribution</h3>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Recipient</th><th>Share</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Liquidator</td><td>2% (200 bps)</td><td>Reward for calling liquidate</td></tr>
+            <tr><td>LP Pool</td><td>44% (4,400 bps)</td><td>Distributed to liquidity providers</td></tr>
+            <tr><td>Insurance Fund</td><td>44% (4,400 bps)</td><td>Bad debt reserve</td></tr>
+            <tr><td>Platform</td><td>10%</td><td>Protocol revenue (stays in fee vault)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Add / Remove Margin</h3>
+      <p class="docs-p">Use <code>add_margin</code> to move free collateral into a position (lowering liquidation price). Use <code>remove_margin</code> to withdraw margin back to free collateral (health-checked — cannot reduce margin ratio below the liquidation threshold).</p>
+
+      <h2 id="oracle" class="docs-h2">Oracle</h2>
+      <h3 class="docs-h3">Price Source</h3>
+      <p class="docs-p">Prices are aggregated from WatchCharts and secondary dealer feeds. The keeper polls each reference model, normalizes listings, and extracts the current market price. All live markets are updated in parallel.</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Market</th><th>WatchCharts ID</th><th>Oracle Address</th></tr></thead>
+          <tbody>
+            <tr><td>ROLEX-SUB-PERP</td><td>RX-126610LN</td><td>7xKp9m...Zi0w</td></tr>
+            <tr><td>PATEK-NAUTILUS-PERP</td><td>PP-5711-1A</td><td>Hk3mP8...Zi3w</td></tr>
+            <tr><td>AP-ROYAL-OAK-PERP</td><td>AP-15500ST</td><td>9mN2vQ...pKq9</td></tr>
+            <tr><td>OMEGA-SPEEDY-PERP</td><td>OM-310-30</td><td>2vQwR4...mN2v</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Update Frequency</h3>
+      <p class="docs-p">The oracle updates every <strong>5 minutes</strong> (300,000ms). Each market has its own on-chain oracle account (PDA seeded with <code>["oracle", market_id"]</code>).</p>
+      <h3 class="docs-h3">Adaptive EWMA Smoothing</h3>
+      <p class="docs-p">Raw aggregated prices are smoothed using an Adaptive Exponential Weighted Moving Average (EWMA) with 4 tiers based on price deviation from the current EWMA:</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Deviation</th><th>Alpha</th><th>Mode</th><th>Behavior</th></tr></thead>
+          <tbody>
+            <tr><td>&lt; 3%</td><td>1.0</td><td>Direct</td><td>Price passes through unchanged</td></tr>
+            <tr><td>3–5%</td><td>0.3</td><td>Moderate</td><td>Moderate smoothing applied</td></tr>
+            <tr><td>5–15%</td><td>0.1</td><td>Heavy</td><td>Heavy smoothing, slow convergence</td></tr>
+            <tr><td>&gt; 15%</td><td>0.01</td><td>Spike</td><td>Near-total rejection, spike protection</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="docs-code">
+        <button class="docs-copy" data-copy="EWMA formula: new_ewma = alpha * raw_price + (1 - alpha) * prev_ewma&#10;&#10;Price floor protection: if candidate &lt; floor, update is rejected entirely.&#10;  Submariner floor: $8,000 | Nautilus floor: $50,000&#10;  Royal Oak floor: $25,000 | Speedmaster floor: $4,000">COPY</button>
+        <pre>EWMA formula: new_ewma = alpha * raw_price + (1 - alpha) * prev_ewma
+
+Price floor protection: if candidate &lt; floor, update is rejected entirely.
+  Submariner floor: $8,000 | Nautilus floor: $50,000
+  Royal Oak floor: $25,000 | Speedmaster floor: $4,000</pre>
+      </div>
+      <h3 class="docs-h3">Staleness Protection</h3>
+      <p class="docs-p">On-chain, the oracle has a <strong>staleness threshold of 30 minutes</strong> (1,800 seconds). Anyone can call <code>check_and_pause</code> (permissionless) to automatically pause the protocol if the oracle is stale beyond the <strong>auto-pause threshold of 1 hour</strong>.</p>
+      <h3 class="docs-h3">Secondary Authority</h3>
+      <p class="docs-p">The oracle accepts updates from either the admin wallet or a secondary authority keypair. The keeper automatically fails over to the secondary keypair after 3 consecutive primary failures, and sends Telegram alerts when failover occurs.</p>
+
+      <h2 id="lp" class="docs-h2">Liquidity Pool</h2>
+      <h3 class="docs-h3">How It Works</h3>
+      <p class="docs-p">Liquidity providers deposit USDC into the pool via <code>lp_deposit</code> and receive LP shares. Shares represent proportional ownership of the pool. The share price = total_usdc / total_shares.</p>
+      <h3 class="docs-h3">Earning Fees</h3>
+      <p class="docs-p">LPs earn fees from three sources:</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Source</th><th>LP Share</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Trading Fees</td><td>50%</td><td>From position open and close fees</td></tr>
+            <tr><td>Funding Fees</td><td>70%</td><td>From majority-side funding payments</td></tr>
+            <tr><td>Liquidations</td><td>44%</td><td>From liquidated position collateral</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="docs-p">All LP fees accumulate in the fee vault and are claimable proportionally via <code>claim_fees</code> at any time.</p>
+      <h3 class="docs-h3">Withdrawing</h3>
+      <p class="docs-p">Call <code>lp_withdraw</code> with the number of shares to burn. USDC is returned proportionally. There is no lockup period — withdraw anytime.</p>
+
+      <h2 id="protocol" class="docs-h2">Protocol</h2>
+      <h3 class="docs-h3">Program Details</h3>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Program ID</td><td>Demo1c...PMt6</td></tr>
+            <tr><td>Network</td><td>Solana Mainnet</td></tr>
+            <tr><td>Framework</td><td>Anchor 1.0.2</td></tr>
+            <tr><td>Frontend</td><td>watchliquid.xyz</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="docs-h3">Deployed Addresses</h3>
+      <div class="docs-address">
+        <div class="docs-addr-label">Program</div>
+        <div class="docs-addr-row">
+          <a href="#">Demo1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6</a>
+          <button class="docs-copy" data-copy="Demo1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6">COPY</button>
+        </div>
+        <div class="docs-addr-desc">Watch Liquid program (demo)</div>
+      </div>
+      <div class="docs-address">
+        <div class="docs-addr-label">ProtocolState</div>
+        <div class="docs-addr-row">
+          <a href="#">6yAYSsp863889v7bhMEwj6tVq5DvFTi1gwzwHFrqwLFL</a>
+          <button class="docs-copy" data-copy="6yAYSsp863889v7bhMEwj6tVq5DvFTi1gwzwHFrqwLFL">COPY</button>
+        </div>
+        <div class="docs-addr-desc">Global protocol configuration PDA</div>
+      </div>
+      <div class="docs-address">
+        <div class="docs-addr-label">Oracle (Rolex Sub)</div>
+        <div class="docs-addr-row">
+          <a href="#">FbPBfXaCY1Chm23pyVv7gcesRVK7FxFXHgd5xNb84r4Q</a>
+          <button class="docs-copy" data-copy="FbPBfXaCY1Chm23pyVv7gcesRVK7FxFXHgd5xNb84r4Q">COPY</button>
+        </div>
+        <div class="docs-addr-desc">ROLEX-SUB-PERP price feed</div>
+      </div>
+      <div class="docs-address">
+        <div class="docs-addr-label">Fee Vault</div>
+        <div class="docs-addr-row">
+          <a href="#">BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt</a>
+          <button class="docs-copy" data-copy="BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt">COPY</button>
+        </div>
+        <div class="docs-addr-desc">Protocol revenue vault</div>
+      </div>
+      <div class="docs-address">
+        <div class="docs-addr-label">Liquidity Pool</div>
+        <div class="docs-addr-row">
+          <a href="#">BdvpxuezgBbdAXNkRoiTrHbtEig7eQDV7X4x3Tcf2q9K</a>
+          <button class="docs-copy" data-copy="BdvpxuezgBbdAXNkRoiTrHbtEig7eQDV7X4x3Tcf2q9K">COPY</button>
+        </div>
+        <div class="docs-addr-desc">LP pool state</div>
+      </div>
+      <div class="docs-address">
+        <div class="docs-addr-label">USDC Mint</div>
+        <div class="docs-addr-row">
+          <a href="#">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</a>
+          <button class="docs-copy" data-copy="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">COPY</button>
+        </div>
+        <div class="docs-addr-desc">USDC (SPL Token)</div>
+      </div>
+      <h3 class="docs-h3">All Instructions</h3>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Instruction</th><th>Auth</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>initialize</td><td>Admin</td><td>One-time protocol setup, creates all PDAs</td></tr>
+            <tr><td>initialize_pool</td><td>Admin</td><td>One-time LP pool setup</td></tr>
+            <tr><td>deposit_collateral</td><td>User</td><td>Deposit USDC into margin account</td></tr>
+            <tr><td>withdraw_collateral</td><td>User</td><td>Withdraw free collateral</td></tr>
+            <tr><td>open_position</td><td>User</td><td>Open a leveraged perpetual position</td></tr>
+            <tr><td>close_position</td><td>User</td><td>Close a position, settle PnL</td></tr>
+            <tr><td>liquidate</td><td>Permissionless</td><td>Liquidate undercollateralized position</td></tr>
+            <tr><td>settle_funding</td><td>Permissionless</td><td>Settle hourly funding on all positions</td></tr>
+            <tr><td>lp_deposit</td><td>User</td><td>Deposit USDC into LP pool for shares</td></tr>
+            <tr><td>lp_withdraw</td><td>User</td><td>Burn shares to withdraw USDC</td></tr>
+            <tr><td>claim_fees</td><td>User</td><td>Claim accumulated LP fee share</td></tr>
+            <tr><td>update_oracle</td><td>Admin/Secondary</td><td>Push price to oracle</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="api" class="docs-h2">API Reference</h2>
+      <p class="docs-p">The keeper exposes an HTTP API on port 3001. On the frontend, endpoints are proxied via rewrites at <code>/api/keeper/*</code>.</p>
+      <h3 class="docs-h3">GET /ping</h3>
+      <p class="docs-p">Health check. Returns <code>{"ok":true,"timestamp":"..."}</code></p>
+      <h3 class="docs-h3">GET /health</h3>
+      <p class="docs-p">Comprehensive system health including oracle status, liquidation stats, funding stats, Solana RPC health, and per-market oracle data.</p>
+      <h3 class="docs-h3">GET /prices</h3>
+      <p class="docs-p">Historical price data for charting.</p>
+      <div class="docs-table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Param</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>market</td><td>string</td><td>ROLEX-SUB</td><td>Market ID</td></tr>
+            <tr><td>limit</td><td>number</td><td>50</td><td>Number of rows (max 500)</td></tr>
+            <tr><td>from</td><td>number</td><td>—</td><td>Unix timestamp range start</td></tr>
+            <tr><td>to</td><td>number</td><td>—</td><td>Unix timestamp range end</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="docs-code">
+        <button class="docs-copy" data-copy='Response: [&#10;  { "id": 1, "timestamp": 1717401600, "raw_price": 14250.5, "ewma": 14248.6, "deviation": 0.001, "alpha": 1, "tx_signature": "..." },&#10;  ...&#10;]'>COPY</button>
+        <pre>Response: [
+  { "id": 1, "timestamp": 1717401600, "raw_price": 14250.5, "ewma": 14248.6, "deviation": 0.001, "alpha": 1, "tx_signature": "..." },
+  ...
+]</pre>
+      </div>
+      <h3 class="docs-h3">GET /candles</h3>
+      <p class="docs-p">OHLC candle data aggregated from raw 5-minute price records. Used for charting.</p>
+      <h3 class="docs-h3">GET /trades/recent</h3>
+      <p class="docs-p">Recent trades across all users.</p>
+      <h3 class="docs-h3">GET /stats</h3>
+      <p class="docs-p">Protocol statistics (24h/7d volume, trades, liquidations, fees, unique traders).</p>
+      <h3 class="docs-h3">GET /leaderboard</h3>
+      <p class="docs-p">Top traders by volume and PnL.</p>
+
+      <h2 id="faq" class="docs-h2">FAQ</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q">Do I need a crypto wallet extension?<span class="faq-icon">+</span></button>
+          <div class="faq-a">No. Watch Liquid generates a session wallet automatically in your browser. No Phantom, Solflare, or any extension required. Your keypair is stored in localStorage and optionally backed up via email for recovery.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Is this real money?<span class="faq-icon">+</span></button>
+          <div class="faq-a">This demo site uses dummy data. The original Watch Liquid protocol is designed for Solana Mainnet with real USDC. Only deposit what you are prepared to lose.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">What happens if I close my browser?<span class="faq-icon">+</span></button>
+          <div class="faq-a">Your session wallet keypair persists in localStorage. When you return, your wallet reconnects automatically. If you created an account with email/password, you can recover your wallet on any device by logging in.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Can I get liquidated?<span class="faq-icon">+</span></button>
+          <div class="faq-a">Yes. If your margin ratio drops below 5%, your position can be liquidated by anyone (the keeper checks every 10 seconds). You lose your remaining collateral. Set a stop-loss to protect yourself.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">How is the price determined?<span class="faq-icon">+</span></button>
+          <div class="faq-a">Prices come from WatchCharts and dealer feed data, updated every 5 minutes. Raw prices are smoothed with an adaptive EWMA algorithm that protects against manipulation and price spikes.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">What is the profit cap?<span class="faq-icon">+</span></button>
+          <div class="faq-a">Maximum profit per position is 500% (50,000 bps) of your collateral. For example, with $10 collateral, max profit is $50.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Can I provide liquidity?<span class="faq-icon">+</span></button>
+          <div class="faq-a">Yes. Go to the <a href="pool.html" class="docs-link">Pool</a> page to deposit USDC. You receive LP shares and earn fees from trading (50%), funding (70%), and liquidations (44%) proportional to your share. No lockup period.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>Experimental software. Not financial advice. Not available to US persons. Use at your own risk.</p>
+    <p style="margin-top:0.25rem">
+      <a href="#">Terms of Service</a>
+      <span style="margin:0 0.5rem">|</span>
+      <a href="#">Privacy Policy</a>
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="docs.js"></script>
+</body>
+</html>

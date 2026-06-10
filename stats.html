@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Live protocol metrics and market stats for Watch Liquid" />
+  <title>Watch Liquid | Statistics</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="pool-page">
+  <header class="header">
+    <a href="index.html" class="header-logo">
+      <img src="assets/logo.svg" alt="Watch Liquid" />
+    </a>
+    <nav class="header-nav">
+      <a href="index.html">Trade</a>
+      <a href="pool.html">Pool</a>
+      <a href="stats.html" class="active">Stats</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="docs.html">Docs</a>
+    </nav>
+    <div class="header-right">
+      <div class="header-stat">SOL: <span>12.45</span></div>
+      <button id="header-connect" class="btn-outline">Connect Wallet</button>
+    </div>
+  </header>
+
+  <main class="pool-main">
+    <div class="pool-container">
+      <div class="pool-hero">
+        <h1>Statistics</h1>
+        <p>Live protocol metrics, oracle data, and market stats.</p>
+      </div>
+
+      <div id="market-tabs" class="stats-tabs"></div>
+
+      <section class="pool-card stats-section">
+        <h2 id="oracle-title">Oracle Status</h2>
+
+        <div class="oracle-grid">
+          <div>
+            <div class="oracle-label">Current Price</div>
+            <div id="oracle-price" class="oracle-price">—</div>
+          </div>
+          <div>
+            <div class="oracle-label">Source</div>
+            <div class="oracle-value">WatchCharts (Aggregator)</div>
+            <div id="oracle-product" class="oracle-sub">—</div>
+          </div>
+          <div>
+            <div class="oracle-label">Last Update</div>
+            <div id="oracle-updated" class="oracle-value">—</div>
+            <div class="oracle-sub">Interval: 5 min</div>
+          </div>
+          <div>
+            <div class="oracle-label">Oracle Status</div>
+            <div id="oracle-status" class="oracle-value text-long">
+              <span class="status-dot status-dot--healthy"></span> Healthy
+            </div>
+            <div class="oracle-sub hidden-mobile">Smoothing: Adaptive EWMA</div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <div class="chart-block-label">Price History (<span id="readings-count">48</span> readings)</div>
+          <div class="stats-chart-wrap">
+            <canvas id="stats-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="session-grid">
+          <div class="session-box">
+            <div class="session-label">Session High</div>
+            <div id="session-high" class="session-value text-long">—</div>
+          </div>
+          <div class="session-box">
+            <div class="session-label">Session Low</div>
+            <div id="session-low" class="session-value text-short">—</div>
+          </div>
+          <div class="session-box">
+            <div class="session-label">EWMA Price</div>
+            <div id="ewma-price" class="session-value">—</div>
+          </div>
+          <div class="session-box">
+            <div class="session-label">Keeper Uptime</div>
+            <div id="keeper-uptime" class="session-value">4.2h</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pool-card stats-section">
+        <h2>Protocol Statistics</h2>
+        <div class="stats-metric-grid">
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">24h Volume</div>
+            <div class="stats-metric-value">$1,284,920.00</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">7d Volume</div>
+            <div class="stats-metric-value">$8,412,650.00</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Total OI</div>
+            <div class="stats-metric-value">$2,847,000</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Trades (24h)</div>
+            <div class="stats-metric-value">1,842</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Unique Traders (24h)</div>
+            <div class="stats-metric-value">312</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Liquidations (24h)</div>
+            <div class="stats-metric-value">7</div>
+            <div class="stats-metric-sub">positions liquidated</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Fees (24h)</div>
+            <div class="stats-metric-value">$2,569.84</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Pool TVL</div>
+            <div class="stats-metric-value">$2,847,320.50</div>
+          </div>
+          <div class="stats-metric-card">
+            <div class="pool-stat-label">Pool APY (est)</div>
+            <div class="stats-metric-value text-long">18.4%</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pool-card stats-section">
+        <h2>Protocol Parameters</h2>
+        <div class="params-grid">
+          <div class="pool-rows">
+            <div class="pool-row"><span>Trade Fee</span><span class="mono">0.20%</span></div>
+            <div class="pool-row"><span>Base Funding Rate</span><span class="mono">0.0720% / 24h</span></div>
+            <div class="pool-row"><span>Skew Funding (current)</span><span class="mono">0.0142% / 24h</span></div>
+            <div class="pool-row"><span>Max Leverage</span><span class="mono">10x</span></div>
+            <div class="pool-row"><span>Profit Cap</span><span class="mono">500.00%</span></div>
+          </div>
+          <div class="pool-rows">
+            <div class="pool-row"><span>Liquidation Threshold</span><span class="mono">5%</span></div>
+            <div class="pool-row"><span>Insurance Fund Rate</span><span class="mono">0.10%</span></div>
+            <div class="pool-row"><span>Min Position Size</span><span class="mono">$1.00</span></div>
+            <div class="pool-row"><span>Max Long OI</span><span class="mono">Uncapped</span></div>
+            <div class="pool-row"><span>Max Short OI</span><span class="mono">Uncapped</span></div>
+            <div class="pool-row"><span>Protocol Paused</span><span class="mono">NO</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Experimental software. Not financial advice. Not available to US persons. Use at your own risk.</p>
+    <p style="margin-top:0.25rem">
+      <a href="#">Terms of Service</a>
+      <span style="margin:0 0.5rem">|</span>
+      <a href="#">Privacy Policy</a>
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="stats.js"></script>
+</body>
+</html>

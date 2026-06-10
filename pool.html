@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Provide liquidity and earn fees on Watch Liquid" />
+  <title>Watch Liquid | Liquidity Pool</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="pool-page">
+  <header class="header">
+    <a href="index.html" class="header-logo">
+      <img src="assets/logo.svg" alt="Watch Liquid" />
+    </a>
+    <nav class="header-nav">
+      <a href="index.html">Trade</a>
+      <a href="pool.html" class="active">Pool</a>
+      <a href="stats.html">Stats</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="docs.html">Docs</a>
+    </nav>
+    <div class="header-right">
+      <div class="header-stat">SOL: <span>12.45</span></div>
+      <button id="header-connect" class="btn-outline">Connect Wallet</button>
+    </div>
+  </header>
+
+  <main class="pool-main">
+    <div class="pool-container">
+      <div class="pool-hero">
+        <h1>Liquidity Pool</h1>
+        <p>Provide liquidity and earn fees from trading, funding, and liquidations.</p>
+      </div>
+
+      <div class="pool-stat-grid">
+        <div class="pool-stat-card">
+          <div class="pool-stat-label">Pool TVL</div>
+          <div id="stat-tvl" class="pool-stat-value">$2,847,320.50</div>
+        </div>
+        <div class="pool-stat-card">
+          <div class="pool-stat-label">Accumulated Fees</div>
+          <div id="stat-fees" class="pool-stat-value">$48,912.33</div>
+        </div>
+        <div class="pool-stat-card">
+          <div class="pool-stat-label">Est. APY</div>
+          <div id="stat-apy" class="pool-stat-value text-long">18.4%</div>
+        </div>
+        <div class="pool-stat-card">
+          <div class="pool-stat-label">Your Share</div>
+          <div id="stat-share" class="pool-stat-value">0.00%</div>
+        </div>
+      </div>
+
+      <div class="pool-layout">
+        <div class="pool-left">
+          <section class="pool-card">
+            <h2>Your LP Position</h2>
+            <div id="lp-position-content">
+              <p class="pool-muted">Connect wallet to view</p>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>Pool Stats</h2>
+            <div class="pool-rows">
+              <div class="pool-row"><span>Total USDC</span><span id="pool-total-usdc" class="mono">$2,847,320.50</span></div>
+              <div class="pool-row"><span>Total Shares</span><span id="pool-total-shares" class="mono">2,847,320</span></div>
+              <div class="pool-row"><span>Share Price</span><span id="pool-share-price" class="mono">$1.00</span></div>
+              <div class="pool-row"><span>Accumulated Fees</span><span id="pool-acc-fees" class="mono">$48,912.33</span></div>
+              <div class="pool-row"><span>Est. APY</span><span id="pool-apy" class="mono text-long">18.4%</span></div>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>LP Fee Sources</h2>
+            <div class="pool-rows">
+              <div class="pool-row"><span>Trading Fees</span><span class="mono">$28,400.00</span></div>
+              <div class="pool-row"><span>Funding Fees</span><span class="mono">$12,800.00</span></div>
+              <div class="pool-row"><span>Liquidations</span><span class="mono">$7,712.33</span></div>
+            </div>
+            <p class="pool-footnote">All LP fees accumulate in the fee vault and are claimable proportional to your pool share.</p>
+          </section>
+
+          <section class="pool-card">
+            <h2>Open Interest</h2>
+            <div class="oi-grid">
+              <div class="oi-box">
+                <div class="oi-box-label">Total Long</div>
+                <div class="oi-box-value text-long">$1,624,000</div>
+              </div>
+              <div class="oi-box">
+                <div class="oi-box-label">Total Short</div>
+                <div class="oi-box-value text-short">$1,223,000</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>Protocol Vaults</h2>
+            <div class="vault-grid">
+              <div class="vault-box">
+                <div class="vault-label">LP Vault</div>
+                <div class="vault-value">$2,847,320</div>
+              </div>
+              <div class="vault-box">
+                <div class="vault-label">Fee Vault</div>
+                <div class="vault-value">$48,912</div>
+              </div>
+              <div class="vault-box">
+                <div class="vault-label">Insurance Fund</div>
+                <div class="vault-value">$125,000</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="pool-right">
+          <section class="pool-card">
+            <h2>Wallet</h2>
+            <div id="wallet-content">
+              <p class="pool-muted">Connect wallet</p>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>Deposit</h2>
+            <div class="pool-action">
+              <div class="amount-input-wrap">
+                <input id="deposit-amount" type="number" class="field-input amount-input" placeholder="0" min="0" step="1" disabled />
+                <span class="amount-suffix">USDC</span>
+              </div>
+              <div id="deposit-preview" class="pool-preview hidden">
+                <div class="pool-row"><span>Shares received</span><span id="deposit-shares" class="mono">—</span></div>
+                <div class="pool-row"><span>Your pool share</span><span id="deposit-share-pct" class="mono">—</span></div>
+              </div>
+              <button id="btn-deposit" class="btn-green pool-action-btn" disabled>Deposit to Pool</button>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>Withdraw</h2>
+            <div class="pool-action">
+              <div class="amount-input-wrap">
+                <input id="withdraw-amount" type="number" class="field-input amount-input" placeholder="0" min="0" step="1" disabled />
+                <span class="amount-suffix">SHARES</span>
+              </div>
+              <div class="pct-btns">
+                <button class="pct-btn" data-pct="25" disabled>25%</button>
+                <button class="pct-btn" data-pct="50" disabled>50%</button>
+                <button class="pct-btn" data-pct="75" disabled>75%</button>
+                <button class="pct-btn" data-pct="100" disabled>100%</button>
+              </div>
+              <div id="withdraw-preview" class="pool-preview hidden">
+                <div class="pool-row"><span>USDC received</span><span id="withdraw-usdc" class="mono">—</span></div>
+              </div>
+              <button id="btn-withdraw" class="btn-outline pool-action-btn" style="width:100%" disabled>Withdraw from Pool</button>
+            </div>
+          </section>
+
+          <section class="pool-card">
+            <h2>Claim Fees</h2>
+            <div class="pool-action">
+              <div class="claim-amount">
+                <div class="claim-label">Claimable</div>
+                <div id="claimable-amount" class="claim-value">$0.00</div>
+              </div>
+              <p id="claim-total" class="pool-muted hidden">Total earned: $0.00 USDC</p>
+              <button id="btn-claim" class="btn-green pool-action-btn" disabled>Claim Fees</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Experimental software. Not financial advice. Not available to US persons. Use at your own risk.</p>
+    <p style="margin-top:0.25rem">
+      <a href="#">Terms of Service</a>
+      <span style="margin:0 0.5rem">|</span>
+      <a href="#">Privacy Policy</a>
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="pool.js"></script>
+</body>
+</html>

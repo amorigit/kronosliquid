@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Luxury watch perpetual futures on Solana" />
+  <title>Watch Liquid | Luxury Watch Perps</title>
+  <meta property="og:title" content="Watch Liquid | Luxury Watch Perps" />
+  <meta property="og:description" content="Luxury watch perpetual futures on Solana" />
+  <meta property="og:site_name" content="Watch Liquid" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Watch Liquid | Luxury Watch Perps" />
+  <meta name="twitter:description" content="Luxury watch perpetual futures on Solana" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Risk Disclosure -->
+  <div id="risk-overlay" class="risk-overlay">
+    <div class="risk-modal">
+      <h1>Risk Disclosure</h1>
+      <p>Watch Liquid is experimental software. Trading perpetual futures involves substantial risk of loss including loss of your entire deposit.</p>
+      <p style="margin-top:0.75rem">By continuing you confirm:</p>
+      <ul>
+        <li>You are not a US person as defined by applicable law</li>
+        <li>You are legally permitted to use this service in your jurisdiction</li>
+        <li>You understand smart contracts may contain bugs</li>
+        <li>You understand the oracle may fail or be manipulated</li>
+        <li>You accept all risks associated with experimental DeFi software</li>
+      </ul>
+      <p class="disclaimer">This is not financial advice.</p>
+      <button id="risk-accept" class="btn-green">I understand, let me trade</button>
+      <p class="footnote">If you are a US person or resident of a restricted jurisdiction please do not use this platform.</p>
+    </div>
+  </div>
+
+  <!-- Landing -->
+  <section id="landing" class="landing">
+    <div class="landing-logo">
+      <img class="logo-sm" src="assets/logo.svg" alt="Watch Liquid" />
+      <img class="logo-lg" src="assets/logo.svg" alt="Watch Liquid" />
+    </div>
+
+    <div id="hero-watches" class="watch-fan" aria-hidden="true"></div>
+
+    <p class="landing-tagline">Luxury watch perpetual futures on Solana</p>
+
+    <div class="landing-actions">
+      <button id="btn-start" class="btn-green btn-start">Start Trading</button>
+      <button id="btn-connect" class="btn-connect">Connect Wallet</button>
+    </div>
+
+    <a href="docs.html" class="landing-docs">Read the Docs</a>
+  </section>
+
+  <!-- Trading Terminal -->
+  <div id="terminal" class="terminal">
+    <header class="header">
+      <a href="#" class="header-logo" onclick="location.reload();return false">
+        <img src="assets/logo.svg" alt="Watch Liquid" />
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="active">Trade</a>
+        <a href="pool.html">Pool</a>
+        <a href="stats.html">Stats</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="docs.html">Docs</a>
+      </nav>
+      <div class="header-right">
+        <div class="header-stat">SOL: <span>12.45</span></div>
+        <button id="header-connect" class="btn-outline">Connect Wallet</button>
+      </div>
+    </header>
+
+    <div class="ticker">
+      <div id="ticker-track" class="ticker-track"></div>
+    </div>
+
+    <div class="terminal-body">
+      <!-- Markets -->
+      <aside class="markets-panel">
+        <div class="markets-header">
+          <h2>Markets</h2>
+          <input id="market-search" type="text" class="field-input" placeholder="Search..." />
+        </div>
+        <div id="markets-list" class="markets-list"></div>
+      </aside>
+
+      <!-- Center -->
+      <main class="center-panel">
+        <div class="market-header">
+          <div class="market-header-left">
+            <img id="market-img" src="" alt="" />
+            <div>
+              <h1 id="market-name">—</h1>
+              <p id="market-subtitle" class="subtitle">—</p>
+            </div>
+          </div>
+          <div class="market-stats">
+            <div class="stat-block">
+              <div class="label">Price</div>
+              <div id="market-price" class="value">—</div>
+            </div>
+            <div class="stat-block">
+              <div class="label">24h</div>
+              <div id="market-change" class="value">—</div>
+            </div>
+            <div class="stat-block">
+              <div class="label">Volume</div>
+              <div id="stat-volume" class="value">—</div>
+            </div>
+            <div class="stat-block">
+              <div class="label">Open Interest</div>
+              <div id="stat-oi" class="value">—</div>
+            </div>
+            <div class="stat-block">
+              <div class="label">Funding</div>
+              <div id="stat-funding" class="value">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-area">
+          <canvas id="price-chart"></canvas>
+          <div class="chart-placeholder">Chart will appear as price history builds</div>
+        </div>
+
+        <div class="bottom-panels">
+          <div class="panel-box">
+            <div class="panel-title">Order Book</div>
+            <div id="order-book" class="order-book"></div>
+          </div>
+          <div class="panel-box">
+            <div class="panel-title">Open Interest</div>
+            <div class="oi-bar-wrap">
+              <div class="oi-label">
+                <span id="oi-long-label">—</span>
+                <span id="oi-short-label">—</span>
+              </div>
+              <div class="oi-bar">
+                <div id="oi-long" class="oi-long" style="width:55%"></div>
+                <div id="oi-short" class="oi-short" style="width:45%"></div>
+              </div>
+            </div>
+            <div class="panel-title" style="border-top:1px solid var(--border)">Open Positions (2)</div>
+            <div id="positions-list" class="positions-list"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Trade Panel -->
+      <aside class="trade-panel">
+        <div class="trade-panel-inner">
+          <div class="direction-toggle">
+            <button id="btn-long">Long</button>
+            <button id="btn-short">Short</button>
+          </div>
+
+          <div class="trade-field">
+            <label>Collateral (USDC) <span id="leverage-display">5x</span></label>
+            <input id="collateral-input" type="number" class="field-input" value="500" min="0" step="10" />
+          </div>
+
+          <div class="trade-field">
+            <label>Leverage</label>
+            <div class="leverage-btns">
+              <button class="lev-btn" data-lev="1">1x</button>
+              <button class="lev-btn" data-lev="2">2x</button>
+              <button class="lev-btn" data-lev="3">3x</button>
+              <button class="lev-btn" data-lev="5">5x</button>
+              <button class="lev-btn" data-lev="10">10x</button>
+              <button class="lev-btn" data-lev="20">20x</button>
+            </div>
+          </div>
+
+          <div class="trade-summary">
+            <div class="row"><span>Notional Size</span><span id="summary-notional" class="val">—</span></div>
+            <div class="row"><span>Entry Price</span><span id="summary-entry" class="val">—</span></div>
+            <div class="row"><span>Liq. Price</span><span id="summary-liq" class="val">—</span></div>
+            <div class="row"><span>Est. Fee</span><span id="summary-fee" class="val">—</span></div>
+          </div>
+
+          <button id="trade-submit" class="trade-submit btn-green">Open Long</button>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Experimental software. Not financial advice. Not available to US persons. Use at your own risk.</p>
+      <p style="margin-top:0.25rem">
+        <a href="#">Terms of Service</a>
+        <span style="margin:0 0.5rem">|</span>
+        <a href="#">Privacy Policy</a>
+      </p>
+    </footer>
+
+    <nav class="mobile-nav">
+      <button class="active">Trade</button>
+      <button>Markets</button>
+      <button>Positions</button>
+      <button>Docs</button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

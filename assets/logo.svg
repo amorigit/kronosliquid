@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 120" role="img" aria-label="Watch Liquid">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="0" flood-color="#1a3a8f"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="0" flood-color="#1a3a8f"/>
+    </filter>
+  </defs>
+  <text x="256" y="78" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="64" font-weight="900" letter-spacing="-2" fill="#ffcb05" stroke="#1a3a8f" stroke-width="6" paint-order="stroke fill" filter="url(#shadow)">WATCHLIQUID</text>
+</svg>
