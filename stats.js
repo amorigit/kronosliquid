@@ -11,8 +11,19 @@ const WATCH_IMAGES = [
   "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
 ];
 
+const COMMODITY_IMAGES = {
+  gold: "https://images.unsplash.com/photo-1610375461246-0c10621b98d2?w=400&h=400&fit=crop",
+  silver: "https://images.unsplash.com/photo-1621451537820-481b465741cd?w=400&h=400&fit=crop",
+  platinum: "https://images.unsplash.com/photo-1606814899291-dceeefa944a0?w=400&h=400&fit=crop",
+  diamond: "https://images.unsplash.com/photo-1515562141203-7a88fb7ce338?w=400&h=400&fit=crop",
+};
+
 const MARKETS = [
   { id: "wl500", tab: "WL500", name: "WL500-PERP", subtitle: "WL500 Index · Top 500 Luxury Watches", productId: "WL500-IDX", price: 48250.0, live: true },
+  { id: "gold", tab: "GOLD", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", productId: "XAU-USD", price: 2348.5, live: true },
+  { id: "silver", tab: "SILVER", name: "SILVER-PERP", subtitle: "Silver · XAG/USD · Troy Oz Spot", productId: "XAG-USD", price: 28.65, live: true },
+  { id: "platinum", tab: "PLATINUM", name: "PLATINUM-PERP", subtitle: "Platinum · XPT/USD · Troy Oz Spot", productId: "XPT-USD", price: 982.4, live: true },
+  { id: "diamond", tab: "DIAMOND", name: "DIAMOND-PERP", subtitle: "Diamond · 1ct Round Brilliant · Rapaport", productId: "RAP-1CT-RB", price: 4850.0, live: true },
   { id: "rolex-sub", tab: "ROLEX-SUB", name: "ROLEX-SUB-PERP", subtitle: "Rolex Submariner · 126610LN", productId: "RX-126610LN", price: 14250.0, live: true },
   { id: "patek-nautilus", tab: "PATEK-NAUT", name: "PATEK-NAUTILUS-PERP", subtitle: "Patek Philippe · Nautilus 5711/1A", productId: "PP-5711-1A", price: 98400.0, live: true },
   { id: "ap-royal-oak", tab: "AP-RO", name: "AP-ROYAL-OAK-PERP", subtitle: "Audemars Piguet · Royal Oak 15500ST", productId: "AP-15500ST", price: 52800.0, live: true },

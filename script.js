@@ -11,6 +11,13 @@ const WATCH_IMAGES = [
   "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
 ];
 
+const COMMODITY_IMAGES = {
+  gold: "https://images.unsplash.com/photo-1610375461246-0c10621b98d2?w=400&h=400&fit=crop",
+  silver: "https://images.unsplash.com/photo-1621451537820-481b465741cd?w=400&h=400&fit=crop",
+  platinum: "https://images.unsplash.com/photo-1606814899291-dceeefa944a0?w=400&h=400&fit=crop",
+  diamond: "https://images.unsplash.com/photo-1515562141203-7a88fb7ce338?w=400&h=400&fit=crop",
+};
+
 const HERO_WATCHES = [
   { name: "Rolex Submariner", image: WATCH_IMAGES[9] },
   { name: "Patek Philippe Nautilus", image: WATCH_IMAGES[1] },
@@ -21,6 +28,10 @@ const HERO_WATCHES = [
 
 const MARKETS = [
   { id: "wl500", name: "WL500-PERP", subtitle: "WL500 Index · Top 500 Luxury Watches", image: WATCH_IMAGES[0], price: 48250.0, change: 2.14, badge: "Index", live: true },
+  { id: "gold", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", image: COMMODITY_IMAGES.gold, price: 2348.5, change: 0.42, badge: "Commodity", live: true },
+  { id: "silver", name: "SILVER-PERP", subtitle: "Silver · XAG/USD · Troy Oz Spot", image: COMMODITY_IMAGES.silver, price: 28.65, change: 1.15, badge: "Commodity", live: true },
+  { id: "platinum", name: "PLATINUM-PERP", subtitle: "Platinum · XPT/USD · Troy Oz Spot", image: COMMODITY_IMAGES.platinum, price: 982.4, change: -0.28, badge: "Commodity", live: true },
+  { id: "diamond", name: "DIAMOND-PERP", subtitle: "Diamond · 1ct Round Brilliant · Rapaport Index", image: COMMODITY_IMAGES.diamond, price: 4850.0, change: 0.85, badge: "Commodity", live: true },
   { id: "rolex-sub", name: "ROLEX-SUB-PERP", subtitle: "Rolex Submariner · 126610LN · Oystersteel", image: WATCH_IMAGES[9], price: 14250.0, change: 1.82, badge: "Hot", live: true },
   { id: "patek-nautilus", name: "PATEK-NAUTILUS-PERP", subtitle: "Patek Philippe · Nautilus 5711/1A", image: WATCH_IMAGES[1], price: 98400.0, change: -0.45, badge: null, live: true },
   { id: "ap-royal-oak", name: "AP-ROYAL-OAK-PERP", subtitle: "Audemars Piguet · Royal Oak 15500ST", image: WATCH_IMAGES[2], price: 52800.0, change: 3.21, badge: "New", live: true },

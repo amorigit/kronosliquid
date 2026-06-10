@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="description" content="watchliquid.lol documentation" />
-  <title>watchliquid.lol | Documentation</title>
-  <link rel="canonical" href="https://watchliquid.lol/docs.html" />
+  <meta name="description" content="Kronos documentation" />
+  <title>Kronos | Documentation</title>
+  <link rel="canonical" href="https://kronosliquid.xyz/docs.html" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="docs-page">
   <header class="header">
-    <a href="index.html" class="header-logo">
-      <img src="assets/logo.svg" alt="watchliquid.lol" />
-    </a>
     <nav class="header-nav">
       <a href="index.html">Trade</a>
       <a href="pool.html">Pool</a>
@@ -20,6 +17,9 @@
       <a href="leaderboard.html">Leaderboard</a>
       <a href="docs.html" class="active">Docs</a>
     </nav>
+    <a href="index.html" class="header-logo">
+      <img src="assets/kronos-logo.svg" alt="Kronos" />
+    </a>
     <div class="header-right">
       <div class="header-stat">SOL: <span>12.45</span></div>
       <button id="header-connect" class="btn-outline">Connect Wallet</button>
@@ -60,7 +60,7 @@
 
     <main class="docs-content">
       <h2 id="overview" class="docs-h2">Overview</h2>
-      <p class="docs-p">watchliquid.lol is the first on-chain perpetual futures DEX for luxury watches. Built on Solana using the Anchor framework, it lets traders go long or short on individual timepieces and watch indices with up to 10x leverage. Prices are sourced from WatchCharts market data via an automated aggregator with adaptive EWMA smoothing.</p>
+      <p class="docs-p">Kronos is the first on-chain perpetual futures DEX for luxury watches and precious metals. Built on Solana using the Anchor framework, it lets traders go long or short on individual timepieces, watch indices, and commodity spot prices (gold, silver, platinum, diamonds) with up to 10x leverage. Prices are sourced from WatchCharts, LBMA spot feeds, and Rapaport index data via an automated aggregator with adaptive EWMA smoothing.</p>
       <p class="docs-p">Live on Solana Mainnet with real USDC.</p>
 
       <h2 id="markets" class="docs-h2">Current Markets</h2>
@@ -69,6 +69,10 @@
           <thead><tr><th>Market</th><th>Model</th><th>Brand</th><th>Reference</th><th>Live</th></tr></thead>
           <tbody>
             <tr><td>WL500-PERP</td><td>WL500 Index</td><td>Index</td><td>Top 500 Watches</td><td>Yes</td></tr>
+            <tr><td>GOLD-PERP</td><td>Gold Spot</td><td>Commodity</td><td>XAU/USD · Troy Oz</td><td>Yes</td></tr>
+            <tr><td>SILVER-PERP</td><td>Silver Spot</td><td>Commodity</td><td>XAG/USD · Troy Oz</td><td>Yes</td></tr>
+            <tr><td>PLATINUM-PERP</td><td>Platinum Spot</td><td>Commodity</td><td>XPT/USD · Troy Oz</td><td>Yes</td></tr>
+            <tr><td>DIAMOND-PERP</td><td>1ct Round Brilliant</td><td>Commodity</td><td>Rapaport Index</td><td>Yes</td></tr>
             <tr><td>ROLEX-SUB-PERP</td><td>Submariner</td><td>Rolex</td><td>126610LN</td><td>Yes</td></tr>
             <tr><td>PATEK-NAUTILUS-PERP</td><td>Nautilus</td><td>Patek Philippe</td><td>5711/1A</td><td>Yes</td></tr>
             <tr><td>AP-ROYAL-OAK-PERP</td><td>Royal Oak</td><td>Audemars Piguet</td><td>15500ST</td><td>Yes</td></tr>
@@ -81,11 +85,11 @@
 
       <h2 id="getting-started" class="docs-h2">Getting Started</h2>
       <h3 class="docs-h3">1. Visit the app</h3>
-      <p class="docs-p">Go to <a href="https://watchliquid.lol" class="docs-link">watchliquid.lol</a>.</p>
+      <p class="docs-p">Go to <a href="https://kronosliquid.xyz" class="docs-link">kronosliquid.xyz</a>.</p>
       <h3 class="docs-h3">2. Create an account</h3>
       <p class="docs-p">Click "Start Trading" on the landing page. You can create an account with email and password, or continue as a guest with no account.</p>
       <h3 class="docs-h3">3. Session Wallet</h3>
-      <p class="docs-p">No browser wallet extension (Phantom, Solflare) is required. watchliquid.lol automatically generates a Solana keypair stored in your browser's localStorage. This "session wallet" signs all transactions locally. If you create an account, your encrypted private key is stored server-side for email recovery (AES-256-GCM encryption).</p>
+      <p class="docs-p">No browser wallet extension (Phantom, Solflare) is required. Kronos automatically generates a Solana keypair stored in your browser's localStorage. This "session wallet" signs all transactions locally. If you create an account, your encrypted private key is stored server-side for email recovery (AES-256-GCM encryption).</p>
       <h3 class="docs-h3">4. Deposit Collateral</h3>
       <p class="docs-p">Click "DEPOSIT/WITHDRAW" and deposit USDC into your margin account. Your margin account is a PDA derived from your wallet address with the seed <code>margin</code>.</p>
       <h3 class="docs-h3">5. Open a Position</h3>
@@ -203,11 +207,15 @@ Liquidation Price (Short):
 
       <h2 id="oracle" class="docs-h2">Oracle</h2>
       <h3 class="docs-h3">Price Source</h3>
-      <p class="docs-p">Prices are aggregated from WatchCharts and secondary dealer feeds. The keeper polls each reference model, normalizes listings, and extracts the current market price. All live markets are updated in parallel.</p>
+      <p class="docs-p">Prices are aggregated from WatchCharts, LBMA spot feeds (gold, silver, platinum), Rapaport diamond index data, and secondary dealer feeds. The keeper polls each reference, normalizes listings, and extracts the current market price. All live markets are updated in parallel.</p>
       <div class="docs-table-wrap">
         <table class="docs-table">
-          <thead><tr><th>Market</th><th>WatchCharts ID</th><th>Oracle Address</th></tr></thead>
+          <thead><tr><th>Market</th><th>Source ID</th><th>Oracle Address</th></tr></thead>
           <tbody>
+            <tr><td>GOLD-PERP</td><td>XAU-USD</td><td>4gLd8k...Au12</td></tr>
+            <tr><td>SILVER-PERP</td><td>XAG-USD</td><td>5sLv9m...Ag34</td></tr>
+            <tr><td>PLATINUM-PERP</td><td>XPT-USD</td><td>6pTm2n...Pt56</td></tr>
+            <tr><td>DIAMOND-PERP</td><td>RAP-1CT-RB</td><td>7dMn4p...Dm78</td></tr>
             <tr><td>ROLEX-SUB-PERP</td><td>RX-126610LN</td><td>7xKp9m...Zi0w</td></tr>
             <tr><td>PATEK-NAUTILUS-PERP</td><td>PP-5711-1A</td><td>Hk3mP8...Zi3w</td></tr>
             <tr><td>AP-ROYAL-OAK-PERP</td><td>AP-15500ST</td><td>9mN2vQ...pKq9</td></tr>
@@ -235,8 +243,9 @@ Liquidation Price (Short):
         <pre>EWMA formula: new_ewma = alpha * raw_price + (1 - alpha) * prev_ewma
 
 Price floor protection: if candidate &lt; floor, update is rejected entirely.
-  Submariner floor: $8,000 | Nautilus floor: $50,000
-  Royal Oak floor: $25,000 | Speedmaster floor: $4,000</pre>
+  Gold floor: $1,800/oz | Silver floor: $18/oz
+  Platinum floor: $700/oz | Diamond floor: $2,500/ct
+  Submariner floor: $8,000 | Nautilus floor: $50,000</pre>
       </div>
       <h3 class="docs-h3">Staleness Protection</h3>
       <p class="docs-p">On-chain, the oracle has a <strong>staleness threshold of 30 minutes</strong> (1,800 seconds). Anyone can call <code>check_and_pause</code> (permissionless) to automatically pause the protocol if the oracle is stale beyond the <strong>auto-pause threshold of 1 hour</strong>.</p>
@@ -271,7 +280,7 @@ Price floor protection: if candidate &lt; floor, update is rejected entirely.
             <tr><td>Program ID</td><td>Demo1c...PMt6</td></tr>
             <tr><td>Network</td><td>Solana Mainnet</td></tr>
             <tr><td>Framework</td><td>Anchor 1.0.2</td></tr>
-            <tr><td>Frontend</td><td>watchliquid.lol</td></tr>
+            <tr><td>Frontend</td><td>kronosliquid.xyz</td></tr>
           </tbody>
         </table>
       </div>
@@ -282,7 +291,7 @@ Price floor protection: if candidate &lt; floor, update is rejected entirely.
           <a href="#">Demo1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6</a>
           <button class="docs-copy" data-copy="Demo1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6">COPY</button>
         </div>
-        <div class="docs-addr-desc">watchliquid.lol program (demo)</div>
+        <div class="docs-addr-desc">Kronos program (demo)</div>
       </div>
       <div class="docs-address">
         <div class="docs-addr-label">ProtocolState</div>
@@ -384,11 +393,11 @@ Price floor protection: if candidate &lt; floor, update is rejected entirely.
       <div class="faq-list">
         <div class="faq-item">
           <button class="faq-q">Do I need a crypto wallet extension?<span class="faq-icon">+</span></button>
-          <div class="faq-a">No. watchliquid.lol generates a session wallet automatically in your browser. No Phantom, Solflare, or any extension required. Your keypair is stored in localStorage and optionally backed up via email for recovery.</div>
+          <div class="faq-a">No. Kronos generates a session wallet automatically in your browser. No Phantom, Solflare, or any extension required. Your keypair is stored in localStorage and optionally backed up via email for recovery.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q">Is this real money?<span class="faq-icon">+</span></button>
-          <div class="faq-a">This demo site uses dummy data. watchliquid.lol is designed for Solana Mainnet with real USDC. Only deposit what you are prepared to lose.</div>
+          <div class="faq-a">This demo site uses dummy data. Kronos is designed for Solana Mainnet with real USDC. Only deposit what you are prepared to lose.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q">What happens if I close my browser?<span class="faq-icon">+</span></button>
