@@ -24,7 +24,7 @@ security_txt! {
 }
 
 // Mainnet program ID
-declare_id!("5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6");
+declare_id!("HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP");
 
 #[program]
 pub mod kronos {

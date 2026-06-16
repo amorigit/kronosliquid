@@ -5,17 +5,17 @@ package_manager = "yarn"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-kronos = "7DVf9oEMcKPV6VUUz5BpptbwqpgBfXunwxjTNNQmZvbJ"
-
 [programs.devnet]
-kronos = "7DVf9oEMcKPV6VUUz5BpptbwqpgBfXunwxjTNNQmZvbJ"
+kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
+
+[programs.localnet]
+kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 
 [programs.mainnet]
-kronos = "5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6"
+kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 
 [provider]
-cluster = "mainnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

@@ -15,7 +15,7 @@ pub struct ProcessPayouts<'info> {
         seeds = [PROTOCOL_SEED],
         bump = protocol_state.bump,
     )]
-    pub protocol_state: Account<'info, ProtocolState>,
+    pub protocol_state: Box<Account<'info, ProtocolState>>,
 
     #[account(
         mut,
@@ -29,7 +29,7 @@ pub struct ProcessPayouts<'info> {
         seeds = [LP_POOL_SEED],
         bump = liquidity_pool.bump,
     )]
-    pub liquidity_pool: Account<'info, LiquidityPool>,
+    pub liquidity_pool: Box<Account<'info, LiquidityPool>>,
 
     #[account(
         mut,
@@ -37,14 +37,14 @@ pub struct ProcessPayouts<'info> {
         bump = liquidity_pool.vault_bump,
         token::mint = protocol_state.usdc_mint,
     )]
-    pub lp_vault: Account<'info, TokenAccount>,
+    pub lp_vault: Box<Account<'info, TokenAccount>>,
 
     /// The user's USDC token account — must match the head of the queue.
     #[account(
         mut,
         token::mint = protocol_state.usdc_mint,
     )]
-    pub user_token_account: Account<'info, TokenAccount>,
+    pub user_token_account: Box<Account<'info, TokenAccount>>,
 
     pub token_program: Program<'info, Token>,
 }
