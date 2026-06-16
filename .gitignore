@@ -1,0 +1,41 @@
+# Next.js build files
+app/.next/
+.next/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+app/.env.local
+keeper/.env
+keeper/.env.local
+
+# Keypairs / secrets — NEVER commit these
+keeper/secondary.json
+keeper/admin.json
+**/id.json
+*.pem
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+.anchor
+target
+**/*.rs.bk
+test-ledger
+
+# OS / editor
+.DS_Store
+.yarn
+.surfpool
+.vercel
+
+# Keeper runtime artifacts
+keeper/logs/
+keeper/prices.db
+keeper/prices.db-shm
+keeper/prices.db-wal
+keeper/prices.json
+tsconfig.tsbuildinfo
+**/tsconfig.tsbuildinfo

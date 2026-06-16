@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:        #0a0a0a;
+  --panel:     #111111;
+  --border:    #1a1a1a;
+  --border2:   #222222;
+  --green:     #00ff41;
+  --green-dim: rgba(0,255,65,.08);
+  --red:       #ff3333;
+  --red-dim:   rgba(255,51,51,.08);
+  --text:      #ffffff;
+  --muted:     #666666;
+  --muted2:    #333333;
+  --blue:      #00d4ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  min-height: 100vh;
+}
+
+/* Long/Short color helpers */
+.text-long { color: var(--green); }
+.text-short { color: var(--red); }
+.bg-long { background: var(--green); }
+.bg-short { background: var(--red); }
+.bg-long-dim { background: var(--green-dim); }
+.bg-short-dim { background: var(--red-dim); }
+
+/* Terminal button — green */
+.btn-green {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--green);
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-green:hover { opacity: 0.85; }
+.btn-green:disabled { opacity: .3; cursor: not-allowed; background: var(--muted2); color: var(--muted); }
+
+/* Terminal button — red */
+.btn-red {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-red:hover { opacity: 0.85; }
+.btn-red:disabled { opacity: .3; cursor: not-allowed; background: var(--muted2); color: var(--muted); }
+
+/* Outline button */
+.btn-outline {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.btn-outline:hover { color: var(--text); border-color: var(--muted); }
+.btn-outline.active { color: var(--green); border-color: var(--green); }
+
+/* Field input */
+.field-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  padding: 8px 10px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border .12s;
+}
+.field-input:focus {
+  border-color: var(--green);
+}
+.field-input::placeholder { color: var(--muted2); }
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Price flash animation */
+.price-flash-up { animation: flash-up 0.8s ease-out; }
+.price-flash-down { animation: flash-down 0.8s ease-out; }
+
+@keyframes flash-up {
+  0% { background-color: rgba(0,255,65,.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-down {
+  0% { background-color: rgba(255,51,51,.2); }
+  100% { background-color: transparent; }
+}
+
+/* PnL flash */
+.pnl-flash-up { animation: pnl-up 0.6s ease-out; }
+.pnl-flash-down { animation: pnl-down 0.6s ease-out; }
+
+@keyframes pnl-up {
+  0% { color: var(--green); text-shadow: 0 0 6px rgba(0,255,65,0.4); }
+  100% { text-shadow: none; }
+}
+
+@keyframes pnl-down {
+  0% { color: var(--red); text-shadow: 0 0 6px rgba(255,51,51,0.4); }
+  100% { text-shadow: none; }
+}
+
+/* Ticker marquee */
+.ticker-track {
+  display: flex;
+  animation: ticker 30s linear infinite;
+  width: max-content;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* Toast slide-in animation */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.animate-in.slide-in-from-right { animation: slide-in-right 0.3s ease-out; }
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-in.slide-in-from-bottom { animation: slide-in-bottom 0.4s ease-out; }
+
+/* Prevent horizontal overflow — only on body (html overflow-x breaks iOS scroll) */
+body { overflow-x: hidden; max-width: 100vw; }
+
+/* Mobile touch targets */
+@media (max-width: 767px) {
+  button, a, [role="button"] { min-height: 44px; }
+  input, select, textarea { min-height: 44px; font-size: 16px; }
+}
+
+/* Input / slider overrides */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--border2);
+  outline: none;
+  cursor: pointer;
+  min-height: 20px;
+  accent-color: var(--green);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--green);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--green);
+  cursor: pointer;
+  border: none;
+}
+
+/* Wallet adapter modal overrides */
+.wallet-adapter-modal-wrapper {
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+}
+
+.wallet-adapter-button {
+  border-radius: 0 !important;
+  min-height: 44px !important;
+}
+
+@media (max-width: 767px) {
+  .wallet-adapter-modal-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+  .wallet-adapter-modal-container { padding: 0 !important; align-items: stretch !important; }
+  .wallet-adapter-modal { padding: 0 !important; }
+  .wallet-adapter-button { min-height: 48px !important; font-size: 14px !important; }
+}

@@ -1,0 +1,266 @@
+pub mod constants;
+pub mod error;
+pub mod events;
+pub mod instructions;
+pub mod state;
+
+use anchor_lang::prelude::*;
+#[cfg(not(feature = "no-entrypoint"))]
+use solana_security_txt::security_txt;
+
+pub use constants::*;
+pub use events::*;
+pub use instructions::*;
+pub use state::*;
+
+#[cfg(not(feature = "no-entrypoint"))]
+security_txt! {
+    name: "Kronos",
+    project_url: "https://kronos.xyz",
+    contacts: "email:kronos28@gmail.com",
+    policy: "https://kronos.xyz/terms",
+    preferred_languages: "en",
+    source_code: "https://github.com/kronos28-pixel/kronos"
+}
+
+// Mainnet program ID
+declare_id!("5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6");
+
+#[program]
+pub mod kronos {
+    use super::*;
+
+    /// One-time setup. Creates all protocol accounts and sets default parameters.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        initialize::handler(ctx)
+    }
+
+    /// One-time setup for the liquidity pool (admin only, run after initialize).
+    pub fn initialize_pool(ctx: Context<InitializePool>) -> Result<()> {
+        initialize_pool::handler(ctx)
+    }
+
+    /// Deposit USDC collateral into the protocol.
+    pub fn deposit_collateral(ctx: Context<DepositCollateral>, amount: u64) -> Result<()> {
+        deposit_collateral::handler(ctx, amount)
+    }
+
+    /// Withdraw free (unencumbered) collateral.
+    pub fn withdraw_collateral(ctx: Context<WithdrawCollateral>, amount: u64) -> Result<()> {
+        withdraw_collateral::handler(ctx, amount)
+    }
+
+    /// Close (delete) a margin account and return rent to the user.
+    pub fn close_margin_account(ctx: Context<CloseMarginAccount>) -> Result<()> {
+        close_margin_account::handler(ctx)
+    }
+
+    /// Add margin from free collateral to an open position.
+    pub fn add_margin(ctx: Context<AddMargin>, position_index: u8, amount: u64) -> Result<()> {
+        add_margin::handler(ctx, position_index, amount)
+    }
+
+    /// Remove margin from an open position back to free collateral (health-checked).
+    pub fn remove_margin(ctx: Context<RemoveMargin>, position_index: u8, amount: u64) -> Result<()> {
+        remove_margin::handler(ctx, position_index, amount)
+    }
+
+    /// Permissionless: pause the protocol if oracle is stale beyond threshold.
+    pub fn check_and_pause(ctx: Context<CheckAndPause>) -> Result<()> {
+        check_and_pause::handler(ctx)
+    }
+
+    /// Open a perpetual position with optional SL/TP.
+    pub fn open_position<'a>(
+        ctx: Context<'a, OpenPosition<'a>>,
+        direction: Direction,
+        collateral: u64,
+        leverage: u8,
+        sl_price: Option<u64>,
+        tp_price: Option<u64>,
+    ) -> Result<()> {
+        open_position::handler(ctx, direction, collateral, leverage, sl_price, tp_price)
+    }
+
+    /// Set stop-loss and/or take-profit on an open position.
+    pub fn set_sl_tp(
+        ctx: Context<SetSlTp>,
+        position_index: u8,
+        sl_price: Option<u64>,
+        tp_price: Option<u64>,
+    ) -> Result<()> {
+        set_sl_tp::handler(ctx, position_index, sl_price, tp_price)
+    }
+
+    /// Close a position by slot index and settle PnL.
+    pub fn close_position(ctx: Context<ClosePosition>, position_index: u8) -> Result<()> {
+        close_position::handler(ctx, position_index)
+    }
+
+    /// Liquidate an undercollateralised position by slot index (anyone can call).
+    pub fn liquidate(ctx: Context<Liquidate>, user: Pubkey, position_index: u8) -> Result<()> {
+        liquidate::handler(ctx, user, position_index)
+    }
+
+    /// Execute a stop-loss or take-profit on any position (permissionless, keeper receives 0.1% reward).
+    pub fn execute_sl_tp(ctx: Context<ExecuteSlTp>, user: Pubkey, position_index: u8) -> Result<()> {
+        execute_sl_tp::handler(ctx, user, position_index)
+    }
+
+    /// Settle accrued funding on all positions in a margin account (permissionless crank).
+    pub fn settle_funding(ctx: Context<SettleFunding>) -> Result<()> {
+        settle_funding::handler(ctx)
+    }
+
+    /// LP: deposit USDC into the liquidity pool, receive shares.
+    pub fn lp_deposit(ctx: Context<LpDeposit>, amount: u64) -> Result<()> {
+        lp_deposit::handler(ctx, amount)
+    }
+
+    /// LP: withdraw USDC from the liquidity pool by burning shares.
+    pub fn lp_withdraw(ctx: Context<LpWithdraw>, shares: u64) -> Result<()> {
+        lp_withdraw::handler(ctx, shares)
+    }
+
+    /// LP: claim accumulated trading fees.
+    pub fn claim_fees(ctx: Context<ClaimFees>) -> Result<()> {
+        claim_fees::handler(ctx)
+    }
+
+    /// Admin: push a new oracle price (default market).
+    pub fn update_oracle(ctx: Context<UpdateOracle>, price: u64) -> Result<()> {
+        update_oracle::handler(ctx, price)
+    }
+
+    /// Admin: initialize a market-specific oracle account.
+    pub fn init_market_oracle(ctx: Context<InitMarketOracle>, market_id: String, seed_price: u64) -> Result<()> {
+        init_market_oracle::handler(ctx, market_id, seed_price)
+    }
+
+    /// Admin: initialize a per-market state account (tracks OI per market).
+    pub fn init_market_state(
+        ctx: Context<InitMarketState>,
+        market_id: String,
+        max_long_oi: u64,
+        max_short_oi: u64,
+    ) -> Result<()> {
+        init_market_state::handler(ctx, market_id, max_long_oi, max_short_oi)
+    }
+
+    /// Admin: push a price to a market-specific oracle.
+    pub fn update_market_oracle(ctx: Context<UpdateMarketOracle>, market_id: String, price: u64) -> Result<()> {
+        update_market_oracle::handler(ctx, market_id, price)
+    }
+
+    /// Admin: update protocol parameters (direct, no timelock — kept for pause/unpause emergencies).
+    pub fn update_params(ctx: Context<UpdateProtocolParams>, params: ProtocolParams) -> Result<()> {
+        update_params::handler(ctx, params)
+    }
+
+    /// Admin: withdraw USDC from the fee vault.
+    pub fn withdraw_fees(ctx: Context<WithdrawFees>, amount: u64) -> Result<()> {
+        withdraw_fees::handler(ctx, amount)
+    }
+
+    /// Admin: initialize the timelock (one-time).
+    pub fn init_timelock(ctx: Context<InitTimelock>) -> Result<()> {
+        init_timelock::handler(ctx)
+    }
+
+    /// Admin: propose a timelocked parameter change (24h delay).
+    pub fn propose_params(ctx: Context<ProposeParams>, params: ProtocolParams) -> Result<()> {
+        propose_params::handler(ctx, params)
+    }
+
+    /// Permissionless: execute a pending param change after timelock expires.
+    pub fn execute_params(ctx: Context<ExecuteParams>) -> Result<()> {
+        execute_params::handler(ctx)
+    }
+
+    /// Admin: cancel all pending timelocked actions.
+    pub fn cancel_timelock(ctx: Context<CancelTimelock>) -> Result<()> {
+        cancel_timelock::handler(ctx)
+    }
+
+    /// Admin: propose a timelocked withdrawal (24h delay). vault_type: 0=fees, 1=insurance.
+    pub fn propose_withdrawal(ctx: Context<ProposeWithdrawal>, vault_type: u8, amount: u64) -> Result<()> {
+        propose_withdrawal::handler(ctx, vault_type, amount)
+    }
+
+    /// Admin: withdraw USDC from the insurance fund.
+    pub fn withdraw_insurance(ctx: Context<WithdrawInsurance>, amount: u64) -> Result<()> {
+        withdraw_insurance::handler(ctx, amount)
+    }
+
+    /// Admin: set fee share bps for a referral account (0-3000 = 0-30%).
+    pub fn set_fee_share(ctx: Context<SetFeeShare>, referral_owner: Pubkey, fee_share_bps: u64) -> Result<()> {
+        set_fee_share::handler(ctx, referral_owner, fee_share_bps)
+    }
+
+    /// Migrate a referral account to the new larger size (permissionless).
+    pub fn migrate_referral(ctx: Context<MigrateReferral>) -> Result<()> {
+        migrate_referral::handler(ctx)
+    }
+
+    /// Register a referral account with a username.
+    pub fn register_referral(ctx: Context<RegisterReferral>, username: String) -> Result<()> {
+        register_referral::handler(ctx, username)
+    }
+
+    /// Claim accumulated referral fees.
+    pub fn claim_referral(ctx: Context<ClaimReferral>) -> Result<()> {
+        claim_referral::handler(ctx)
+    }
+
+    /// One-time: grow ProtocolState for new fields.
+    pub fn realloc_protocol(ctx: Context<ReallocProtocol>) -> Result<()> {
+        realloc_protocol::handler(ctx)
+    }
+
+    /// Accept a pending admin transfer (two-step).
+    pub fn accept_admin(ctx: Context<AcceptAdmin>) -> Result<()> {
+        accept_admin::handler(ctx)
+    }
+
+    /// Admin: force-close any position (for oracle pricing corrections).
+    pub fn admin_close_position(ctx: Context<AdminClosePosition>, user: Pubkey, position_index: u8) -> Result<()> {
+        admin_close_position::handler(ctx, user, position_index)
+    }
+
+    /// Admin: record a raffle winner on-chain (drawn off-chain using slot hash).
+    pub fn record_raffle(
+        ctx: Context<RecordRaffle>,
+        round: u32,
+        winner: Pubkey,
+        total_entries: u64,
+        total_holders: u32,
+        winner_tickets: u64,
+        slot_hash_seed: [u8; 32],
+        prize_description: [u8; 64],
+    ) -> Result<()> {
+        record_raffle::handler(ctx, round, winner, total_entries, total_holders, winner_tickets, slot_hash_seed, prize_description)
+    }
+
+    /// Admin: initialize the payout queue (one-time).
+    pub fn init_payout_queue(ctx: Context<InitPayoutQueue>) -> Result<()> {
+        init_payout_queue::handler(ctx)
+    }
+
+    /// Permissionless: process the next pending payout from the queue.
+    pub fn process_payouts(ctx: Context<ProcessPayouts>) -> Result<()> {
+        process_payouts::handler(ctx)
+    }
+
+    /// Devnet helper: mint 1000 USDC to the caller (no auth required).
+    /// Disabled on mainnet builds.
+    pub fn mint_devnet_usdc(_ctx: Context<MintDevnetUsdc>) -> Result<()> {
+        #[cfg(feature = "mainnet")]
+        {
+            return Err(error!(crate::error::ErrorCode::Unauthorized));
+        }
+        #[cfg(not(feature = "mainnet"))]
+        {
+            mint_devnet_usdc::handler(_ctx)
+        }
+    }
+}
