@@ -11,7 +11,7 @@ const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
 
-const URL = "https://www.tcgplayer.com/categories/trading-and-collectible-card-games/pokemon/price-guides/sv-scarlet-and-violet-151";
+const URL = "https://www.tcgplayer.com/categories/trading-and-collectible-card-games/watch/price-guides/sv-scarlet-and-violet-151";
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const OUTPUT = path.join(__dirname, "sv151-cards.json");
 
@@ -135,7 +135,7 @@ async function main() {
       let cardName = c.name;
       // If name looks like "Select table row N", parse from URL instead
       if (cardName.startsWith("Select table row") && c.href) {
-        const slugMatch = c.href.match(/pokemon-sv-scarlet-and-violet-151-(.+?)(?:\?|$)/);
+        const slugMatch = c.href.match(/watch-sv-scarlet-and-violet-151-(.+?)(?:\?|$)/);
         if (slugMatch) {
           cardName = slugMatch[1]
             .replace(/---/g, " - ")

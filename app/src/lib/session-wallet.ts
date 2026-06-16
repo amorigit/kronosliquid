@@ -24,7 +24,7 @@ export const SessionWalletName = "Kronos Wallet" as WalletName<"Kronos Wallet">;
 
 export class SessionWalletAdapter extends BaseSignerWalletAdapter {
   name = SessionWalletName;
-  url = "https://kronos.xyz";
+  url = "https://kronosliquid.xyz";
   icon = "/logo-64.png";
   supportedTransactionVersions = null;
 

@@ -67,7 +67,7 @@ export default function PFIndexPage() {
           <P>
             The PF-INDEX tracks the combined market value of all {TOTAL_CARDS} cards in
             the Scarlet &amp; Violet Paldean Fates set on TCGPlayer &mdash; the largest
-            Pokemon card marketplace.
+            luxury watch marketplace.
           </P>
           <P>
             Rather than trading individual cards, PF-INDEX gives you exposure to the

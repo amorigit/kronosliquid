@@ -279,7 +279,7 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
       {/* ── 3 STEPS ── */}
       <div className="w-full flex flex-col transition-all duration-700" style={{ opacity: stepsVisible ? 1 : 0, transform: stepsVisible ? "translateY(0)" : "translateY(20px)", maxWidth: 960 }}>
         <h2 className="text-center font-mono font-bold mb-3 md:mb-4 flex-shrink-0" style={{ fontSize: "clamp(13px, 2.5vw, 18px)", color: "#fff" }}>
-          TRADE POKEMON PERPS IN <span style={{ color: "#00ff41" }}>3 SIMPLE STEPS</span>
+          TRADE WATCH PERPS IN <span style={{ color: "#00ff41" }}>3 SIMPLE STEPS</span>
         </h2>
 
         <div className="flex flex-col md:flex-row md:items-stretch gap-3 md:gap-0">

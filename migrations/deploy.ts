@@ -34,7 +34,7 @@ module.exports = async function (provider: anchor.AnchorProvider) {
   const [insuranceFund] = PublicKey.findProgramAddressSync([INSURANCE_FUND_SEED], programId);
 
   console.log("\n═══════════════════════════════════════════");
-  console.log("  kronos — CHARIZARD-PERP Deploy");
+  console.log("  kronos — ROLEX-SUB-PERP Deploy");
   console.log("═══════════════════════════════════════════");
   console.log("Program ID:     ", programId.toBase58());
   console.log("Admin:          ", admin.publicKey.toBase58());
@@ -69,7 +69,7 @@ module.exports = async function (provider: anchor.AnchorProvider) {
     .rpc();
   console.log("✓ Initialized! tx:", tx);
 
-  // Set initial CHARIZARD-PERP price ($25.00)
+  // Set initial ROLEX-SUB-PERP price ($25.00)
   console.log("Setting initial oracle price ($25.00)...");
   const priceTx = await program.methods
     .updateOracle(new BN(25_000_000))

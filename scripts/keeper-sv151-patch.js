@@ -17,7 +17,7 @@ const path = require("path");
 const { chromium } = require("playwright");
 
 const PRICE_GUIDE_URL =
-  "https://www.tcgplayer.com/categories/trading-and-collectible-card-games/pokemon/price-guides/sv-scarlet-and-violet-151";
+  "https://www.tcgplayer.com/categories/trading-and-collectible-card-games/watch/price-guides/sv-scarlet-and-violet-151";
 
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";

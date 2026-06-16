@@ -5,7 +5,7 @@ import { useState } from "react";
 // ─── Shared styles ──────────────────────────────────────────────────────────
 
 const FONT = "'JetBrains Mono', 'Fira Mono', 'Consolas', monospace";
-const BASE_URL = "https://kronos.xyz/api/v1";
+const BASE_URL = "https://kronosliquid.xyz/api/v1";
 
 // ─── Components ─────────────────────────────────────────────────────────────
 
@@ -464,12 +464,12 @@ export default function ApiDocsPage() {
 
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, color: "#ccc", fontWeight: 600, marginBottom: 8 }}>JavaScript / TypeScript</div>
-          <Code>{"const BASE = \"https://kronos.xyz/api/v1\";\n\n// Get current ETB price\nconst prices = await fetch(BASE + \"/prices?market=ETB&limit=1\").then(r => r.json());\nconst latest = prices[0];\nconsole.log(\"ETB: $\" + latest.ewma.toFixed(2));\n\n// Get hourly candles for Charizard\nconst candles = await fetch(BASE + \"/candles?market=CHARIZARD-X&resolution=1h\").then(r => r.json());\nconsole.log(candles.length + \" candles, latest close: $\" + candles.at(-1).close);\n\n// Get protocol stats\nconst stats = await fetch(BASE + \"/stats\").then(r => r.json());\nconsole.log(\"24h volume: $\" + stats.total_volume_24h + \", traders: \" + stats.unique_traders_24h);"}</Code>
+          <Code>{"const BASE = \"https://kronosliquid.xyz/api/v1\";\n\n// Get current ETB price\nconst prices = await fetch(BASE + \"/prices?market=ETB&limit=1\").then(r => r.json());\nconst latest = prices[0];\nconsole.log(\"ETB: $\" + latest.ewma.toFixed(2));\n\n// Get hourly candles for Charizard\nconst candles = await fetch(BASE + \"/candles?market=CHARIZARD-X&resolution=1h\").then(r => r.json());\nconsole.log(candles.length + \" candles, latest close: $\" + candles.at(-1).close);\n\n// Get protocol stats\nconst stats = await fetch(BASE + \"/stats\").then(r => r.json());\nconsole.log(\"24h volume: $\" + stats.total_volume_24h + \", traders: \" + stats.unique_traders_24h);"}</Code>
         </div>
 
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, color: "#ccc", fontWeight: 600, marginBottom: 8 }}>Python</div>
-          <Code>{"import requests\n\nBASE = \"https://kronos.xyz/api/v1\"\n\n# Get latest prices for all markets\nfor market in [\"ETB\", \"CHARIZARD-X\", \"CHARMANDER\", \"PIKACHU\"]:\n    data = requests.get(f\"{BASE}/prices?market={market}&limit=1\").json()\n    if data:\n        print(f\"{market}: ${data[0]['ewma']:.2f}\")\n\n# Get recent trades\ntrades = requests.get(f\"{BASE}/trades/recent?limit=50\").json()\nfor t in trades[\"trades\"]:\n    print(f\"{t['action']} {t['direction']} {t['market_id']}\")"}</Code>
+          <Code>{"import requests\n\nBASE = \"https://kronosliquid.xyz/api/v1\"\n\n# Get latest prices for all markets\nfor market in [\"ETB\", \"CHARIZARD-X\", \"CHARMANDER\", \"PIKACHU\"]:\n    data = requests.get(f\"{BASE}/prices?market={market}&limit=1\").json()\n    if data:\n        print(f\"{market}: ${data[0]['ewma']:.2f}\")\n\n# Get recent trades\ntrades = requests.get(f\"{BASE}/trades/recent?limit=50\").json()\nfor t in trades[\"trades\"]:\n    print(f\"{t['action']} {t['direction']} {t['market_id']}\")"}</Code>
         </div>
 
         {/* On-chain section */}

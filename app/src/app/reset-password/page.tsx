@@ -164,7 +164,7 @@ function ResetPasswordInner() {
         </div>
 
         <p className="text-[10px] text-secondary/50 text-center">
-          kronos.xyz
+          kronosliquid.xyz
         </p>
       </div>
     </div>

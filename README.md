@@ -1,6 +1,6 @@
-# Kronos — Pokemon Card Perps
+# Kronos — Watch Perps
 
-A perpetual futures DEX on Solana for trading **Pokemon TCG products** — real-world cards and sealed product priced via live TCGPlayer market data. 22 markets live on mainnet.
+A perpetual futures DEX on Solana for trading **Watch TCG products** — real-world cards and sealed product priced via live TCGPlayer market data. 22 markets live on mainnet.
 
 ```
 TCGPlayer ──scrape──> Keeper (Node.js) ──update_oracle──> Solana Program (Anchor)
@@ -28,11 +28,11 @@ TCGPlayer ──scrape──> Keeper (Node.js) ──update_oracle──> Solana
 
 | Service | URL / Address |
 |---------|---------------|
-| **Frontend** | `https://kronos.xyz` (Vercel) |
+| **Frontend** | `https://kronosliquid.xyz` (Vercel) |
 | **Keeper API** | `http://157.180.67.25:3001` (Hetzner CX23, Helsinki) |
 | **Program** | `5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6` (mainnet) |
 | **Keeper proxy** | Frontend routes `/api/keeper/*` → Hetzner keeper (avoids mixed content) |
-| **Verified source** | `github.com/kronos28-create/kronos` (for on-chain program verification) |
+| **Verified source** | `github.com/amorigit/kronosliquid` (for on-chain program verification) |
 
 ---
 
@@ -57,7 +57,7 @@ TCGPlayer ──scrape──> Keeper (Node.js) ──update_oracle──> Solana
 
 | Market ID | Card / Product | Oracle PDA |
 |-----------|---------------|------------|
-| PL500-INDEX | PL500 Index (Top 500 Pokemon Cards) | `DtvddgrZ8h44AcJangbBbc3F8ByuYzWMnvKHG11U5WqP` |
+| PL500-INDEX | PL500 Index (Top 500 Luxury Watches) | `DtvddgrZ8h44AcJangbBbc3F8ByuYzWMnvKHG11U5WqP` |
 | PRISMATIC-ETB | Prismatic Evolutions ETB | `FbPBfXaCY1Chm23pyVv7gcesRVK7FxFXHgd5xNb84r4Q` |
 | CHARIZARD-125/094-PFL | Mega Charizard X ex (Phantasmal Flames) | `8KU9oyrCAhX58Mz73z8MjKH8P88CyqPcx8zCm61HWzeP` |
 | CHARMANDER-038-MEP | Charmander (Mega Evolution Promo) | `EN3Y7vWu2a2PXma2V5vfm6swFed8YTFHCG75EQxoHETY` |
@@ -287,7 +287,7 @@ npm run dev                 # http://localhost:3000
 
 ### Deploy Frontend
 ```bash
-git push origin main        # auto-deploys to Vercel ("app" project → kronos.xyz)
+git push origin main        # auto-deploys to Vercel ("app" project → kronosliquid.xyz)
 ```
 
 ### Run Tests
@@ -349,14 +349,14 @@ Users authenticate with email + password. No external wallet extensions required
 - Scripts in `scripts/drain-farm.js` for reference
 
 ### Vercel Frontend
-- **URL:** `https://kronos.xyz`
+- **URL:** `https://kronosliquid.xyz`
 - **Deploy from:** `app/` subdirectory
 - **Rewrites:** `/api/keeper/*` → `http://157.180.67.25:3001/*` (via vercel.json)
 - **Auto-deploy:** Push to `origin/main` triggers deploy
 
 ### GitHub Repos
 - **Private:** `onchainscammer-art/kronos-liquid` (full codebase, auto-deploys frontend)
-- **Public:** `kronos28-create/kronos` (program source only, for on-chain verification)
+- **Public:** `amorigit/kronosliquid` (program source only, for on-chain verification)
 
 ### Env Vars (Vercel)
 ```
@@ -373,7 +373,7 @@ RELAYER_PRIVATE_KEY=<base58-private-key>  # Funds new session wallets with SOL
 
 # Optional:
 NEXT_PUBLIC_RPC_ENDPOINT=https://api.mainnet-beta.solana.com
-NEXT_PUBLIC_APP_URL=https://kronos.xyz
+NEXT_PUBLIC_APP_URL=https://kronosliquid.xyz
 ```
 
 ---
@@ -503,7 +503,7 @@ rewards: 1% liquidator, 9% insurance, 90% stays in vault
 - **OHLC charts** — 1-hour and 1-day candle aggregation from 5-minute price data
 - **24h change tracking** — accurate 24-hour price change percentages per market
 - **Responsive mobile UI** — landing page, docs, and trading interface optimized for mobile
-- **Custom domain** — `kronos.xyz` with verified email sending via Resend
+- **Custom domain** — `kronosliquid.xyz` with verified email sending via Resend
 - **Leaderboard + prize pool** — competitive trading with prize distribution
 - **Security.txt** — on-chain security contact info via `solana-security-txt`
 - **Referral system** — on-chain referral accounts with fee sharing
@@ -524,7 +524,7 @@ rewards: 1% liquidator, 9% insurance, 90% stays in vault
 - RELAYER_PRIVATE_KEY is base58 format (not JSON array)
 - Password hashing uses `bcryptjs` (pure JS, no native deps) — legacy PBKDF2 hashes auto-migrate on login
 - JWT sessions use `jose` package (HS256) — 30-day expiry, HttpOnly/Secure/SameSite=Lax cookies
-- Forgot-password emails sent via Resend API (verified domain: `kronos.xyz`)
+- Forgot-password emails sent via Resend API (verified domain: `kronosliquid.xyz`)
 - `SessionWalletAdapter.connect()` does NOT auto-generate keypairs — users must explicitly log in or choose guest mode
 - On-chain market IDs use full names (e.g. "PRISMATIC-ETB", not "ETB") — PDA seeds: `[b"oracle", market_id.as_bytes()]`
 - PositionClosed event does NOT emit notional/collateral — trade history shows "—" for size on closes

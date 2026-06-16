@@ -122,7 +122,7 @@ export default function ReferralPage() {
 
   function handleCopyLink() {
     if (!referral) return;
-    const link = `https://kronos.xyz/ref/${referral.username}`;
+    const link = `https://kronosliquid.xyz/ref/${referral.username}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -216,7 +216,7 @@ export default function ReferralPage() {
               </button>
             </div>
             <div style={{ fontSize: 10, color: "#555" }}>
-              Your link will be: kronos.xyz/ref/{usernameInput || "username"}
+              Your link will be: kronosliquid.xyz/ref/{usernameInput || "username"}
             </div>
           </div>
         ) : (
@@ -239,7 +239,7 @@ export default function ReferralPage() {
                     wordBreak: "break-all",
                   }}
                 >
-                  kronos.xyz/ref/{referral.username}
+                  kronosliquid.xyz/ref/{referral.username}
                 </div>
                 <button
                   onClick={handleCopyLink}

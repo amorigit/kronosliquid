@@ -6,9 +6,9 @@ Welcome to Kronos! This document gives you everything you need to get productive
 
 ## Project Overview
 
-Kronos is a perpetual futures trading platform on Solana where users trade the price of a real-world Pokemon TCG product — the Prismatic Evolutions Elite Trainer Box. A keeper server scrapes TCGPlayer for the live market price, pushes it on-chain via a custom Solana program (written in Anchor/Rust), and the Next.js frontend lets users open leveraged long/short positions, manage collateral, set stop-loss/take-profit, and view trade history. Everything runs on **devnet** — no real money is involved.
+Kronos is a perpetual futures trading platform on Solana where users trade the price of a real-world Watch TCG product — the Prismatic Evolutions Elite Trainer Box. A keeper server scrapes TCGPlayer for the live market price, pushes it on-chain via a custom Solana program (written in Anchor/Rust), and the Next.js frontend lets users open leveraged long/short positions, manage collateral, set stop-loss/take-profit, and view trade history. Everything runs on **devnet** — no real money is involved.
 
-- **Live URL:** https://kronos.xyz
+- **Live URL:** https://kronosliquid.xyz
 - **Tech stack:** Next.js 14 (App Router), Tailwind CSS, Anchor (Solana), `@solana/wallet-adapter-react`
 - **Repo root:** The frontend lives in the `app/` subdirectory. The Solana program is in `programs/kronos/`, and the keeper server is in `keeper/`.
 
@@ -446,7 +446,7 @@ The complete IDL is at `src/lib/kronos.idl.json`. It's auto-generated — never 
 | `NEXT_PUBLIC_INSURANCE_FUND` | No | Insurance fund PDA | `9NmpMraE2XCSUa1gKgwi9zxN8LLdT4o5Uiis5dKkKs1F` |
 | `NEXT_PUBLIC_USDC_MINT` | No | USDC mint address | `Gj9gBxmesYoNa4kvZUKJbiF85PduMKnHnppp4ikbWUUi` |
 | `NEXT_PUBLIC_PRICE_API` | No | Keeper API base URL | `/api/keeper` |
-| `NEXT_PUBLIC_APP_URL` | No | App URL for email links | `https://kronos.xyz` |
+| `NEXT_PUBLIC_APP_URL` | No | App URL for email links | `https://kronosliquid.xyz` |
 
 ### Server-side (Vercel only — already configured)
 

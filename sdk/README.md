@@ -1,6 +1,6 @@
 # @kronos/sdk
 
-TypeScript SDK for the [Kronos](https://kronos.xyz) perpetual futures DEX on Solana.
+TypeScript SDK for the [Kronos](https://kronosliquid.xyz) perpetual futures DEX on Solana.
 
 ## Install
 

@@ -38,16 +38,16 @@ const cheapest = sortedByPrice[sortedByPrice.length - 1];
 const top10Value = sortedByPrice.slice(0, 10).reduce((s, c) => s + c.price, 0);
 const top10Pct = ((top10Value / totalValue) * 100).toFixed(1);
 
-// Unique Pokemon
-const pokemonMaxMap: Record<string, number> = {};
+// Unique Watch
+const watchMaxMap: Record<string, number> = {};
 cards.forEach((c) => {
   let name = c.cardName.split(" - ")[0].trim();
   name = name.replace(/\s*\(.*\)$/, "");
   const price = c.price;
-  if (!pokemonMaxMap[name] || price > pokemonMaxMap[name]) pokemonMaxMap[name] = price;
+  if (!watchMaxMap[name] || price > watchMaxMap[name]) watchMaxMap[name] = price;
 });
-const uniquePokemonCount = Object.keys(pokemonMaxMap).length;
-const top50Pokemon = Object.entries(pokemonMaxMap)
+const uniqueWatchCount = Object.keys(watchMaxMap).length;
+const top50Watch = Object.entries(watchMaxMap)
   .sort((a, b) => b[1] - a[1])
   .slice(0, 50);
 
@@ -128,21 +128,21 @@ export default function PL500Page() {
               marginBottom: 0,
             }}
           >
-            The Pokemon Card Market Index
+            The Luxury Watch Market Index
           </p>
         </div>
 
         {/* ── What is PL500? ─────────────────────────────────── */}
         <Section title="What is PL500?">
           <P>
-            The PL500 is analogous to the S&amp;P 500, but for Pokemon cards. It
-            tracks the combined market value of the top 500 best-selling Pokemon
-            cards on TCGPlayer &mdash; the largest Pokemon card marketplace.
+            The PL500 is analogous to the S&amp;P 500, but for luxury watches. It
+            tracks the combined market value of the top 500 best-selling Watch
+            cards on TCGPlayer &mdash; the largest luxury watch marketplace.
           </P>
           <P>
             Rather than trading individual cards, the PL500 gives you exposure to
-            the entire Pokemon card market in a single tradeable perpetual market
-            on Kronos. When the Pokemon card market goes up, the PL500 goes
+            the entire luxury watch market in a single tradeable perpetual market
+            on Kronos. When the luxury watch market goes up, the PL500 goes
             up. When it goes down, the PL500 goes down.
           </P>
         </Section>
@@ -173,8 +173,8 @@ export default function PL500Page() {
             <StatBox label="Index Value" value={fmt(totalValue)} accent />
             <StatBox label="Cards in Index" value="500" />
             <StatBox
-              label="Unique Pokemon"
-              value={`${uniquePokemonCount}+`}
+              label="Unique Watch"
+              value={`${uniqueWatchCount}+`}
             />
           </div>
           <div
@@ -345,10 +345,10 @@ export default function PL500Page() {
           </div>
         </Section>
 
-        {/* ── Top 50 Pokemon ─────────────────────────────────── */}
-        <Section title="Top 50 Pokemon">
+        {/* ── Top 50 Watches ─────────────────────────────────── */}
+        <Section title="Top 50 Watches">
           <P>
-            The 50 unique Pokemon (or named characters) with the highest-value
+            The 50 unique Watch (or named characters) with the highest-value
             single card in the index.
           </P>
           <div
@@ -359,7 +359,7 @@ export default function PL500Page() {
               marginTop: 16,
             }}
           >
-            {top50Pokemon.map(([name, price], i) => (
+            {top50Watch.map(([name, price], i) => (
               <div
                 key={name}
                 style={{

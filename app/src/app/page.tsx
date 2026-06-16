@@ -746,9 +746,9 @@ function ChartSection({ oracle, priceApiMarket = "ETB", marketId, marketImage, s
         ) : chartData.length < 2 ? (
           marketId === "PL500" ? (
             <div className="flex flex-col items-center justify-center h-full px-6 text-center gap-2">
-              <div className="text-[13px] font-bold text-primary tracking-wide">The S&P 500 of Pokemon Cards</div>
+              <div className="text-[13px] font-bold text-primary tracking-wide">The S&P 500 of Luxury Watches</div>
               <div className="text-[11px] text-secondary leading-relaxed max-w-[360px]">
-                Tracks the combined market value of the top 500 best-selling Pokemon cards on TCGPlayer. Updated every 60s.
+                Tracks the combined market value of the top 500 best-selling luxury watches on TCGPlayer. Updated every 60s.
               </div>
               <a href="/pl500" className="text-[10px] text-long hover:underline mt-1">View methodology & all 500 cards &rarr;</a>
               <div className="text-[9px] text-secondary/50 mt-1">Chart will appear as price history builds</div>

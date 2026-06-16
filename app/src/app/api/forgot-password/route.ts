@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       await createResetToken(email, token, expiresAt);
       console.log("Reset token created for:", email);
 
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kronos.xyz";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://kronosliquid.xyz";
       const resetUrl = `${appUrl}/reset-password?token=${token}`;
 
       // Send email via Resend
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Kronos <noreply@kronos.xyz>",
+            from: "Kronos <noreply@kronosliquid.xyz>",
             to: email,
             subject: "Reset your Kronos password",
             html: `
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
                   If you didn't request this, you can safely ignore this email.
                 </p>
                 <p style="color: #444; font-size: 10px; margin-top: 24px; border-top: 1px solid #222; padding-top: 16px;">
-                  kronos.xyz
+                  kronosliquid.xyz
                 </p>
               </div>
             `,

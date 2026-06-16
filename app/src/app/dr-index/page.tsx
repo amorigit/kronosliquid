@@ -42,7 +42,7 @@ export default function DRIndexPage() {
           <p style={{ fontSize: 14, color: "#888", marginTop: 8, marginBottom: 0 }}>Scarlet &amp; Violet &middot; Destined Rivals &middot; All {TOTAL_CARDS} Cards</p>
         </div>
         <Section title="What is DR-INDEX?">
-          <P>The DR-INDEX tracks the combined market value of all {TOTAL_CARDS} cards in the Scarlet &amp; Violet Destined Rivals set on TCGPlayer &mdash; the largest Pokemon card marketplace.</P>
+          <P>The DR-INDEX tracks the combined market value of all {TOTAL_CARDS} cards in the Scarlet &amp; Violet Destined Rivals set on TCGPlayer &mdash; the largest luxury watch marketplace.</P>
           <P>Rather than trading individual cards, DR-INDEX gives you exposure to the entire Destined Rivals set in a single tradeable perpetual market on Kronos. When the set&apos;s value goes up, DR-INDEX goes up. When it goes down, DR-INDEX goes down.</P>
         </Section>
         <Section title="Methodology">

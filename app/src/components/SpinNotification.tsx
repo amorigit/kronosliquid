@@ -49,7 +49,7 @@ export function SpinEligibilityBanner() {
           <>
             <div className="text-xs font-mono font-bold text-accent">FREE SPIN AVAILABLE</div>
             <div className="text-[10px] font-mono text-secondary">
-              2% chance to win a graded Pokemon card
+              2% chance to win a graded luxury watch
               {streak > 0 && <span className="text-accent"> · {streak % 7}/7 streak</span>}
             </div>
           </>

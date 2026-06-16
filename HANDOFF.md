@@ -9,7 +9,7 @@
 
 ## 1. Executive summary
 
-Kronos (`watch-liquid` repo) is a static HTML/CSS/JS frontend with **fake market data** and no blockchain integration. Kronos ([github.com/kronos28-pixel/kronos](https://github.com/kronos28-pixel/kronos)) is a complete Anchor perpetual-futures program with **no frontend, no tests, and no keeper in-repo**. The live Kronos UI lives separately at [kronos.xyz](https://kronos.xyz) (Next.js + keeper + backend).
+Kronos (`watch-liquid` repo) is a static HTML/CSS/JS frontend with **fake market data** and no blockchain integration. Kronos ([github.com/amorigit/kronosliquid](https://github.com/amorigit/kronosliquid)) is a complete Anchor perpetual-futures program with **no frontend, no tests, and no keeper in-repo**. The live Kronos UI lives separately at [kronosliquid.xyz](https://kronosliquid.xyz) (Next.js + keeper + backend).
 
 **Recommended delivery:** devnet demo with Phantom wallet, 2–5 watch markets, deposit → open → close, fake oracle prices, Tier 1 Rust fixes, and basic integration tests.
 
@@ -27,11 +27,11 @@ Kronos (`watch-liquid` repo) is a static HTML/CSS/JS frontend with **fake market
 | Asset | Location | Notes |
 |-------|----------|-------|
 | Kronos UI (this repo) | `watch-liquid` | Static demo; `script.js` line 100: `"Demo mode — wallet connect disabled"` |
-| Kronos program | [kronos28-pixel/kronos](https://github.com/kronos28-pixel/kronos) | Rust only; 31 instructions; 1 commit; no tests |
-| Live Kronos UI | [kronos.xyz](https://kronos.xyz) | Next.js; not in GitHub; use as behavioral reference only |
+| Kronos program | [amorigit/kronosliquid](https://github.com/amorigit/kronosliquid) | Rust only; 31 instructions; 1 commit; no tests |
+| Live Kronos UI | [kronosliquid.xyz](https://kronosliquid.xyz) | Next.js; not in GitHub; use as behavioral reference only |
 | Kronos mainnet program ID | `5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6` | **Do not reuse** — generate new devnet ID for Kronos |
 | Kronos devnet program ID (upstream) | `7DVf9oEMcKPV6VUUz5BpptbwqpgBfXunwxjTNNQmZvbJ` | Reference only |
-| Contact (from `security_txt`) | kronos28@gmail.com | |
+| Contact (from `security_txt`) | security@kronosliquid.xyz | |
 
 ---
 
@@ -316,7 +316,7 @@ Register module in `instructions.rs`.
 |--------|---------|
 | Rebrand `security_txt!` | `name: "Kronos"`, `project_url: "https://kronosliquid.xyz"`, update contacts |
 | `declare_id!` | New devnet keypair pubkey |
-| Doc comments | Match Kronos product (watches/metals, not Pokémon) |
+| Doc comments | Match Kronos product (watches/metals, not Watch) |
 
 ---
 
@@ -562,4 +562,4 @@ Record all addresses in `docs.html` and `src/chain/config.ts`.
 
 ---
 
-*Generated from code review of [kronos28-pixel/kronos](https://github.com/kronos28-pixel/kronos) and Kronos `watch-liquid` static demo. Revisit this document when program ID, market list, or scope changes.*
+*Generated from code review of [amorigit/kronosliquid](https://github.com/amorigit/kronosliquid) and Kronos `watch-liquid` static demo. Revisit this document when program ID, market list, or scope changes.*

@@ -36,16 +36,16 @@ const cheapest = sortedByPrice[sortedByPrice.length - 1];
 const top10Value = sortedByPrice.slice(0, 10).reduce((s, c) => s + c.price, 0);
 const top10Pct = ((top10Value / totalValue) * 100).toFixed(1);
 
-// Unique Pokemon
-const pokemonMaxMap: Record<string, number> = {};
+// Unique Watch
+const watchMaxMap: Record<string, number> = {};
 cards.forEach((c) => {
   let name = c.cardName.split(" - ")[0].trim();
   name = name.replace(/\s*\(.*\)$/, "");
   const price = c.price;
-  if (!pokemonMaxMap[name] || price > pokemonMaxMap[name]) pokemonMaxMap[name] = price;
+  if (!watchMaxMap[name] || price > watchMaxMap[name]) watchMaxMap[name] = price;
 });
-const uniquePokemonCount = Object.keys(pokemonMaxMap).length;
-const top50Pokemon = Object.entries(pokemonMaxMap)
+const uniqueWatchCount = Object.keys(watchMaxMap).length;
+const top50Watch = Object.entries(watchMaxMap)
   .sort((a, b) => b[1] - a[1])
   .slice(0, 50);
 
@@ -131,7 +131,7 @@ export default function AHIndexPage() {
           <P>
             The AH-INDEX tracks the combined market value of all 580 cards in
             the Ascended Heroes set on TCGPlayer &mdash; the largest
-            Pokemon card marketplace.
+            luxury watch marketplace.
           </P>
           <P>
             Rather than trading individual cards, the AH-INDEX gives you exposure to
@@ -166,8 +166,8 @@ export default function AHIndexPage() {
             <StatBox label="Index Value" value={fmt(totalValue)} accent />
             <StatBox label="Cards in Index" value="580" />
             <StatBox
-              label="Unique Pokemon"
-              value={`${uniquePokemonCount}+`}
+              label="Unique Watch"
+              value={`${uniqueWatchCount}+`}
             />
           </div>
           <div
@@ -329,10 +329,10 @@ export default function AHIndexPage() {
           </div>
         </Section>
 
-        {/* ── Top 50 Pokemon ─────────────────────────────────── */}
-        <Section title="Top 50 Pokemon">
+        {/* ── Top 50 Watches ─────────────────────────────────── */}
+        <Section title="Top 50 Watches">
           <P>
-            The 50 unique Pokemon (or named characters) with the highest-value
+            The 50 unique Watch (or named characters) with the highest-value
             single card in the index.
           </P>
           <div
@@ -343,7 +343,7 @@ export default function AHIndexPage() {
               marginTop: 16,
             }}
           >
-            {top50Pokemon.map(([name, price], i) => (
+            {top50Watch.map(([name, price], i) => (
               <div
                 key={name}
                 style={{

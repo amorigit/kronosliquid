@@ -323,7 +323,7 @@ export default function DocsPage() {
             {/* ════════════ GETTING STARTED ════════════ */}
             <H2 id="getting-started">Getting Started</H2>
             <H3>1. Visit the app</H3>
-            <P>Go to <a href="https://kronos.xyz" style={{ color: "#00ff41" }}>kronos.xyz</a>.</P>
+            <P>Go to <a href="https://kronosliquid.xyz" style={{ color: "#00ff41" }}>kronosliquid.xyz</a>.</P>
 
             <H3>2. Create an account</H3>
             <P>
@@ -597,7 +597,7 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
               1. Go to the Referral page and register a username (stored on-chain as a ReferralAccount PDA).
             </P>
             <P>
-              2. Share your link: kronos.xyz/ref/your-username
+              2. Share your link: kronosliquid.xyz/ref/your-username
             </P>
             <P>
               3. When someone signs up through your link, their trades attribute fees to your referral account.
@@ -616,7 +616,7 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
                 ["Program ID", "5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6"],
                 ["Network", "Solana Mainnet"],
                 ["Framework", "Anchor 1.0.2"],
-                ["Frontend", "kronos.xyz"],
+                ["Frontend", "kronosliquid.xyz"],
               ]}
             />
 

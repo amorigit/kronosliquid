@@ -19,7 +19,7 @@ export const MARKETS: Market[] = [
   {
     id: "PL500",
     name: "PL500-PERP",
-    subtitle: "PL500 Index \u00B7 Top 500 Pokemon Cards",
+    subtitle: "PL500 Index \u00B7 Top 500 Luxury Watches",
     badge: "INDEX",
     live: true,
     oracleAddress: "DtvddgrZ8h44AcJangbBbc3F8ByuYzWMnvKHG11U5WqP",

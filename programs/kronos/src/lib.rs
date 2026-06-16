@@ -16,11 +16,11 @@ pub use state::*;
 #[cfg(not(feature = "no-entrypoint"))]
 security_txt! {
     name: "Kronos",
-    project_url: "https://kronos.xyz",
-    contacts: "email:kronos28@gmail.com",
-    policy: "https://kronos.xyz/terms",
+    project_url: "https://kronosliquid.xyz",
+    contacts: "email:security@kronosliquid.xyz",
+    policy: "https://kronosliquid.xyz/terms",
     preferred_languages: "en",
-    source_code: "https://github.com/kronos28-pixel/kronos"
+    source_code: "https://github.com/amorigit/kronosliquid"
 }
 
 // Mainnet program ID

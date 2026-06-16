@@ -25,7 +25,7 @@ async function searchCard(query) {
   const url = `https://mp-search-api.tcgplayer.com/v1/search/request?q=${encodeURIComponent(query)}&isList=false&mpfev=2952`;
   const body = {
     algorithm: "", from: 0, size: 5,
-    filters: { term: { productLineName: ["pokemon"] }, range: {}, match: {} },
+    filters: { term: { productLineName: ["watch"] }, range: {}, match: {} },
     listingSearch: { filters: { term: {}, range: {}, exclude: { channelExclusion: 0 } } },
     context: { cart: {}, shippingCountry: "US", userProfile: {} },
     settings: { useFuzzySearch: true, didYouMean: {} },

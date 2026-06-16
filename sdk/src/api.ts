@@ -6,7 +6,7 @@ import type {
   HealthStatus,
 } from "./types";
 
-const DEFAULT_BASE = "https://kronos.xyz/api/v1";
+const DEFAULT_BASE = "https://kronosliquid.xyz/api/v1";
 
 /**
  * Read-only REST API client for Kronos market data.

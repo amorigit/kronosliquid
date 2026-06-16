@@ -31,7 +31,7 @@
   <!-- Subtitle -->
   <text x="200" y="340" text-anchor="middle" font-family="'Courier New', monospace"
     font-size="22" fill="#888" letter-spacing="6">KRONOS</text>
-  <!-- Small pokeball accent -->
+  <!-- Small mysteryBox accent -->
   <circle cx="200" cy="370" r="6" fill="none" stroke="#ff3333" stroke-width="2" opacity="0.5"/>
   <line x1="194" y1="370" x2="206" y2="370" stroke="#ff3333" stroke-width="2" opacity="0.5"/>
 </svg>

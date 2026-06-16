@@ -15,10 +15,10 @@ type SpinRecord = {
   fulfilled: number;
 };
 
-// ── Pokeball CSS ─────────────────────────────────────────────────────────────
+// ── MysteryBox CSS ─────────────────────────────────────────────────────────────
 
-const pokeballStyles = `
-  .pokeball-container {
+const mysteryBoxStyles = `
+  .mysteryBox-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,7 +27,7 @@ const pokeballStyles = `
     position: relative;
   }
 
-  .pokeball {
+  .mysteryBox {
     position: relative;
     width: 160px;
     height: 160px;
@@ -40,16 +40,16 @@ const pokeballStyles = `
     transition: transform 0.2s;
   }
 
-  .pokeball:hover:not(.shaking):not(.locked) {
+  .mysteryBox:hover:not(.shaking):not(.locked) {
     transform: scale(1.05);
   }
 
-  .pokeball.locked {
+  .mysteryBox.locked {
     cursor: not-allowed;
     opacity: 0.5;
   }
 
-  .pokeball::before {
+  .mysteryBox::before {
     content: "";
     position: absolute;
     width: 100%;
@@ -57,7 +57,7 @@ const pokeballStyles = `
     background: linear-gradient(180deg, #ff1a1a 0%, #cc0000 70%, #990000 100%);
   }
 
-  .pokeball::after {
+  .mysteryBox::after {
     content: "";
     position: absolute;
     top: calc(50% - 4px);
@@ -66,7 +66,7 @@ const pokeballStyles = `
     background: #111;
   }
 
-  .pokeball__button {
+  .mysteryBox__button {
     position: absolute;
     width: 32px;
     height: 32px;
@@ -80,15 +80,15 @@ const pokeballStyles = `
     transition: background 0.3s, box-shadow 0.3s;
   }
 
-  .pokeball.shaking {
-    animation: pokeball-shake 0.5s cubic-bezier(.36,.07,.19,.97) 3;
+  .mysteryBox.shaking {
+    animation: mysteryBox-shake 0.5s cubic-bezier(.36,.07,.19,.97) 3;
   }
 
-  .pokeball.shaking .pokeball__button {
+  .mysteryBox.shaking .mysteryBox__button {
     animation: button-blink 0.4s alternate 6;
   }
 
-  @keyframes pokeball-shake {
+  @keyframes mysteryBox-shake {
     0%   { transform: translate(0, 0) rotate(0deg); }
     15%  { transform: translate(-12px, 0) rotate(-18deg); }
     30%  { transform: translate(10px, 0) rotate(15deg); }
@@ -103,16 +103,16 @@ const pokeballStyles = `
     to   { background: #e74c3c; box-shadow: 0 0 12px #e74c3c, 0 0 0 6px #111; }
   }
 
-  .pokeball.won {
-    animation: pokeball-click 0.3s ease-out forwards;
+  .mysteryBox.won {
+    animation: mysteryBox-click 0.3s ease-out forwards;
   }
 
-  .pokeball.won .pokeball__button {
+  .mysteryBox.won .mysteryBox__button {
     background: #00ff41 !important;
     box-shadow: 0 0 20px #00ff41, 0 0 0 6px #111 !important;
   }
 
-  @keyframes pokeball-click {
+  @keyframes mysteryBox-click {
     0%   { transform: scale(1); box-shadow: 0 0 0 rgba(0,255,65,0); }
     50%  { transform: scale(1.12); box-shadow: 0 0 40px rgba(0,255,65,0.6), 0 0 80px rgba(0,255,65,0.3); }
     100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,255,65,0.3); }
@@ -173,36 +173,36 @@ const pokeballStyles = `
     }
   }
 
-  .pokeball.lost {
-    animation: pokeball-settle 0.4s ease-out forwards;
+  .mysteryBox.lost {
+    animation: mysteryBox-settle 0.4s ease-out forwards;
   }
 
-  @keyframes pokeball-settle {
+  @keyframes mysteryBox-settle {
     0%   { transform: scale(1); }
     30%  { transform: scale(0.95); }
     100% { transform: scale(1); opacity: 0.7; }
   }
 
-  .pokeball.glow {
+  .mysteryBox.glow {
     box-shadow:
       0 0 15px rgba(0, 255, 65, 0.4),
       0 0 30px rgba(0, 255, 65, 0.2),
       0 0 60px rgba(0, 255, 65, 0.1),
       inset -8px 8px 0 8px rgba(0,0,0,0.05);
-    animation: pokeball-glow-pulse 2s ease-in-out infinite;
+    animation: mysteryBox-glow-pulse 2s ease-in-out infinite;
   }
 
-  @keyframes pokeball-glow-pulse {
+  @keyframes mysteryBox-glow-pulse {
     0%, 100% { box-shadow: 0 0 15px rgba(0,255,65,0.3), 0 0 30px rgba(0,255,65,0.15), 0 0 60px rgba(0,255,65,0.05), inset -8px 8px 0 8px rgba(0,0,0,0.05); }
     50%      { box-shadow: 0 0 20px rgba(0,255,65,0.5), 0 0 40px rgba(0,255,65,0.25), 0 0 80px rgba(0,255,65,0.1), inset -8px 8px 0 8px rgba(0,0,0,0.05); }
   }
 `;
 
-// ── Pokeball Component ───────────────────────────────────────────────────────
+// ── MysteryBox Component ───────────────────────────────────────────────────────
 
-type PokeballState = "idle" | "shaking" | "won" | "lost";
+type MysteryBoxState = "idle" | "shaking" | "won" | "lost";
 
-function PokeballSpin({
+function MysteryBoxSpin({
   onResult,
   freeEligible,
   onWin,
@@ -214,7 +214,7 @@ function PokeballSpin({
   wheelType?: string;
 }) {
   const { publicKey } = useWallet();
-  const [state, setState] = useState<PokeballState>("idle");
+  const [state, setState] = useState<MysteryBoxState>("idle");
   const [result, setResult] = useState<SpinRecord | null>(null);
 
   const spin = useCallback(async () => {
@@ -268,8 +268,8 @@ function PokeballSpin({
   }, [publicKey, state, freeEligible, onResult]);
 
   const disabled = state !== "idle" || !publicKey || !freeEligible;
-  const pokeballClass = [
-    "pokeball",
+  const mysteryBoxClass = [
+    "mysteryBox",
     state === "shaking" ? "shaking" : "",
     state === "won" ? "won" : "",
     state === "lost" ? "lost" : "",
@@ -278,7 +278,7 @@ function PokeballSpin({
   ].filter(Boolean).join(" ");
 
   return (
-    <div className="pokeball-container">
+    <div className="mysteryBox-container">
       <div style={{ position: "relative", width: 172, height: 172 }}>
         <div className={`sparkles ${state === "won" ? "active" : ""}`}
           style={{ position: "absolute", top: 0, left: 0, width: 172, height: 172 }}>
@@ -287,8 +287,8 @@ function PokeballSpin({
           ))}
         </div>
 
-        <div className={pokeballClass} onClick={!disabled ? spin : undefined}>
-          <div className="pokeball__button" />
+        <div className={mysteryBoxClass} onClick={!disabled ? spin : undefined}>
+          <div className="mysteryBox__button" />
         </div>
       </div>
 
@@ -297,7 +297,7 @@ function PokeballSpin({
           <div className="text-xs font-mono text-secondary">TRADE $100+ TO UNLOCK</div>
         )}
         {state === "idle" && freeEligible && (
-          <div className="text-xs font-mono text-accent animate-pulse">TAP THE POKEBALL TO SPIN</div>
+          <div className="text-xs font-mono text-accent animate-pulse">TAP THE MYSTERYBOX TO SPIN</div>
         )}
         {state === "shaking" && (
           <div className="text-xs font-mono text-secondary animate-pulse">. . .</div>
@@ -373,7 +373,7 @@ function WonCardReveal({ spinId, userPubkey, onClose }: { spinId: number; userPu
             const asset = metaData.result;
             if (!cancelled && asset) {
               setCard({
-                name: asset.content?.metadata?.name || "Pokemon Card",
+                name: asset.content?.metadata?.name || "Luxury Watch",
                 image: asset.content?.links?.image || asset.content?.files?.[0]?.uri || "",
                 nft: spin.nft_mint,
               });
@@ -443,7 +443,7 @@ function WonCardReveal({ spinId, userPubkey, onClose }: { spinId: number; userPu
               {card.name}
             </div>
             <div className="text-xs font-mono text-secondary mb-4">
-              Graded Pokemon Card — delivered to your wallet
+              Graded Luxury Watch — delivered to your wallet
             </div>
 
             <div className="flex gap-2 justify-center">
@@ -524,7 +524,7 @@ export default function RewardsPage() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: pokeballStyles }} />
+      <style dangerouslySetInnerHTML={{ __html: mysteryBoxStyles }} />
       <div className="min-h-screen bg-bg font-mono text-primary px-4 py-8">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-8">
@@ -532,7 +532,7 @@ export default function RewardsPage() {
               DAILY CATCH
             </h1>
             <p className="text-sm text-secondary">
-              Trade $100+. Spin once daily. Win a real graded Pokemon card.
+              Trade $100+. Spin once daily. Win a real graded luxury watch.
             </p>
             <p className="text-xs text-secondary mt-1">
               Powered by{" "}
@@ -603,7 +603,7 @@ export default function RewardsPage() {
           ) : (
             <>
               <div className="flex flex-col items-center mb-10">
-                <PokeballSpin onResult={handleResult} freeEligible={freeEligible} onWin={(id) => setWonSpinId(id)} />
+                <MysteryBoxSpin onResult={handleResult} freeEligible={freeEligible} onWin={(id) => setWonSpinId(id)} />
               </div>
 
               {/* ── Streak Bonus Spin ── */}
@@ -611,7 +611,7 @@ export default function RewardsPage() {
                 <div className="flex flex-col items-center mb-10 border border-accent/30 bg-accent/5 rounded-lg p-6">
                   <div className="text-xs font-mono text-accent font-bold tracking-widest mb-1">7-DAY STREAK BONUS</div>
                   <div className="text-[10px] font-mono text-secondary mb-4">25% gacha pack / 75% $10 USDC</div>
-                  <PokeballSpin
+                  <MysteryBoxSpin
                     onResult={(r) => {
                       if (r) {
                         setHistory((prev) => [r, ...prev]);
@@ -638,13 +638,13 @@ export default function RewardsPage() {
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-accent">2.</span>
-                <span>Tap the Pokeball — 2% chance to catch</span>
+                <span>Tap the MysteryBox — 2% chance to catch</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-accent">3.</span>
                 <span>
                   Win a <span className="text-primary">$50 Elite Pack</span> from
-                  Collector Crypt — a random graded Pokemon card worth $30-$5,000+
+                  Collector Crypt — a random graded luxury watch worth $30-$5,000+
                 </span>
               </div>
               <div className="flex items-start gap-2">
@@ -703,7 +703,7 @@ export default function RewardsPage() {
             <div className="space-y-3 text-xs font-mono text-secondary">
               <p>
                 Hold <span className="text-accent">$KRONOS</span> tokens for a chance to win a{" "}
-                <span className="text-primary">$50 Elite Gacha Pack</span> — a real graded Pokemon card delivered to your wallet.
+                <span className="text-primary">$50 Elite Gacha Pack</span> — a real graded luxury watch delivered to your wallet.
               </p>
               <div className="bg-bg p-3 space-y-1.5" style={{ border: "1px solid #1a1a1a" }}>
                 <div className="flex justify-between">
@@ -712,7 +712,7 @@ export default function RewardsPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-secondary">Prize</span>
-                  <span className="text-primary font-bold">$50 Elite Pokemon Gacha Pack</span>
+                  <span className="text-primary font-bold">$50 Elite Watch Gacha Pack</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-secondary">Drawing</span>

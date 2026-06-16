@@ -26,7 +26,7 @@ const SEED_PRICE_USD        = parseFloat(process.env.SEED_PRICE_USD || "179");
 const RAW_HISTORY_SIZE      = 12; // ~1 hour at 5-min intervals
 
 const TCGPLAYER_URL = process.env.TCGPLAYER_URL ||
-  "https://www.tcgplayer.com/product/593355/Pokemon-SV%20Prismatic%20Evolutions-Prismatic%20Evolutions%20Elite%20Trainer%20Box?Language=English";
+  "https://www.tcgplayer.com/product/593355/Watch-SV%20Prismatic%20Evolutions-Prismatic%20Evolutions%20Elite%20Trainer%20Box?Language=English";
 
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -40,7 +40,7 @@ const MARKET_CONFIGS = [
     id: "ETB",
     label: "PRISMATIC-ETB",
     tcgplayerProductId: 593355,
-    tcgplayerUrl: "https://www.tcgplayer.com/product/593355/Pokemon-SV%20Prismatic%20Evolutions-Prismatic%20Evolutions%20Elite%20Trainer%20Box?Language=English",
+    tcgplayerUrl: "https://www.tcgplayer.com/product/593355/Watch-SV%20Prismatic%20Evolutions-Prismatic%20Evolutions%20Elite%20Trainer%20Box?Language=English",
     oraclePubkey: ORACLE_PUBKEY,
     seedPrice: SEED_PRICE_USD,
     priceFloor: PRICE_MIN_USD,

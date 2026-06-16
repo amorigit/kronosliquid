@@ -208,7 +208,7 @@ export function TradeExportModal({ trade, onClose }: { trade: TradeDetail; onClo
                   KRONOS
                 </div>
                 <div style={{ fontSize: 9, color: "#444", letterSpacing: "0.08em" }}>
-                  POKEMON CARD PERPS
+                  WATCH PERPS
                 </div>
               </div>
             </div>
@@ -281,7 +281,7 @@ export function TradeExportModal({ trade, onClose }: { trade: TradeDetail; onClo
 
           {/* Footer */}
           <div style={{ paddingTop: 12, borderTop: "1px solid #1a1a1a", textAlign: "center" }}>
-            <div style={{ fontSize: 9, color: "#333" }}>kronos.xyz</div>
+            <div style={{ fontSize: 9, color: "#333" }}>kronosliquid.xyz</div>
           </div>
         </div>
 
@@ -465,7 +465,7 @@ function PnlExportModal({ onClose }: { onClose: () => void }) {
                       KRONOS
                     </div>
                     <div style={{ fontSize: 9, color: "#444", letterSpacing: "0.08em" }}>
-                      POKEMON CARD PERPS
+                      WATCH PERPS
                     </div>
                   </div>
                 </div>
@@ -564,7 +564,7 @@ function PnlExportModal({ onClose }: { onClose: () => void }) {
                 textAlign: "center",
               }}>
                 <div style={{ fontSize: 9, color: "#333" }}>
-                  kronos.xyz
+                  kronosliquid.xyz
                 </div>
               </div>
             </div>

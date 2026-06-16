@@ -280,7 +280,7 @@ function PrizePoolContent() {
               {
                 num: "01",
                 title: "Trade any market on Kronos",
-                desc: "Open long or short positions on any of our Pokemon card perpetual markets. All markets count toward your volume.",
+                desc: "Open long or short positions on any of our watch perpetual markets. All markets count toward your volume.",
               },
               {
                 num: "02",

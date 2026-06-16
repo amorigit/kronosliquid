@@ -17,22 +17,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Kronos | Pokemon Card Perps",
-  description: "Pokémon card perpetual futures on Solana",
+  title: "Kronos | Watch Perps",
+  description: "Luxury watch perpetual futures on Solana",
   icons: {
     icon: "/favicon.png",
     apple: "/logo-192.png",
   },
   openGraph: {
-    title: "Kronos | Pokemon Card Perps",
-    description: "Pokémon card perpetual futures on Solana",
+    title: "Kronos | Watch Perps",
+    description: "Luxury watch perpetual futures on Solana",
     siteName: "Kronos",
     images: [{ url: "/logo-512.png", width: 512, height: 512 }],
   },
   twitter: {
     card: "summary",
-    title: "Kronos | Pokemon Card Perps",
-    description: "Pokémon card perpetual futures on Solana",
+    title: "Kronos | Watch Perps",
+    description: "Luxury watch perpetual futures on Solana",
     images: ["/logo-512.png"],
   },
 };

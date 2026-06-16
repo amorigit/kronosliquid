@@ -141,7 +141,7 @@ async function main() {
   console.log("\nRecording on-chain...");
   const disc = createHash("sha256").update("global:record_raffle").digest().slice(0, 8);
 
-  const prizeStr = "$50 Elite Pokemon Gacha Pack";
+  const prizeStr = "$50 Elite Watch Gacha Pack";
   const prizeBytes = Buffer.alloc(64);
   Buffer.from(prizeStr).copy(prizeBytes);
 
@@ -198,7 +198,7 @@ async function main() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         playerAddress: secondaryKp.publicKey.toBase58(),
-        packType: "pokemon_50",
+        packType: "watch_50",
         altPlayerAddress: winner.owner,
       }),
     });
@@ -241,7 +241,7 @@ async function main() {
         });
         const metaData = await metaRes.json();
         const asset = metaData.result;
-        const cardName = asset?.content?.metadata?.name || "Pokemon Card";
+        const cardName = asset?.content?.metadata?.name || "Luxury Watch";
         const cardImage = asset?.content?.links?.image || asset?.content?.files?.[0]?.uri || "";
         const attrs = asset?.content?.metadata?.attributes || [];
         const insuredValue = attrs.find(a => a.trait_type === "Insured Value")?.value || "?";

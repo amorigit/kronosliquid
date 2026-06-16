@@ -64,7 +64,7 @@ async function searchCard(card) {
     from: 0,
     size: 5,
     filters: {
-      term: { productLineName: ["pokemon"] },
+      term: { productLineName: ["watch"] },
       range: {},
       match: {},
     },

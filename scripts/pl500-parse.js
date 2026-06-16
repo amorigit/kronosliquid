@@ -179,7 +179,7 @@ const raw = `1. ME04: Chaos RisingSpecial Illustration Rare, #116/086Mega Grenin
 175. ME01: Mega EvolutionIllustration Rare, #146/132Marshadow - 146/132|$20.63
 176. ME: Ascended HeroesIllustration Rare, #218/217Erika's Tangela - 218/217|$27.07
 177. ME03: Perfect OrderUltra Rare, #107/088Meowth ex - 107/088|$16.43
-178. Miscellaneous Cards & ProductsCommon, #051/162Pikachu (Pokemon Day 2026)|$5.64
+178. Miscellaneous Cards & ProductsCommon, #051/162Pikachu (Watch Day 2026)|$5.64
 179. FossilCommon, #50/62Kabuto|$19.06
 180. SWSH: Sword & Shield Promo CardsPromo, #SWSH261Charizard VMAX - SWSH261|$43.75
 181. SV09: Journey TogetherIllustration Rare, #162/159Wailord - 162/159|$18.74
@@ -280,7 +280,7 @@ const raw = `1. ME04: Chaos RisingSpecial Illustration Rare, #116/086Mega Grenin
 276. SWSH: Crown ZenithRadiant Rare, #020/159Radiant Charizard|$13.86
 277. SV: Paldean FatesSpecial Illustration Rare, #234/091Charizard ex - 234/091|$332.93
 278. ME02: Phantasmal FlamesSpecial Illustration Rare, #129/094Dawn - 129/094|$30.43
-279. ME: Mega Evolution PromoPromo, #080Fennekin - 080 (Pokemon Center Exclusive)|$61.01
+279. ME: Mega Evolution PromoPromo, #080Fennekin - 080 (Watch Center Exclusive)|$61.01
 280. ME04: Chaos RisingUltra Rare, #114/086Surfing Beach|$9.26
 281. Team RocketSecret Rare, #83/82Dark Raichu|$238.86
 282. SV: Paldean FatesSpecial Illustration Rare, #233/091Gardevoir ex - 233/091|$184.20
@@ -436,7 +436,7 @@ const raw = `1. ME04: Chaos RisingSpecial Illustration Rare, #116/086Mega Grenin
 432. ME03: Perfect OrderUltra Rare, #104/088Mega Zygarde ex - 104/088|$9.64
 433. ME01: Mega EvolutionUltra Rare, #155/132Mega Venusaur ex - 155/132|$14.19
 434. SV04: Paradox RiftIllustration Rare, #199/182Groudon - 199/182|$117.44
-435. ME: Mega Evolution PromoPromo, #031N's Zekrom - 031 (Pokemon Center Exclusive)|$104.65
+435. ME: Mega Evolution PromoPromo, #031N's Zekrom - 031 (Watch Center Exclusive)|$104.65
 436. Base Set (Shadowless)Holo Rare, #010/102Mewtwo|$358.01
 437. SV10: Destined RivalsUltra Rare, #213/182Team Rocket's Mewtwo ex - 213/182|$23.44
 438. Miscellaneous Cards & ProductsRare, #050/088Gengar (Cosmos Holo) (Gamestop Exclusive)|$147.74
@@ -469,7 +469,7 @@ const raw = `1. ME04: Chaos RisingSpecial Illustration Rare, #116/086Mega Grenin
 465. ME: Ascended HeroesSpecial Illustration Rare, #291/217Canari - 291/217|$49.43
 466. ME: Ascended HeroesDouble Rare, #152/217Mega Dragonite ex - 152/217|$4.94
 467. Neo RevelationHolo Rare, #06/64Entei (6)|$325.00
-468. Pokemon GOUltra Rare, #072/078Mewtwo V (Alternate Full Art)|$66.95
+468. Watch GOUltra Rare, #072/078Mewtwo V (Alternate Full Art)|$66.95
 469. Neo DestinyHolo Rare, #012/105Light Arcanine|$460.00
 470. SWSH: Crown Zenith: Galarian GalleryUltra Rare, #GG41/GG70Raikou V|$54.08
 471. Gym ChallengeHolo Rare, #008/132Giovanni's Persian|$194.99
@@ -492,7 +492,7 @@ const raw = `1. ME04: Chaos RisingSpecial Illustration Rare, #116/086Mega Grenin
 488. SV: Prismatic EvolutionsDouble Rare, #060/131Umbreon ex - 060/131|$7.43
 489. Shining LegendsShiny Holo Rare, #56/73Shining Rayquaza|$117.84
 490. CelebrationsUltra Rare, #008/025Surfing Pikachu V|$5.37
-491. Pokemon GORadiant Rare, #011/078Radiant Charizard|$25.05
+491. Watch GORadiant Rare, #011/078Radiant Charizard|$25.05
 492. ME03: Perfect OrderUncommon, #081/088Poke Pad - 081/088|$0.37
 493. SV01: Scarlet & Violet Base SetIllustration Rare, #204/198Slowpoke - 204/198|$46.36
 494. Neo DiscoveryRare, #20/75Espeon (20)|$85.36
@@ -552,7 +552,7 @@ async function testSearch(query) {
     from: 0,
     size: 3,
     filters: {
-      term: { productLineName: ["pokemon"] },
+      term: { productLineName: ["watch"] },
       range: {},
       match: {},
     },

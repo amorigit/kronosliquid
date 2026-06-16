@@ -120,7 +120,7 @@ export default function PREIndexPage() {
           <P>
             The PRE-INDEX tracks the combined market value of all {TOTAL_CARDS} cards in
             the Scarlet &amp; Violet Prismatic Evolutions set on TCGPlayer &mdash; the
-            largest Pokemon card marketplace.
+            largest luxury watch marketplace.
           </P>
           <P>
             Rather than trading individual cards, PRE-INDEX gives you exposure to the
