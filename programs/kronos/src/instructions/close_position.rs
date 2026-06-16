@@ -189,7 +189,7 @@ pub fn handler(ctx: Context<ClosePosition>, position_index: u8) -> Result<()> {
         .checked_div(10_000)
         .ok_or(ErrorCode::MathOverflow)?;
 
-    // Funding fee split: 30% LP, 20% insurance (majority side only)
+    // Funding fee split: 70% LP, 20% insurance, 10% platform (majority side only)
     let funding_lp_portion = funding_owed
         .checked_mul(FUNDING_LP_BPS)
         .ok_or(ErrorCode::MathOverflow)?

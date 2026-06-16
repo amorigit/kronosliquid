@@ -1,0 +1,129 @@
+{
+  "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
+  "rpc": "http://localhost:8899",
+  "protocolState": "HzpzGHZRTDFrQ7GbEAx1SrCzUq7ykWvF4baBH7z69tcg",
+  "liquidityPool": "FZ2vSRqk7bq2YWbSwAcAFDDudQxCs6etDNG448kx16DJ",
+  "usdcMint": "3zsAG5W1sqNb9KdAGEceptZTuHGCWGSLCK8nUv4iPQn9",
+  "markets": [
+    {
+      "marketId": "WL500-PERP",
+      "oracle": "GF1JfkbgH9EcZXC55DZgxZgEkBBsjk1K9YasTeXsUFaB",
+      "market": "DQVZRCP8isXG4MaXb3cDVNDTL6Vjc3dmYEy3rL6ty6e9"
+    },
+    {
+      "marketId": "GOLD-PERP",
+      "oracle": "69LH9Z52mf25jxvrZMFAnfGp6Sw7whLGs7oKFDAjJKpY",
+      "market": "2caAVTBCDkP3zCZvNxqownHjmtuS2DMrsKNkYpAjsvHw"
+    },
+    {
+      "marketId": "SILVER-PERP",
+      "oracle": "GUPesVEyUiPpYR6Uv5YeStMXxpU9oxZrMujASZSQvxqX",
+      "market": "DujdjbXv22nQMwDAKvZnK2LvJN2PzC6iqrzzV4DgDtP4"
+    },
+    {
+      "marketId": "PLATINUM-PERP",
+      "oracle": "FLYN91RZc8Hta45RXcqyiQxyc5nohaotLhvhrYo9zojP",
+      "market": "HShtmTseCxykhV4uqZGa9uZuh464prWcY1r8uNED3bh8"
+    },
+    {
+      "marketId": "DIAMOND-PERP",
+      "oracle": "6d95HD5RirZraqLg7se1RXNRe8abgNcNxBFNPY3UdPxc",
+      "market": "5gaMEM2WGun5KHbSg9chZRszDAh8kDQaVU9JQTNVThXv"
+    },
+    {
+      "marketId": "ROLEX-SUB-PERP",
+      "oracle": "GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ",
+      "market": "3T2ifQviBnon1mWth1JuFn38sKK9pS2S8KZbPHE1h8Bp"
+    },
+    {
+      "marketId": "PATEK-NAUTILUS-PERP",
+      "oracle": "5CynvHovsGzyRAhWymJWkcTStwFjHpqxeeu7YWGwJDDN",
+      "market": "BdXjySyR7ttxgQfEGP7rK1uxmJTCZiBXNr8ppCPMiX7y"
+    },
+    {
+      "marketId": "AP-ROYAL-OAK-PERP",
+      "oracle": "BeKjGVEnwJRGwgRXNMHRUEBkubdAHZDezCJY4AAqUskm",
+      "market": "9p85FemUQqPNqgFVpdU2EcE7hRagVkEwP658avdTo4ND"
+    },
+    {
+      "marketId": "OMEGA-SPEEDY-PERP",
+      "oracle": "HAA3jCpcLFwTB1UCM9LtBNKuZ14z532xqwUob9fyFPR8",
+      "market": "D7koarSrAJ1qSJBwE8juHrAtcuAvG6N7J4pL3ZxnaL55"
+    },
+    {
+      "marketId": "CARTIER-SANTOS-PERP",
+      "oracle": "4DPvJKYGACSJXieqdCLyfhezzTQatJPP8FntEzSWf9yT",
+      "market": "B2fvG1gVk8QJFzZfqta3NqitkkXBGgXMVqPWsZPiUCMw"
+    },
+    {
+      "marketId": "RM-11-PERP",
+      "oracle": "4uzsVSpEYUvRiEicm2DGhmhi5MUwgUxN4xouybFCdPZm",
+      "market": "B2Xe7VR7qFVDQ9ybQ6DA9ptaMhZzeMP7oNqnMZtRzmn3"
+    },
+    {
+      "marketId": "VC-OVERSEAS-PERP",
+      "oracle": "BNBvZtoCEf49iA2G9dRH2KWRZUZp3jveFG2YN9QYKfE1",
+      "market": "75D6qt3E9UYTRQChttsbLAR4hcwJKAYDFLti1DF1vzR2"
+    },
+    {
+      "marketId": "IWC-PILOT-PERP",
+      "oracle": "FsGmgvdkgu7P36yyCKTeZsqVTyTiLNGkViRE4tefNHyE",
+      "market": "5mWFGvkNbM2BEH3ABTSCNiR8xgMWinabiWsH557Kh2HF"
+    },
+    {
+      "marketId": "TAG-CARRERA-PERP",
+      "oracle": "CUn8JUf882waRGQCnqWMzvw4kvAt7SfvVwLaGPMNqrot",
+      "market": "7xFUf8xzcYPmdZG8frW11R3ZuTdfRz5EyiJ7AiKo2y67"
+    },
+    {
+      "marketId": "ROLEX-DAYTONA-PERP",
+      "oracle": "bRYw8BCXGbatStJBLR87RC7DXnhCLTaM259GfhiBB1M",
+      "market": "GEjMuswHbijy2MBPPYwyDgkecMDjGoc7GwRXQEt8xXuf"
+    },
+    {
+      "marketId": "PP-ANNUAL-PERP",
+      "oracle": "3RPBk1DBkpWquPRVH78cTdytAdsxD3BLbdB65niQVAuv",
+      "market": "JAyJpBnrbb5rgrij9aYtbmat79ygLKex9Nvq9TCuyeAq"
+    },
+    {
+      "marketId": "AP-OFFSHORE-PERP",
+      "oracle": "APBKgW6vycxVs2XtoSbKC7Xg4BXFeggbYxkz8qDQ1eBn",
+      "market": "DgSCZjL3P4qBMCA7JZs3vhYmmJXFk7GGVueb8qytfAHe"
+    },
+    {
+      "marketId": "OMEGA-SEAMASTER-PERP",
+      "oracle": "9jZyT7kPCGPWUnTbudMfuZcHZdT8yiQ61hNsNUyq1gRx",
+      "market": "9yEAfGZbZJXDg8bb1d2KxGDdJPFQDBjXNXARzdjMqQDZ"
+    },
+    {
+      "marketId": "CARTIER-TANK-PERP",
+      "oracle": "3Ji5xKvRtrEpoM6gSotRkzsbG1cUQ1wrkzbbvb4efyo4",
+      "market": "2QVHudaFTmTc7kNS7ZFtzrSwFfHDAUJbJn4haqJBXrM1"
+    },
+    {
+      "marketId": "HUBLOT-BB-PERP",
+      "oracle": "HLwHoHsn4mCuarN4DrLkUzJKh8zJqUg7QcBUc7bC2z6v",
+      "market": "z155CoUcwAqPjq4UJatkA2uDFq9sG1HTcfUMYZ59wWe"
+    },
+    {
+      "marketId": "JLC-REVERSO-PERP",
+      "oracle": "3ZBRh6H9eLFfJ5UJse41WS9wvGmZ8DATLfJNnCvTXpA2",
+      "market": "HVrk13UEAp2DywU7Q6TypWFwbQ22dz1PiyyaD2KX5K7z"
+    },
+    {
+      "marketId": "PANERAI-LUM-PERP",
+      "oracle": "4FeYrkvD4U5FWMRFS39MmbvUcUUjZbVYPYag3yKcQoQQ",
+      "market": "JDfUbQGgEwCKARtrZKsDiu4GkPNEq3uQVrei4rrm3DVk"
+    },
+    {
+      "marketId": "BREITLING-NAV-PERP",
+      "oracle": "F54GsLSG9tTai34BCmBUSjhyVCGVgQdbUUzdbLWSisLf",
+      "market": "MWtqHk43h1ExyKha1VvajW4W87igPAZFXPvhvKSSmoQ"
+    },
+    {
+      "marketId": "ROLEX-GMT-PERP",
+      "oracle": "FPsnY6J74x12aYdLPYHkpFFLZnp61X7CwKqUUNsfhN57",
+      "market": "CG8VcfWbse1GHGMidysdy7satdzmPUFam9zpJaWwqEKr"
+    }
+  ]
+}

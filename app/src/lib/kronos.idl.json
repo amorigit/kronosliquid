@@ -1,10 +1,10 @@
 {
-  "address": "5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6",
+  "address": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
   "metadata": {
     "name": "kronos",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "CHARIZARD-PERP perpetual futures protocol"
+    "description": "Kronos luxury watch perpetual futures protocol"
   },
   "instructions": [
     {
@@ -128,6 +128,274 @@
       ]
     },
     {
+      "name": "admin_close_position",
+      "docs": [
+        "Admin: force-close any position (for oracle pricing corrections)."
+      ],
+      "discriminator": [
+        244,
+        87,
+        243,
+        195,
+        206,
+        162,
+        31,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "margin_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  103,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle"
+        },
+        {
+          "name": "market_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market_state"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fee_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "insurance_fund",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  115,
+                  117,
+                  114,
+                  97,
+                  110,
+                  99,
+                  101,
+                  95,
+                  102,
+                  117,
+                  110,
+                  100
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "liquidity_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  113,
+                  117,
+                  105,
+                  100,
+                  105,
+                  116,
+                  121,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "user",
+          "type": "pubkey"
+        },
+        {
+          "name": "position_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "cancel_timelock",
+      "docs": [
+        "Admin: cancel all pending timelocked actions."
+      ],
+      "discriminator": [
+        158,
+        180,
+        47,
+        81,
+        133,
+        231,
+        168,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "timelock",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "check_and_pause",
       "docs": [
         "Permissionless: pause the protocol if oracle is stale beyond threshold."
@@ -191,8 +459,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -449,9 +716,6 @@
         },
         {
           "name": "margin_account",
-          "docs": [
-            "with any margin account layout size."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -566,8 +830,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -793,6 +1056,105 @@
       ]
     },
     {
+      "name": "execute_params",
+      "docs": [
+        "Permissionless: execute a pending param change after timelock expires."
+      ],
+      "discriminator": [
+        211,
+        161,
+        167,
+        192,
+        235,
+        188,
+        25,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "docs": [
+            "Anyone can execute after timelock expires"
+          ],
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "timelock",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle",
+          "writable": true
+        },
+        {
+          "name": "liquidity_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  113,
+                  117,
+                  105,
+                  100,
+                  105,
+                  116,
+                  121,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "execute_sl_tp",
       "docs": [
         "Execute a stop-loss or take-profit on any position (permissionless, keeper receives 0.1% reward)."
@@ -881,8 +1243,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -1189,6 +1550,148 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "init_payout_queue",
+      "docs": [
+        "Admin: initialize the payout queue (one-time)."
+      ],
+      "discriminator": [
+        11,
+        96,
+        116,
+        115,
+        44,
+        220,
+        216,
+        20
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "payout_queue",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  121,
+                  111,
+                  117,
+                  116,
+                  95,
+                  113,
+                  117,
+                  101,
+                  117,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_timelock",
+      "docs": [
+        "Admin: initialize the timelock (one-time)."
+      ],
+      "discriminator": [
+        81,
+        88,
+        16,
+        80,
+        19,
+        85,
+        67,
+        9
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "timelock",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "initialize",
@@ -1533,8 +2036,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -2105,8 +2607,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -2224,6 +2725,281 @@
       ]
     },
     {
+      "name": "process_payouts",
+      "docs": [
+        "Permissionless: process the next pending payout from the queue."
+      ],
+      "discriminator": [
+        85,
+        200,
+        138,
+        99,
+        54,
+        198,
+        23,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "payout_queue",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  121,
+                  111,
+                  117,
+                  116,
+                  95,
+                  113,
+                  117,
+                  101,
+                  117,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "liquidity_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  113,
+                  117,
+                  105,
+                  100,
+                  105,
+                  116,
+                  121,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "docs": [
+            "The user's USDC token account — must match the head of the queue."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "propose_params",
+      "docs": [
+        "Admin: propose a timelocked parameter change (24h delay)."
+      ],
+      "discriminator": [
+        94,
+        141,
+        220,
+        182,
+        171,
+        53,
+        52,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "timelock",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ProtocolParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "propose_withdrawal",
+      "docs": [
+        "Admin: propose a timelocked withdrawal (24h delay). vault_type: 0=fees, 1=insurance."
+      ],
+      "discriminator": [
+        24,
+        15,
+        80,
+        161,
+        146,
+        233,
+        1,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "timelock",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  109,
+                  101,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "vault_type",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "realloc_protocol",
       "docs": [
         "One-time: grow ProtocolState for new fields."
@@ -2274,6 +3050,116 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "record_raffle",
+      "docs": [
+        "Admin: record a raffle winner on-chain (drawn off-chain using slot hash)."
+      ],
+      "discriminator": [
+        166,
+        238,
+        124,
+        23,
+        73,
+        180,
+        253,
+        53
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "raffle_result",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  97,
+                  102,
+                  102,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round",
+          "type": "u32"
+        },
+        {
+          "name": "winner",
+          "type": "pubkey"
+        },
+        {
+          "name": "total_entries",
+          "type": "u64"
+        },
+        {
+          "name": "total_holders",
+          "type": "u32"
+        },
+        {
+          "name": "winner_tickets",
+          "type": "u64"
+        },
+        {
+          "name": "slot_hash_seed",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "prize_description",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "register_referral",
@@ -2640,8 +3526,7 @@
               },
               {
                 "kind": "account",
-                "path": "market_state.market_id",
-                "account": "MarketState"
+                "path": "market_state"
               }
             ]
           }
@@ -2900,7 +3785,7 @@
     {
       "name": "update_params",
       "docs": [
-        "Admin: update protocol parameters."
+        "Admin: update protocol parameters (direct, no timelock — kept for pause/unpause emergencies)."
       ],
       "discriminator": [
         108,
@@ -3367,6 +4252,19 @@
       ]
     },
     {
+      "name": "PayoutQueue",
+      "discriminator": [
+        28,
+        95,
+        241,
+        71,
+        14,
+        134,
+        76,
+        117
+      ]
+    },
+    {
       "name": "ProtocolState",
       "discriminator": [
         33,
@@ -3380,6 +4278,19 @@
       ]
     },
     {
+      "name": "RaffleResult",
+      "discriminator": [
+        178,
+        95,
+        209,
+        216,
+        176,
+        235,
+        168,
+        157
+      ]
+    },
+    {
       "name": "ReferralAccount",
       "discriminator": [
         237,
@@ -3390,6 +4301,19 @@
         233,
         91,
         2
+      ]
+    },
+    {
+      "name": "Timelock",
+      "discriminator": [
+        189,
+        33,
+        78,
+        75,
+        205,
+        31,
+        4,
+        177
       ]
     }
   ],
@@ -3709,6 +4633,31 @@
       "code": 6028,
       "name": "InvalidFeeShare",
       "msg": "Fee share must be 0-3000 bps (0-30%)"
+    },
+    {
+      "code": 6029,
+      "name": "OracleUpdateTooFrequent",
+      "msg": "Oracle updates too frequent"
+    },
+    {
+      "code": 6030,
+      "name": "InsuranceReserveViolation",
+      "msg": "Insurance withdrawal exceeds safe reserve"
+    },
+    {
+      "code": 6031,
+      "name": "MinFirstDeposit",
+      "msg": "First LP deposit must be at least 10 USDC"
+    },
+    {
+      "code": 6032,
+      "name": "PayoutQueueFull",
+      "msg": "Payout queue is full"
+    },
+    {
+      "code": 6033,
+      "name": "InvalidParam",
+      "msg": "Parameter value out of allowed range"
     }
   ],
   "types": [
@@ -3728,6 +4677,9 @@
           },
           {
             "name": "Liquidation"
+          },
+          {
+            "name": "AdminForced"
           }
         ]
       }
@@ -4053,6 +5005,67 @@
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PayoutEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_ata",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PayoutQueue",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "head",
+            "type": "u16"
+          },
+          {
+            "name": "tail",
+            "type": "u16"
+          },
+          {
+            "name": "count",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "entries",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "PayoutEntry"
+                  }
+                },
+                16
+              ]
+            }
           }
         ]
       }
@@ -4478,6 +5491,60 @@
       }
     },
     {
+      "name": "RaffleResult",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round",
+            "type": "u32"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_entries",
+            "type": "u64"
+          },
+          {
+            "name": "total_holders",
+            "type": "u32"
+          },
+          {
+            "name": "winner_tickets",
+            "type": "u64"
+          },
+          {
+            "name": "slot_hash_seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "prize_description",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "ReferralAccount",
       "type": {
         "kind": "struct",
@@ -4615,6 +5682,57 @@
             "type": {
               "option": "u64"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Timelock",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pending_params",
+            "docs": [
+              "Pending parameter change"
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "ProtocolParams"
+                }
+              }
+            }
+          },
+          {
+            "name": "params_execute_after",
+            "type": "i64"
+          },
+          {
+            "name": "pending_fee_withdrawal",
+            "docs": [
+              "Pending fee vault withdrawal"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "fee_execute_after",
+            "type": "i64"
+          },
+          {
+            "name": "pending_insurance_withdrawal",
+            "docs": [
+              "Pending insurance withdrawal"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "insurance_execute_after",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

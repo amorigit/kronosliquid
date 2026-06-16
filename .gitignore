@@ -6,6 +6,7 @@ app/.next/
 .env
 .env.*
 !.env.example
+!app/.env.local.example
 app/.env.local
 keeper/.env
 keeper/.env.local

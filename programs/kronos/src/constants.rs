@@ -40,6 +40,9 @@ pub const AUTO_UPGRADE_UNIQUE_REFS: u64 = 10;
 pub const AUTO_UPGRADE_FEES_THRESHOLD: u64 = 100_000_000; // $100 USDC (6 decimals)
 pub const AUTO_UPGRADE_FEE_SHARE_BPS: u64 = 2_000; // 20%
 
+/// Max leverage allowed when opening a position (Kronos cap; docs state 10x).
+pub const MAX_LEVERAGE: u8 = 10;
+
 pub const FUNDING_RATE_SCALE: u64 = 100_000;
 pub const LIQUIDATION_THRESHOLD_BPS: u64 = 500; // 5% = 500 bps
 pub const LIQUIDATOR_REWARD_BPS: u64 = 200; // 2% to liquidator

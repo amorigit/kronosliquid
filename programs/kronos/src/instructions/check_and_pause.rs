@@ -36,8 +36,9 @@ pub fn handler(ctx: Context<CheckAndPause>) -> Result<()> {
 
     let seconds_stale = now.saturating_sub(oracle.last_updated);
 
+    // Pause at exactly the threshold (>=) to match documented behavior.
     require!(
-        oracle.last_updated == 0 || seconds_stale > protocol.auto_pause_threshold,
+        oracle.last_updated == 0 || seconds_stale >= protocol.auto_pause_threshold,
         ErrorCode::OracleNotStale
     );
 

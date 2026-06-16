@@ -110,8 +110,15 @@ pub fn handler(ctx: Context<Liquidate>, _user: Pubkey, position_index: u8) -> Re
 
     let equity = position.collateral as i128 + unrealized_pnl;
 
-    // margin_ratio < 2% => equity * 50 < notional
-    let is_liquidatable = equity <= 0 || (equity * 50 < position.notional as i128);
+    // Liquidatable when margin_ratio < LIQUIDATION_THRESHOLD_BPS (5%):
+    //   equity / notional < 500 / 10_000  ⇔  equity * 10_000 < notional * 500
+    let is_liquidatable = equity <= 0
+        || equity
+            .checked_mul(10_000)
+            .ok_or(ErrorCode::MathOverflow)?
+            < (position.notional as i128)
+                .checked_mul(LIQUIDATION_THRESHOLD_BPS as i128)
+                .ok_or(ErrorCode::MathOverflow)?;
     require!(is_liquidatable, ErrorCode::NotLiquidatable);
 
     // ── Distribute collateral: 2% liquidator, 44% LP, 44% insurance, 10% platform

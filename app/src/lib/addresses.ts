@@ -1,27 +1,30 @@
 import { PublicKey } from "@solana/web3.js";
 
+// Defaults below point at the local validator deployment created by
+// `anchor migrate` + `scripts/bootstrap-watch-markets.ts`. Override any of
+// these via NEXT_PUBLIC_* env vars (see app/.env.local) for devnet/mainnet.
 export const PROGRAM_ID = new PublicKey(
-  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6"
+  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 );
 
 export const PROTOCOL_STATE = new PublicKey(
-  process.env.NEXT_PUBLIC_PROTOCOL_STATE ?? "6yAYSsp863889v7bhMEwj6tVq5DvFTi1gwzwHFrqwLFL"
+  process.env.NEXT_PUBLIC_PROTOCOL_STATE ?? "HzpzGHZRTDFrQ7GbEAx1SrCzUq7ykWvF4baBH7z69tcg"
 );
 
 export const ORACLE_ACCOUNT = new PublicKey(
-  process.env.NEXT_PUBLIC_ORACLE_ACCOUNT ?? "ANrbuXt3ui1KMEDfnRrhT72Zi8v3NSrVgCwvcdwurTCp"
+  process.env.NEXT_PUBLIC_ORACLE_ACCOUNT ?? "F4kK3Rim3a2ikcqxAasBCr9xtnwVbbP9tDHqFUggUQdw"
 );
 
 export const FEE_VAULT = new PublicKey(
-  process.env.NEXT_PUBLIC_FEE_VAULT ?? "BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt"
+  process.env.NEXT_PUBLIC_FEE_VAULT ?? "F4wfXD5yNULQy7tdMwVtNag4XZSQBHSdSACxn7TrmCmr"
 );
 
 export const INSURANCE_FUND = new PublicKey(
-  process.env.NEXT_PUBLIC_INSURANCE_FUND ?? "266CZZpRb1PFDGQf4bNE5ASPVxAUkon6tv6BvRYpP7x9"
+  process.env.NEXT_PUBLIC_INSURANCE_FUND ?? "5gS3Q9us8yptZ8cbQoQexqAc1ToC2skchRJMefCRZvfn"
 );
 
 export const USDC_MINT = new PublicKey(
-  process.env.NEXT_PUBLIC_USDC_MINT ?? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  process.env.NEXT_PUBLIC_USDC_MINT ?? "3zsAG5W1sqNb9KdAGEceptZTuHGCWGSLCK8nUv4iPQn9"
 );
 
 // PDA seeds (mirror constants.rs)

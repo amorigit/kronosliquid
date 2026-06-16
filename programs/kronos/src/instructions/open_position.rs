@@ -81,7 +81,7 @@ pub fn handler<'a>(
 
     require!(!protocol.is_paused, ErrorCode::ProtocolPaused);
     require!(leverage >= 1, ErrorCode::BelowMinLeverage);
-    require!(leverage <= 25, ErrorCode::AboveMaxLeverage);
+    require!(leverage <= MAX_LEVERAGE, ErrorCode::AboveMaxLeverage);
     require!(collateral >= protocol.min_position_size, ErrorCode::BelowMinPositionSize);
     require!(
         ctx.accounts.margin_account.collateral >= collateral,
@@ -117,13 +117,6 @@ pub fn handler<'a>(
             Direction::Short => require!(tp < entry_price, ErrorCode::InvalidTakeProfit),
         }
     }
-
-    // Post-fee collateral for notional calculation
-    let post_fee_collateral = collateral
-        .checked_sub(
-            collateral.checked_mul(protocol.fee_bps).ok_or(ErrorCode::MathOverflow)?
-                .checked_div(10_000).ok_or(ErrorCode::MathOverflow)?
-        ).ok_or(ErrorCode::MathOverflow)?;
 
     // Notional = post-fee collateral * leverage (prevents slight over-leverage)
     let fee_amount = collateral
