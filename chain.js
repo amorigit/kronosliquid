@@ -122,6 +122,10 @@
         : 0;
       market.live = true;
       changed = true;
+      // Feed the real sample into the chart history (script.js).
+      if (typeof window.kronosRecordSample === "function") {
+        window.kronosRecordSample(name, price);
+      }
     });
 
     if (changed) rerender();
@@ -139,6 +143,9 @@
       ) {
         renderMarketHeader();
       }
+      if (typeof window.kronosDrawChart === "function") {
+        window.kronosDrawChart();
+      }
     } catch (_) {}
   }
 
@@ -148,7 +155,7 @@
     });
     setInterval(function () {
       syncPrices().catch(function () {});
-    }, 10000);
+    }, 5000);
   }
 
   if (document.readyState === "loading") {

@@ -377,7 +377,7 @@ export default function TradePage() {
               <div className="flex items-center gap-2">
                 {selectedMarket.image && (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={selectedMarket.image} alt="" width={28} height={28} className="object-contain flex-shrink-0" style={{ borderRadius: 4 }} />
+                  <img src={selectedMarket.image} alt="" width={28} height={28} className="object-contain flex-shrink-0" style={{ borderRadius: 4 }} referrerPolicy="no-referrer" />
                 )}
                 <span className="text-sm font-bold text-primary font-mono">{selectedMarket.name.replace("-PERP", "")}</span>
                 {selectedMarket.badge && <span className="text-[9px] px-1.5 py-0.5 border border-long/40 text-long uppercase font-mono">{selectedMarket.badge}</span>}
@@ -770,6 +770,7 @@ function ChartSection({ oracle, priceApiMarket = "ETB", marketId, marketImage, s
                         src={marketImage}
                         alt={cardInfo.productName || "Card"}
                         className="w-[60px] md:w-[120px] border border-border"
+                        referrerPolicy="no-referrer"
                       />
                     </div>
                   )}

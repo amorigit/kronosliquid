@@ -27,7 +27,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "GF1JfkbgH9EcZXC55DZgxZgEkBBsjk1K9YasTeXsUFaB",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1523170335258-f5ed11844cfe?w=400&h=400&fit=crop",
+    "image": "/watches/wl500.jpg",
     "priceApiMarket": "WL500-PERP",
     "type": "INDEX"
   },
@@ -39,7 +39,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "69LH9Z52mf25jxvrZMFAnfGp6Sw7whLGs7oKFDAjJKpY",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1610375461246-0c10621b98d2?w=400&h=400&fit=crop",
+    "image": "/watches/gold.jpg",
     "priceApiMarket": "GOLD-PERP",
     "type": "INDEX"
   },
@@ -51,7 +51,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "GUPesVEyUiPpYR6Uv5YeStMXxpU9oxZrMujASZSQvxqX",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1621451537820-481b465741cd?w=400&h=400&fit=crop",
+    "image": "/watches/silver.jpg",
     "priceApiMarket": "SILVER-PERP",
     "type": "INDEX"
   },
@@ -63,7 +63,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "FLYN91RZc8Hta45RXcqyiQxyc5nohaotLhvhrYo9zojP",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1606814899291-dceeefa944a0?w=400&h=400&fit=crop",
+    "image": "/watches/platinum.jpg",
     "priceApiMarket": "PLATINUM-PERP",
     "type": "INDEX"
   },
@@ -75,7 +75,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "6d95HD5RirZraqLg7se1RXNRe8abgNcNxBFNPY3UdPxc",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1515562141203-7a88fb7ce338?w=400&h=400&fit=crop",
+    "image": "/watches/diamond.jpg",
     "priceApiMarket": "DIAMOND-PERP",
     "type": "INDEX"
   },
@@ -87,7 +87,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
+    "image": "/watches/rolex-sub.jpg",
     "priceApiMarket": "ROLEX-SUB-PERP",
     "type": "CARDS"
   },
@@ -99,7 +99,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "5CynvHovsGzyRAhWymJWkcTStwFjHpqxeeu7YWGwJDDN",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1614164185125-e4834f113aa6?w=400&h=400&fit=crop",
+    "image": "/watches/patek-nautilus.jpg",
     "priceApiMarket": "PATEK-NAUTILUS-PERP",
     "type": "CARDS"
   },
@@ -111,7 +111,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "BeKjGVEnwJRGwgRXNMHRUEBkubdAHZDezCJY4AAqUskm",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1622433721438-14366f4a5f57?w=400&h=400&fit=crop",
+    "image": "/watches/ap-royal-oak.jpg",
     "priceApiMarket": "AP-ROYAL-OAK-PERP",
     "type": "CARDS"
   },
@@ -123,7 +123,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "HAA3jCpcLFwTB1UCM9LtBNKuZ14z532xqwUob9fyFPR8",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1587836374828-4dbafa94a0e2?w=400&h=400&fit=crop",
+    "image": "/watches/omega-speedy.jpg",
     "priceApiMarket": "OMEGA-SPEEDY-PERP",
     "type": "CARDS"
   },
@@ -135,7 +135,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "4DPvJKYGACSJXieqdCLyfhezzTQatJPP8FntEzSWf9yT",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1547996160-81dfa97665a9?w=400&h=400&fit=crop",
+    "image": "/watches/cartier-santos.jpg",
     "priceApiMarket": "CARTIER-SANTOS-PERP",
     "type": "CARDS"
   },
@@ -147,7 +147,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "4uzsVSpEYUvRiEicm2DGhmhi5MUwgUxN4xouybFCdPZm",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1613857851772-8066a4b51562?w=400&h=400&fit=crop",
+    "image": "/watches/rm-11.jpg",
     "priceApiMarket": "RM-11-PERP",
     "type": "CARDS"
   },
@@ -159,7 +159,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "BNBvZtoCEf49iA2G9dRH2KWRZUZp3jveFG2YN9QYKfE1",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1611591437281-460bfbeb52b7?w=400&h=400&fit=crop",
+    "image": "/watches/vc-overseas.jpg",
     "priceApiMarket": "VC-OVERSEAS-PERP",
     "type": "CARDS"
   },
@@ -171,7 +171,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "FsGmgvdkgu7P36yyCKTeZsqVTyTiLNGkViRE4tefNHyE",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&h=400&fit=crop",
+    "image": "/watches/iwc-pilot.jpg",
     "priceApiMarket": "IWC-PILOT-PERP",
     "type": "CARDS"
   },
@@ -183,7 +183,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "CUn8JUf882waRGQCnqWMzvw4kvAt7SfvVwLaGPMNqrot",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1594534475808-f9f22c27b1e2?w=400&h=400&fit=crop",
+    "image": "/watches/tag-carrera.jpg",
     "priceApiMarket": "TAG-CARRERA-PERP",
     "type": "CARDS"
   },
@@ -195,7 +195,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "bRYw8BCXGbatStJBLR87RC7DXnhCLTaM259GfhiBB1M",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1523170335258-f5ed11844cfe?w=400&h=400&fit=crop",
+    "image": "/watches/rolex-daytona.jpg",
     "priceApiMarket": "ROLEX-DAYTONA-PERP",
     "type": "CARDS"
   },
@@ -207,7 +207,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "3RPBk1DBkpWquPRVH78cTdytAdsxD3BLbdB65niQVAuv",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1614164185125-e4834f113aa6?w=400&h=400&fit=crop",
+    "image": "/watches/pp-annual.jpg",
     "priceApiMarket": "PP-ANNUAL-PERP",
     "type": "CARDS"
   },
@@ -219,7 +219,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "APBKgW6vycxVs2XtoSbKC7Xg4BXFeggbYxkz8qDQ1eBn",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1622433721438-14366f4a5f57?w=400&h=400&fit=crop",
+    "image": "/watches/ap-offshore.jpg",
     "priceApiMarket": "AP-OFFSHORE-PERP",
     "type": "CARDS"
   },
@@ -231,7 +231,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "9jZyT7kPCGPWUnTbudMfuZcHZdT8yiQ61hNsNUyq1gRx",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1587836374828-4dbafa94a0e2?w=400&h=400&fit=crop",
+    "image": "/watches/omega-seamaster.jpg",
     "priceApiMarket": "OMEGA-SEAMASTER-PERP",
     "type": "CARDS"
   },
@@ -243,7 +243,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "3Ji5xKvRtrEpoM6gSotRkzsbG1cUQ1wrkzbbvb4efyo4",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1547996160-81dfa97665a9?w=400&h=400&fit=crop",
+    "image": "/watches/cartier-tank.jpg",
     "priceApiMarket": "CARTIER-TANK-PERP",
     "type": "CARDS"
   },
@@ -255,7 +255,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "HLwHoHsn4mCuarN4DrLkUzJKh8zJqUg7QcBUc7bC2z6v",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1613857851772-8066a4b51562?w=400&h=400&fit=crop",
+    "image": "/watches/hublot-bb.jpg",
     "priceApiMarket": "HUBLOT-BB-PERP",
     "type": "CARDS"
   },
@@ -267,7 +267,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "3ZBRh6H9eLFfJ5UJse41WS9wvGmZ8DATLfJNnCvTXpA2",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1611591437281-460bfbeb52b7?w=400&h=400&fit=crop",
+    "image": "/watches/jlc-reverso.jpg",
     "priceApiMarket": "JLC-REVERSO-PERP",
     "type": "CARDS"
   },
@@ -279,7 +279,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "4FeYrkvD4U5FWMRFS39MmbvUcUUjZbVYPYag3yKcQoQQ",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&h=400&fit=crop",
+    "image": "/watches/panerai-lum.jpg",
     "priceApiMarket": "PANERAI-LUM-PERP",
     "type": "CARDS"
   },
@@ -291,7 +291,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "F54GsLSG9tTai34BCmBUSjhyVCGVgQdbUUzdbLWSisLf",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1594534475808-f9f22c27b1e2?w=400&h=400&fit=crop",
+    "image": "/watches/breitling-nav.jpg",
     "priceApiMarket": "BREITLING-NAV-PERP",
     "type": "CARDS"
   },
@@ -303,7 +303,7 @@ export const MARKETS: Market[] = [
     "live": true,
     "oracleAddress": "FPsnY6J74x12aYdLPYHkpFFLZnp61X7CwKqUUNsfhN57",
     "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
+    "image": "/watches/rolex-gmt.jpg",
     "priceApiMarket": "ROLEX-GMT-PERP",
     "type": "CARDS"
   }

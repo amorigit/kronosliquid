@@ -16,6 +16,7 @@ keeper/secondary.json
 keeper/admin.json
 **/id.json
 *.pem
+keys/devnet/
 
 # Dependencies
 node_modules/

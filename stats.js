@@ -1,23 +1,3 @@
-const WATCH_IMAGES = [
-  "https://images.unsplash.com/photo-1523170335258-f5ed11844cfe?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1614164185125-e4834f113aa6?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1622433721438-14366f4a5f57?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1587836374828-4dbafa94a0e2?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1547996160-81dfa97665a9?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1613857851772-8066a4b51562?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1611591437281-460bfbeb52b7?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1594534475808-f9f22c27b1e2?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
-];
-
-const COMMODITY_IMAGES = {
-  gold: "https://images.unsplash.com/photo-1610375461246-0c10621b98d2?w=400&h=400&fit=crop",
-  silver: "https://images.unsplash.com/photo-1621451537820-481b465741cd?w=400&h=400&fit=crop",
-  platinum: "https://images.unsplash.com/photo-1606814899291-dceeefa944a0?w=400&h=400&fit=crop",
-  diamond: "https://images.unsplash.com/photo-1515562141203-7a88fb7ce338?w=400&h=400&fit=crop",
-};
-
 const MARKETS = [
   { id: "wl500", tab: "WL500", name: "WL500-PERP", subtitle: "WL500 Index · Top 500 Luxury Watches", productId: "WL500-IDX", price: 48250.0, live: true },
   { id: "gold", tab: "GOLD", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", productId: "XAU-USD", price: 2348.5, live: true },

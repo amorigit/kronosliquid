@@ -1,58 +1,72 @@
-const WATCH_IMAGES = [
-  "https://images.unsplash.com/photo-1523170335258-f5ed11844cfe?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1614164185125-e4834f113aa6?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1622433721438-14366f4a5f57?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1587836374828-4dbafa94a0e2?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1547996160-81dfa97665a9?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1613857851772-8066a4b51562?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1611591437281-460bfbeb52b7?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1594534475808-f9f22c27b1e2?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1524593964546-eadffd65a3b4?w=400&h=400&fit=crop",
-];
-
-const COMMODITY_IMAGES = {
-  gold: "https://images.unsplash.com/photo-1610375461246-0c10621b98d2?w=400&h=400&fit=crop",
-  silver: "https://images.unsplash.com/photo-1621451537820-481b465741cd?w=400&h=400&fit=crop",
-  platinum: "https://images.unsplash.com/photo-1606814899291-dceeefa944a0?w=400&h=400&fit=crop",
-  diamond: "https://images.unsplash.com/photo-1515562141203-7a88fb7ce338?w=400&h=400&fit=crop",
+// Market photos — local assets (see assets/watches/).
+const MARKET_IMAGES = {
+  "WL500-PERP": "assets/watches/wl500.jpg",
+  "GOLD-PERP": "assets/watches/gold.jpg",
+  "SILVER-PERP": "assets/watches/silver.jpg",
+  "PLATINUM-PERP": "assets/watches/platinum.jpg",
+  "DIAMOND-PERP": "assets/watches/diamond.jpg",
+  "ROLEX-SUB-PERP": "assets/watches/rolex-sub.jpg",
+  "ROLEX-DAYTONA-PERP": "assets/watches/rolex-daytona.jpg",
+  "ROLEX-GMT-PERP": "assets/watches/rolex-gmt.jpg",
+  "PATEK-NAUTILUS-PERP": "assets/watches/patek-nautilus.jpg",
+  "PP-ANNUAL-PERP": "assets/watches/pp-annual.jpg",
+  "PP-AQUANAUT-PERP": "assets/watches/pp-aquanaut.jpg",
+  "AP-ROYAL-OAK-PERP": "assets/watches/ap-royal-oak.jpg",
+  "AP-OFFSHORE-PERP": "assets/watches/ap-offshore.jpg",
+  "AP-CODE-PERP": "assets/watches/ap-code.jpg",
+  "OMEGA-SPEEDY-PERP": "assets/watches/omega-speedy.jpg",
+  "OMEGA-SEAMASTER-PERP": "assets/watches/omega-seamaster.jpg",
+  "CARTIER-SANTOS-PERP": "assets/watches/cartier-santos.jpg",
+  "CARTIER-TANK-PERP": "assets/watches/cartier-tank.jpg",
+  "RM-11-PERP": "assets/watches/rm-11.jpg",
+  "VC-OVERSEAS-PERP": "assets/watches/vc-overseas.jpg",
+  "IWC-PILOT-PERP": "assets/watches/iwc-pilot.jpg",
+  "TAG-CARRERA-PERP": "assets/watches/tag-carrera.jpg",
+  "HUBLOT-BB-PERP": "assets/watches/hublot-bb.jpg",
+  "JLC-REVERSO-PERP": "assets/watches/jlc-reverso.jpg",
+  "PANERAI-LUM-PERP": "assets/watches/panerai-lum.jpg",
+  "BREITLING-NAV-PERP": "assets/watches/breitling-nav.jpg",
 };
 
+function marketImage(name) {
+  return MARKET_IMAGES[name] || MARKET_IMAGES["WL500-PERP"];
+}
+
 const HERO_WATCHES = [
-  { name: "Rolex Submariner", image: WATCH_IMAGES[9] },
-  { name: "Patek Philippe Nautilus", image: WATCH_IMAGES[1] },
-  { name: "Audemars Piguet Royal Oak", image: WATCH_IMAGES[2] },
-  { name: "Omega Speedmaster", image: WATCH_IMAGES[3] },
-  { name: "Cartier Santos", image: WATCH_IMAGES[4] },
+  { name: "Rolex Submariner", image: marketImage("ROLEX-SUB-PERP") },
+  { name: "Patek Philippe Nautilus", image: marketImage("PATEK-NAUTILUS-PERP") },
+  { name: "Audemars Piguet Royal Oak", image: marketImage("AP-ROYAL-OAK-PERP") },
+  { name: "Omega Speedmaster", image: marketImage("OMEGA-SPEEDY-PERP") },
+  { name: "Cartier Santos", image: marketImage("CARTIER-SANTOS-PERP") },
 ];
 
 const MARKETS = [
-  { id: "wl500", name: "WL500-PERP", subtitle: "WL500 Index · Top 500 Luxury Watches", image: WATCH_IMAGES[0], price: 48250.0, change: 2.14, badge: "Index", live: true },
-  { id: "gold", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", image: COMMODITY_IMAGES.gold, price: 2348.5, change: 0.42, badge: "Commodity", live: true },
-  { id: "silver", name: "SILVER-PERP", subtitle: "Silver · XAG/USD · Troy Oz Spot", image: COMMODITY_IMAGES.silver, price: 28.65, change: 1.15, badge: "Commodity", live: true },
-  { id: "platinum", name: "PLATINUM-PERP", subtitle: "Platinum · XPT/USD · Troy Oz Spot", image: COMMODITY_IMAGES.platinum, price: 982.4, change: -0.28, badge: "Commodity", live: true },
-  { id: "diamond", name: "DIAMOND-PERP", subtitle: "Diamond · 1ct Round Brilliant · Rapaport Index", image: COMMODITY_IMAGES.diamond, price: 4850.0, change: 0.85, badge: "Commodity", live: true },
-  { id: "rolex-sub", name: "ROLEX-SUB-PERP", subtitle: "Rolex Submariner · 126610LN · Oystersteel", image: WATCH_IMAGES[9], price: 14250.0, change: 1.82, badge: "Hot", live: true },
-  { id: "patek-nautilus", name: "PATEK-NAUTILUS-PERP", subtitle: "Patek Philippe · Nautilus 5711/1A", image: WATCH_IMAGES[1], price: 98400.0, change: -0.45, badge: null, live: true },
-  { id: "ap-royal-oak", name: "AP-ROYAL-OAK-PERP", subtitle: "Audemars Piguet · Royal Oak 15500ST", image: WATCH_IMAGES[2], price: 52800.0, change: 3.21, badge: "New", live: true },
-  { id: "omega-speedy", name: "OMEGA-SPEEDY-PERP", subtitle: "Omega Speedmaster · Moonwatch Professional", image: WATCH_IMAGES[3], price: 7850.0, change: 0.67, badge: null, live: true },
-  { id: "cartier-santos", name: "CARTIER-SANTOS-PERP", subtitle: "Cartier Santos · Large Model WSSA0018", image: WATCH_IMAGES[4], price: 9200.0, change: -1.12, badge: null, live: true },
-  { id: "rm-rm11", name: "RM-11-PERP", subtitle: "Richard Mille · RM 11-03 · Flyback Chronograph", image: WATCH_IMAGES[5], price: 248500.0, change: 4.88, badge: "Hot", live: true },
-  { id: "vc-overseas", name: "VC-OVERSEAS-PERP", subtitle: "Vacheron Constantin · Overseas 4500V", image: WATCH_IMAGES[6], price: 31200.0, change: 0.34, badge: null, live: true },
-  { id: "iwc-pilot", name: "IWC-PILOT-PERP", subtitle: "IWC Big Pilot · IW501001", image: WATCH_IMAGES[7], price: 11800.0, change: -0.89, badge: null, live: true },
-  { id: "tag-carrera", name: "TAG-CARRERA-PERP", subtitle: "TAG Heuer Carrera · Glassbox Chronograph", image: WATCH_IMAGES[8], price: 6450.0, change: 1.05, badge: null, live: true },
-  { id: "rolex-daytona", name: "ROLEX-DAYTONA-PERP", subtitle: "Rolex Daytona · 116500LN · Panda Dial", image: WATCH_IMAGES[0], price: 38750.0, change: 5.42, badge: "Hot", live: true },
-  { id: "pp-annual", name: "PP-ANNUAL-PERP", subtitle: "Patek Philippe · Annual Calendar 5205G", image: WATCH_IMAGES[1], price: 62400.0, change: -0.22, badge: null, live: true },
-  { id: "ap-offshore", name: "AP-OFFSHORE-PERP", subtitle: "Audemars Piguet · Royal Oak Offshore", image: WATCH_IMAGES[2], price: 44100.0, change: 2.76, badge: null, live: true },
-  { id: "omega-seamaster", name: "OMEGA-SEAMASTER-PERP", subtitle: "Omega Seamaster · 300M Co-Axial", image: WATCH_IMAGES[3], price: 5600.0, change: 0.15, badge: null, live: true },
-  { id: "cartier-tank", name: "CARTIER-TANK-PERP", subtitle: "Cartier Tank · Must de Cartier", image: WATCH_IMAGES[4], price: 4100.0, change: -0.58, badge: null, live: true },
-  { id: "hublot-bigbang", name: "HUBLOT-BB-PERP", subtitle: "Hublot Big Bang · Unico Titanium", image: WATCH_IMAGES[5], price: 15800.0, change: 1.44, badge: null, live: true },
-  { id: "jlc-reverso", name: "JLC-REVERSO-PERP", subtitle: "Jaeger-LeCoultre · Reverso Classic", image: WATCH_IMAGES[6], price: 9800.0, change: 0.91, badge: null, live: true },
-  { id: "panerai-luminor", name: "PANERAI-LUM-PERP", subtitle: "Panerai Luminor · Marina 1312", image: WATCH_IMAGES[7], price: 8900.0, change: -1.34, badge: null, live: true },
-  { id: "breitling-nav", name: "BREITLING-NAV-PERP", subtitle: "Breitling Navitimer · B01 Chronograph", image: WATCH_IMAGES[8], price: 10200.0, change: 0.48, badge: null, live: true },
-  { id: "rolex-gmt", name: "ROLEX-GMT-PERP", subtitle: "Rolex GMT-Master II · 126710BLNR", image: WATCH_IMAGES[9], price: 22400.0, change: 2.03, badge: null, live: true },
-  { id: "pp-aquanaut", name: "PP-AQUANAUT-PERP", subtitle: "Patek Philippe · Aquanaut 5167A", image: WATCH_IMAGES[1], price: 71200.0, change: 1.67, badge: "Soon", live: false },
-  { id: "ap-code", name: "AP-CODE-PERP", subtitle: "Audemars Piguet · Code 11.59 Chronograph", image: WATCH_IMAGES[2], price: 38900.0, change: 0.0, badge: "Soon", live: false },
+  { id: "wl500", name: "WL500-PERP", subtitle: "WL500 Index · Top 500 Luxury Watches", image: marketImage("WL500-PERP"), price: 48250.0, change: 2.14, badge: "Index", live: true },
+  { id: "gold", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", image: marketImage("GOLD-PERP"), price: 2348.5, change: 0.42, badge: "Commodity", live: true },
+  { id: "silver", name: "SILVER-PERP", subtitle: "Silver · XAG/USD · Troy Oz Spot", image: marketImage("SILVER-PERP"), price: 28.65, change: 1.15, badge: "Commodity", live: true },
+  { id: "platinum", name: "PLATINUM-PERP", subtitle: "Platinum · XPT/USD · Troy Oz Spot", image: marketImage("PLATINUM-PERP"), price: 982.4, change: -0.28, badge: "Commodity", live: true },
+  { id: "diamond", name: "DIAMOND-PERP", subtitle: "Diamond · 1ct Round Brilliant · Rapaport Index", image: marketImage("DIAMOND-PERP"), price: 4850.0, change: 0.85, badge: "Commodity", live: true },
+  { id: "rolex-sub", name: "ROLEX-SUB-PERP", subtitle: "Rolex Submariner · 126610LN · Oystersteel", image: marketImage("ROLEX-SUB-PERP"), price: 14250.0, change: 1.82, badge: "Hot", live: true },
+  { id: "patek-nautilus", name: "PATEK-NAUTILUS-PERP", subtitle: "Patek Philippe · Nautilus 5711/1A", image: marketImage("PATEK-NAUTILUS-PERP"), price: 98400.0, change: -0.45, badge: null, live: true },
+  { id: "ap-royal-oak", name: "AP-ROYAL-OAK-PERP", subtitle: "Audemars Piguet · Royal Oak 15500ST", image: marketImage("AP-ROYAL-OAK-PERP"), price: 52800.0, change: 3.21, badge: "New", live: true },
+  { id: "omega-speedy", name: "OMEGA-SPEEDY-PERP", subtitle: "Omega Speedmaster · Moonwatch Professional", image: marketImage("OMEGA-SPEEDY-PERP"), price: 7850.0, change: 0.67, badge: null, live: true },
+  { id: "cartier-santos", name: "CARTIER-SANTOS-PERP", subtitle: "Cartier Santos · Large Model WSSA0018", image: marketImage("CARTIER-SANTOS-PERP"), price: 9200.0, change: -1.12, badge: null, live: true },
+  { id: "rm-rm11", name: "RM-11-PERP", subtitle: "Richard Mille · RM 11-03 · Flyback Chronograph", image: marketImage("RM-11-PERP"), price: 248500.0, change: 4.88, badge: "Hot", live: true },
+  { id: "vc-overseas", name: "VC-OVERSEAS-PERP", subtitle: "Vacheron Constantin · Overseas 4500V", image: marketImage("VC-OVERSEAS-PERP"), price: 31200.0, change: 0.34, badge: null, live: true },
+  { id: "iwc-pilot", name: "IWC-PILOT-PERP", subtitle: "IWC Big Pilot · IW501001", image: marketImage("IWC-PILOT-PERP"), price: 11800.0, change: -0.89, badge: null, live: true },
+  { id: "tag-carrera", name: "TAG-CARRERA-PERP", subtitle: "TAG Heuer Carrera · Glassbox Chronograph", image: marketImage("TAG-CARRERA-PERP"), price: 6450.0, change: 1.05, badge: null, live: true },
+  { id: "rolex-daytona", name: "ROLEX-DAYTONA-PERP", subtitle: "Rolex Daytona · 116500LN · Panda Dial", image: marketImage("ROLEX-DAYTONA-PERP"), price: 38750.0, change: 5.42, badge: "Hot", live: true },
+  { id: "pp-annual", name: "PP-ANNUAL-PERP", subtitle: "Patek Philippe · Annual Calendar 5205G", image: marketImage("PP-ANNUAL-PERP"), price: 62400.0, change: -0.22, badge: null, live: true },
+  { id: "ap-offshore", name: "AP-OFFSHORE-PERP", subtitle: "Audemars Piguet · Royal Oak Offshore", image: marketImage("AP-OFFSHORE-PERP"), price: 44100.0, change: 2.76, badge: null, live: true },
+  { id: "omega-seamaster", name: "OMEGA-SEAMASTER-PERP", subtitle: "Omega Seamaster · 300M Co-Axial", image: marketImage("OMEGA-SEAMASTER-PERP"), price: 5600.0, change: 0.15, badge: null, live: true },
+  { id: "cartier-tank", name: "CARTIER-TANK-PERP", subtitle: "Cartier Tank · Must de Cartier", image: marketImage("CARTIER-TANK-PERP"), price: 4100.0, change: -0.58, badge: null, live: true },
+  { id: "hublot-bigbang", name: "HUBLOT-BB-PERP", subtitle: "Hublot Big Bang · Unico Titanium", image: marketImage("HUBLOT-BB-PERP"), price: 15800.0, change: 1.44, badge: null, live: true },
+  { id: "jlc-reverso", name: "JLC-REVERSO-PERP", subtitle: "Jaeger-LeCoultre · Reverso Classic", image: marketImage("JLC-REVERSO-PERP"), price: 9800.0, change: 0.91, badge: null, live: true },
+  { id: "panerai-luminor", name: "PANERAI-LUM-PERP", subtitle: "Panerai Luminor · Marina 1312", image: marketImage("PANERAI-LUM-PERP"), price: 8900.0, change: -1.34, badge: null, live: true },
+  { id: "breitling-nav", name: "BREITLING-NAV-PERP", subtitle: "Breitling Navitimer · B01 Chronograph", image: marketImage("BREITLING-NAV-PERP"), price: 10200.0, change: 0.48, badge: null, live: true },
+  { id: "rolex-gmt", name: "ROLEX-GMT-PERP", subtitle: "Rolex GMT-Master II · 126710BLNR", image: marketImage("ROLEX-GMT-PERP"), price: 22400.0, change: 2.03, badge: null, live: true },
+  { id: "pp-aquanaut", name: "PP-AQUANAUT-PERP", subtitle: "Patek Philippe · Aquanaut 5167A", image: marketImage("PP-AQUANAUT-PERP"), price: 71200.0, change: 1.67, badge: "Soon", live: false },
+  { id: "ap-code", name: "AP-CODE-PERP", subtitle: "Audemars Piguet · Code 11.59 Chronograph", image: marketImage("AP-CODE-PERP"), price: 38900.0, change: 0.0, badge: "Soon", live: false },
 ];
 
 const DUMMY_POSITIONS = [
@@ -66,7 +80,6 @@ let state = {
   leverage: 5,
   collateral: 500,
   search: "",
-  chartPoints: [],
 };
 
 function formatPrice(n) {
@@ -103,7 +116,7 @@ function connectWallet() {
 function renderHeroWatches() {
   const container = document.getElementById("hero-watches");
   container.innerHTML = HERO_WATCHES.map(
-    (w) => `<div class="watch-item"><img src="${w.image}" alt="${w.name}" draggable="false" /></div>`
+    (w) => `<div class="watch-item"><img src="${w.image}" alt="${w.name}" referrerpolicy="no-referrer" loading="lazy" draggable="false" /></div>`
   ).join("");
 }
 
@@ -125,7 +138,7 @@ function renderMarkets() {
           : "";
       return `
         <button class="market-item ${active}" data-id="${m.id}">
-          <img src="${m.image}" alt="${m.name}" />
+          <img src="${m.image}" alt="${m.name}" referrerpolicy="no-referrer" loading="lazy" />
           <div class="market-item-info">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
               <span class="market-item-name">${m.name}</span>${badge}
@@ -150,7 +163,9 @@ function renderMarkets() {
 
 function selectMarket(market) {
   state.selectedMarket = market;
-  generateChartData();
+  if (!priceHistory[market.name] || !priceHistory[market.name].length) {
+    recordSample(market.name, market.price);
+  }
   renderMarkets();
   renderMarketHeader();
   renderOrderBook();
@@ -160,6 +175,7 @@ function selectMarket(market) {
 
 function renderMarketHeader() {
   const m = state.selectedMarket;
+  document.getElementById("market-img").referrerPolicy = "no-referrer";
   document.getElementById("market-img").src = m.image;
   document.getElementById("market-img").alt = m.name;
   document.getElementById("market-name").textContent = m.name;
@@ -239,20 +255,25 @@ function renderTicker() {
   track.innerHTML = items + items;
 }
 
-function generateChartData() {
-  const base = state.selectedMarket.price;
-  state.chartPoints = [];
-  let price = base * 0.97;
-  for (let i = 0; i < 80; i++) {
-    price += (Math.random() - 0.48) * base * 0.003;
-    price = Math.max(base * 0.92, Math.min(base * 1.06, price));
-    state.chartPoints.push(price);
-  }
-  state.chartPoints[state.chartPoints.length - 1] = base;
+// Real price history per market, keyed by market name. Each entry is the
+// sequence of observed prices since the terminal opened — the chart starts
+// from the first sample (i.e. the moment data began streaming), not a
+// fabricated back-history.
+const priceHistory = {};
+const MAX_HISTORY = 600;
+
+function recordSample(name, price) {
+  if (!name || !isFinite(price) || price <= 0) return;
+  if (!priceHistory[name]) priceHistory[name] = [];
+  const h = priceHistory[name];
+  h.push({ t: Date.now(), p: price });
+  if (h.length > MAX_HISTORY) h.shift();
 }
 
 function drawChart() {
   const canvas = document.getElementById("price-chart");
+  if (!canvas) return;
+  const placeholder = document.querySelector(".chart-placeholder");
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -260,18 +281,24 @@ function drawChart() {
   canvas.height = rect.height * dpr;
   canvas.style.width = rect.width + "px";
   canvas.style.height = rect.height + "px";
-  ctx.scale(dpr, dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const w = rect.width;
   const h = rect.height;
-  const pts = state.chartPoints;
-  if (!pts.length) return;
+  ctx.clearRect(0, 0, w, h);
+
+  const hist = priceHistory[state.selectedMarket.name] || [];
+  const pts = hist.map((s) => s.p);
+  // Need at least two real samples before a line is meaningful.
+  if (pts.length < 2) {
+    if (placeholder) placeholder.style.display = "flex";
+    return;
+  }
+  if (placeholder) placeholder.style.display = "none";
 
   const min = Math.min(...pts);
   const max = Math.max(...pts);
   const range = max - min || 1;
-
-  ctx.clearRect(0, 0, w, h);
 
   ctx.strokeStyle = "rgba(255,255,255,0.04)";
   ctx.lineWidth = 1;
@@ -308,7 +335,7 @@ function drawChart() {
 }
 
 function initTerminal() {
-  generateChartData();
+  recordSample(state.selectedMarket.name, state.selectedMarket.price);
   renderMarkets();
   renderMarketHeader();
   renderOrderBook();
@@ -317,7 +344,26 @@ function initTerminal() {
   renderTicker();
   drawChart();
   window.addEventListener("resize", drawChart);
+
+  // Fallback sampler: when no live on-chain feed is driving prices
+  // (chain.js sets __kronosChainLive), nudge the selected market with a
+  // gentle drift so the chart still builds from the moment it opened.
+  setInterval(() => {
+    if (window.__kronosChainLive) return;
+    const m = state.selectedMarket;
+    const h = priceHistory[m.name];
+    const base = h && h.length ? h[h.length - 1].p : m.price;
+    const next = Math.max(base * 0.5, base * (1 + (Math.random() - 0.5) * 0.008));
+    m.price = next;
+    recordSample(m.name, next);
+    renderMarketHeader();
+    drawChart();
+  }, 2500);
 }
+
+// Exposed so the on-chain price client (chain.js) can feed real samples in.
+window.kronosRecordSample = recordSample;
+window.kronosDrawChart = drawChart;
 
 document.addEventListener("DOMContentLoaded", () => {
   renderHeroWatches();

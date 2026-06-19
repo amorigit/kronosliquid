@@ -89,6 +89,7 @@ export function BinderCard({
               borderRadius: 6,
             }}
             draggable={false}
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div
