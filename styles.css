@@ -782,7 +782,7 @@ a { color: inherit; }
 .ticker-track {
   display: inline-flex;
   gap: 2rem;
-  animation: ticker 40s linear infinite;
+  animation: ticker 80s linear infinite;
 }
 
 .ticker-item {

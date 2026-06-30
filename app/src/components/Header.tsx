@@ -123,7 +123,7 @@ function TickerBar() {
         .ticker-track {
           display: flex;
           width: max-content;
-          animation: ticker-scroll 28s linear infinite;
+          animation: ticker-scroll 100s linear infinite;
           will-change: transform;
         }
         .ticker-track:hover {

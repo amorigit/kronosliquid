@@ -35,6 +35,7 @@ test-ledger
 
 # Keeper runtime artifacts
 keeper/logs/
+logs/
 keeper/prices.db
 keeper/prices.db-shm
 keeper/prices.db-wal
