@@ -8,7 +8,10 @@ import { SessionWalletProvider } from "@/providers/SessionWalletProvider";
 import { NotificationProvider } from "@/providers/NotificationProvider";
 import { ToastContainer } from "@/components/ToastContainer";
 
-const RPC = process.env.NEXT_PUBLIC_RPC_ENDPOINT!;
+const RPC =
+  process.env.NEXT_PUBLIC_RPC_ENDPOINT ||
+  process.env.NEXT_PUBLIC_RPC_URL ||
+  "https://api.devnet.solana.com";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const wallets = useMemo(

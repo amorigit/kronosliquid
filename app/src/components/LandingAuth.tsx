@@ -21,20 +21,8 @@ import { Logo } from "./Logo";
 
 type Mode = "login" | "signup";
 
-const LANDING_CARDS = [
-  { id: "charizard-promo", name: "Shadowless Charizard", image: "https://product-images.tcgplayer.com/fit-in/400x400/106999.jpg" },
-  { id: "mega-charizard-x", name: "Mega Charizard X ex", image: "https://product-images.tcgplayer.com/fit-in/400x400/662184.jpg" },
-  { id: "charmander-promo", name: "Charmander #038", image: "https://product-images.tcgplayer.com/fit-in/400x400/684462.jpg" },
-  { id: "pikachu-ex", name: "Pikachu ex", image: "https://product-images.tcgplayer.com/fit-in/400x400/676088.jpg" },
-  { id: "mega-charizard-promo", name: "Mega Charizard X ex", image: "https://product-images.tcgplayer.com/fit-in/400x400/659612.jpg" },
-];
-
-const CARD_ROTATIONS = [-20, -10, 0, 10, 20];
-const CARD_OFFSETS_Y = [16, 6, -4, 6, 16];
-const CARD_SCALES = [1, 1, 1.15, 1, 1];
-
-// Pikachu oracle for live price on landing
-const PIKACHU_ORACLE = "Fx1rYyuEz91rqgpEWHs8MyH7kiLpNeXuDdcAJiSjhN87";
+// Rolex Sub oracle for live price on landing
+const ROLEX_SUB_ORACLE = "GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ";
 
 export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
   const { select, connected, wallets, connect } = useWallet();
@@ -50,7 +38,7 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
   const [error, setError] = useState("");
 
   // Live price
-  const { price: rawPrice, readings, isLoading: priceLoading } = useOracle(PIKACHU_ORACLE, "PIKACHU");
+  const { price: rawPrice, readings, isLoading: priceLoading } = useOracle(ROLEX_SUB_ORACLE, "ROLEX-SUB-PERP");
   const livePrice = rawPrice / 1_000_000;
   let pctChange = 0;
   if (readings.length >= 2) {
@@ -67,17 +55,17 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
   const fmt = (n: number) => n.toFixed(2);
 
   // Animation state
+  const [mounted, setMounted] = useState(false);
   const [logoVisible, setLogoVisible] = useState(false);
-  const [cardsVisible, setCardsVisible] = useState(false);
   const [stepsVisible, setStepsVisible] = useState(false);
   const [ctaVisible, setCtaVisible] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const t1 = setTimeout(() => setLogoVisible(true), 100);
-    const t2 = setTimeout(() => setCardsVisible(true), 400);
-    const t3 = setTimeout(() => setStepsVisible(true), 900);
-    const t4 = setTimeout(() => setCtaVisible(true), 1200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    const t2 = setTimeout(() => setStepsVisible(true), 500);
+    const t3 = setTimeout(() => setCtaVisible(true), 900);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
   useEffect(() => { if (connected) onPass?.(); }, [connected, onPass]);
@@ -183,7 +171,7 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center space-y-3">
             <div className="flex justify-center"><Logo width={280} /></div>
-            <p className="text-sm" style={{ color: "#666" }}>Pok&eacute;mon card perpetual futures on Solana</p>
+            <p className="text-sm" style={{ color: "#666" }}>Luxury watch perpetual futures on Solana</p>
           </div>
           <form noValidate onSubmit={(e) => { e.preventDefault(); mode === "login" ? handleLogin() : handleSignup(); }} className="p-6 space-y-4" style={{ backgroundColor: "#111111", border: "1px solid #1a1a1a" }}>
             <h2 className="font-mono text-center text-lg font-bold" style={{ color: "#ffffff" }}>{mode === "login" ? "Log In" : "Create Account"}</h2>
@@ -243,36 +231,12 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
           <div className="hidden md:block"><Logo width={320} /></div>
         </div>
 
-        {/* Card fan — simple inline images, no absolute nonsense */}
-        <div
-          className="flex items-end justify-center transition-all duration-700"
-          style={{ opacity: cardsVisible ? 1 : 0, marginBottom: 40 }}
-        >
-          {LANDING_CARDS.map((card, i) => (
-            <img
-              key={card.id}
-              src={card.image}
-              alt={card.name}
-              draggable={false}
-              className="transition-all duration-700 ease-out"
-              style={{
-                width: 68,
-                transform: `rotate(${CARD_ROTATIONS[i]}deg) translateY(${CARD_OFFSETS_Y[i] * 0.5}px) scale(${CARD_SCALES[i]})`,
-                marginLeft: i === 0 ? 0 : -12,
-                filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.6))",
-                zIndex: i === 2 ? 10 : 5 - Math.abs(i - 2),
-                position: "relative",
-              }}
-            />
-          ))}
-        </div>
-
         <p className="text-center font-mono mb-2" style={{ color: "#ccc", fontSize: "clamp(14px, 2.5vw, 18px)", fontWeight: 700, letterSpacing: "0.02em" }}>
-          Pok&eacute;mon card perpetual futures on Solana
+          Luxury watch perpetual futures on Solana
         </p>
 
         <p className="text-center font-mono mb-4 px-2" style={{ color: "#666", fontSize: 11, lineHeight: 1.6, maxWidth: 520 }}>
-          Bet on Pok&eacute;mon card prices without owning the card. Go long if you think Charizard goes up. Go short if you think it drops. Set your USDC collateral, choose leverage, and manage risk with stop loss / take profit.
+          Bet on luxury watch prices without owning the watch. Go long if you think the Rolex Sub goes up. Go short if you think it drops. Set your USDC collateral, choose leverage, and manage risk with stop loss / take profit.
         </p>
       </div>
 
@@ -297,16 +261,16 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
                   ))}
                 </div>
                 <div className="grid grid-cols-3 gap-1">
-                  {LANDING_CARDS.slice(0, 3).map((c) => (
-                    <div key={c.id} style={{ background: "#1a1a1a", borderRadius: 3, padding: 2 }}>
-                      <img src={c.image} alt="" className="w-full" style={{ borderRadius: 2 }} draggable={false} />
+                  {["/watches/rolex-sub.jpg", "/watches/patek-nautilus.jpg", "/watches/ap-royal-oak.jpg"].map((src, i) => (
+                    <div key={i} style={{ background: "#1a1a1a", borderRadius: 3, padding: 2 }}>
+                      <img src={src} alt="" className="w-full" style={{ borderRadius: 2 }} draggable={false} />
                     </div>
                   ))}
                 </div>
                 <div className="flex gap-1 mt-1.5">
-                  {LANDING_CARDS.slice(0, 4).map((c) => (
-                    <div key={c.id + "-t"} style={{ width: "25%", background: "#1a1a1a", borderRadius: 2, padding: 1 }}>
-                      <img src={c.image} alt="" className="w-full" style={{ borderRadius: 1 }} draggable={false} />
+                  {["/watches/rolex-sub.jpg", "/watches/patek-nautilus.jpg", "/watches/ap-royal-oak.jpg", "/watches/omega-speedy.jpg"].map((src, i) => (
+                    <div key={i} style={{ width: "25%", background: "#1a1a1a", borderRadius: 2, padding: 1 }}>
+                      <img src={src} alt="" className="w-full" style={{ borderRadius: 1 }} draggable={false} />
                     </div>
                   ))}
                 </div>
@@ -331,16 +295,16 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
             <StepCard num={2} title="LONG / SHORT" subtitle="Choose direction and configure your trade" delay={150} visible={stepsVisible}>
               <div style={{ padding: "8px 8px 6px" }}>
                 <div className="flex items-center gap-2 mb-2" style={{ background: "#1a1a1a", borderRadius: 3, padding: "4px 6px" }}>
-                  <img src={LANDING_CARDS[3].image} alt="" style={{ width: 16, height: 16, borderRadius: 2, objectFit: "cover" }} />
+                  <img src="/watches/rolex-sub.jpg" alt="" style={{ width: 16, height: 16, borderRadius: 2, objectFit: "cover" }} />
                   <div>
                     <div style={{ fontSize: 8, color: "#fff", fontFamily: "monospace", fontWeight: 700 }}>TRADE TICKET</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 mb-2 px-0.5">
-                  <img src={LANDING_CARDS[3].image} alt="" style={{ width: 14, height: 14, borderRadius: 2, objectFit: "cover" }} />
+                  <img src="/watches/rolex-sub.jpg" alt="" style={{ width: 14, height: 14, borderRadius: 2, objectFit: "cover" }} />
                   <div>
-                    <span style={{ fontSize: 8, color: "#fff", fontFamily: "monospace", fontWeight: 700 }}>Pikachu ex - 276/217</span>
-                    <div style={{ fontSize: 7, color: "#555", fontFamily: "monospace" }}>Ascended Heroes (ASC)</div>
+                    <span style={{ fontSize: 8, color: "#fff", fontFamily: "monospace", fontWeight: 700 }}>Rolex Submariner</span>
+                    <div style={{ fontSize: 7, color: "#555", fontFamily: "monospace" }}>126610LN · Oystersteel</div>
                   </div>
                 </div>
                 <div style={{ fontSize: 7, color: "#555", fontFamily: "monospace", marginBottom: 3, paddingLeft: 2 }}>CHOOSE DIRECTION</div>
@@ -405,10 +369,10 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
                   <span style={{ fontSize: 6, color: "#555", fontFamily: "monospace" }}>2x</span>
                 </div>
                 <div className="flex items-center gap-1.5 mb-2 px-0.5">
-                  <img src={LANDING_CARDS[3].image} alt="" style={{ width: 14, height: 14, borderRadius: 2, objectFit: "cover" }} />
+                  <img src="/watches/rolex-sub.jpg" alt="" style={{ width: 14, height: 14, borderRadius: 2, objectFit: "cover" }} />
                   <div>
-                    <span style={{ fontSize: 8, color: "#fff", fontFamily: "monospace", fontWeight: 700 }}>Pikachu ex - 276/217</span>
-                    <div style={{ fontSize: 7, color: "#555", fontFamily: "monospace" }}>Ascended Heroes (ASC)</div>
+                    <span style={{ fontSize: 8, color: "#fff", fontFamily: "monospace", fontWeight: 700 }}>Rolex Submariner</span>
+                    <div style={{ fontSize: 7, color: "#555", fontFamily: "monospace" }}>126610LN · Oystersteel</div>
                   </div>
                 </div>
                 <div className="mb-2 px-0.5">
@@ -460,7 +424,7 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
         >
           {checking ? "Checking..." : "Start Trading"}
         </button>
-        {externalWallets.length > 0 && (
+        {mounted && externalWallets.length > 0 && (
           <button onClick={() => setShowWalletPicker(true)} className="uppercase tracking-wider font-bold w-full" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(11px, 1.6vw, 12px)", padding: "10px 40px", background: "transparent", color: "#00ff41", border: "1px solid rgba(0,255,65,0.4)", cursor: "pointer", letterSpacing: "0.08em", transition: "all 0.15s" }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#00ff41"; e.currentTarget.style.background = "rgba(0,255,65,0.06)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,255,65,0.4)"; e.currentTarget.style.background = "transparent"; }}>

@@ -1,6 +1,6 @@
 {
   "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-  "rpc": "http://localhost:8899",
+  "rpc": "https://api.devnet.solana.com",
   "protocolState": "HzpzGHZRTDFrQ7GbEAx1SrCzUq7ykWvF4baBH7z69tcg",
   "liquidityPool": "FZ2vSRqk7bq2YWbSwAcAFDDudQxCs6etDNG448kx16DJ",
   "usdcMint": "3zsAG5W1sqNb9KdAGEceptZTuHGCWGSLCK8nUv4iPQn9",

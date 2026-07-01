@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 
-// Defaults below point at the local validator deployment created by
-// `anchor migrate` + `scripts/bootstrap-watch-markets.ts`. Override any of
-// these via NEXT_PUBLIC_* env vars (see app/.env.local) for devnet/mainnet.
+// Defaults below match the devnet deployment from `anchor migrate` +
+// `scripts/bootstrap-watch-markets.ts`. Override via NEXT_PUBLIC_* in
+// app/.env.local for a different cluster.
 export const PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_PROGRAM_ID ?? "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 );

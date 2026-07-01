@@ -350,7 +350,7 @@ function StatsContent() {
                 : "border-border text-secondary hover:text-primary hover:border-primary/50"
             }`}
           >
-            {m.priceApiMarket}
+            {m.id}
           </button>
         ))}
       </div>
@@ -371,12 +371,8 @@ function StatsContent() {
               <div>
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Source</div>
                 <div className="text-xs md:text-sm font-mono text-primary">
-                  <span className="hidden md:inline">TCGPlayer (Playwright)</span>
-                  <span className="md:hidden">TCGPlayer</span>
+                  Kronos Keeper
                 </div>
-                {market.tcgplayerId && (
-                  <div className="text-[10px] text-secondary mt-0.5">Product {market.tcgplayerId}</div>
-                )}
               </div>
               <div>
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Last Update</div>
