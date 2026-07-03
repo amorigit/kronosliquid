@@ -279,10 +279,11 @@ export default function ApiDocsPage() {
               </thead>
               <tbody>
                 {[
-                  ["ETB", "Prismatic Evolutions ETB", "Live"],
-                  ["CHARIZARD-X", "Mega Charizard X ex (125/094)", "Live"],
-                  ["CHARMANDER", "Charmander (038) Mega Evo Promo", "Live"],
-                  ["PIKACHU", "Pikachu ex (276/217) Ascended Heroes", "Live"],
+                  ["WL500-PERP", "WL500 Watch Index", "Live"],
+                  ["GOLD-PERP", "Gold XAU/USD", "Live"],
+                  ["ROLEX-SUB-PERP", "Rolex Submariner 126610LN", "Live"],
+                  ["PATEK-NAUTILUS-PERP", "Patek Philippe Nautilus 5711/1A", "Live"],
+                  ["ROLEX-DAYTONA-PERP", "Rolex Daytona 116500LN", "Live"],
                 ].map(([id, name, status]) => (
                   <tr key={id}>
                     <td style={{ padding: "8px 10px", borderBottom: "1px solid #1a1a1a", color: "#00ff41" }}>{id}</td>
@@ -294,7 +295,8 @@ export default function ApiDocsPage() {
             </table>
           </div>
           <p style={{ fontSize: 11, color: "#666", marginTop: 8 }}>
-            Use the Market ID in API query parameters (e.g. <code style={{ color: "#888" }}>?market=ETB</code>).
+            All 24 markets are listed in <code style={{ color: "#888" }}>markets.bootstrap.json</code>. Use the
+            Market ID in API query parameters (e.g. <code style={{ color: "#888" }}>?market=ROLEX-SUB-PERP</code>).
           </p>
         </div>
 
@@ -313,23 +315,19 @@ export default function ApiDocsPage() {
 
         <Endpoint
           path="/prices"
-          description="Historical oracle price data. Returns raw scraped prices, EWMA-smoothed prices, deviation, alpha used, and on-chain transaction signatures."
+          description="Historical oracle price data recorded by the keeper (one point every 30 seconds, 48h retention)."
           params={[
-            ["market", "string", "ETB", "Market ID (ETB, CHARIZARD-X, CHARMANDER, PIKACHU)"],
-            ["limit", "number", "50", "Number of data points (max 500)"],
+            ["market", "string", "\u2014", "Market ID (e.g. ROLEX-SUB-PERP, GOLD-PERP, WL500-PERP)"],
+            ["limit", "number", "\u2014", "Number of most recent data points"],
             ["from", "number", "\u2014", "Unix timestamp range start"],
             ["to", "number", "\u2014", "Unix timestamp range end"],
           ]}
-          curlExample={`curl "${BASE_URL}/prices?market=ETB&limit=10"`}
+          curlExample={`curl "${BASE_URL}/prices?market=ROLEX-SUB-PERP&limit=10"`}
           responseExample={`[
   {
-    "id": 1234,
-    "timestamp": 1749225600,
-    "raw_price": 161.50,
-    "ewma": 161.62,
-    "deviation": 0.0007,
-    "alpha": 1,
-    "tx_signature": "5xYk...3nQp"
+    "timestamp": 1751500800,
+    "ewma": 14405.20,
+    "price": 14405.20
   },
   ...
 ]`}
@@ -337,19 +335,19 @@ export default function ApiDocsPage() {
 
         <Endpoint
           path="/candles"
-          description="OHLC candlestick data aggregated from 5-minute oracle price records. Useful for charting."
+          description="OHLC candlestick data aggregated from 30-second oracle price records. Useful for charting."
           params={[
-            ["market", "string", "ETB", "Market ID (ETB, CHARIZARD-X, CHARMANDER, PIKACHU)"],
-            ["resolution", "string", "1h", "Candle resolution: \"1h\" (hourly) or \"1d\" (daily)"],
+            ["market", "string", "\u2014", "Market ID (e.g. ROLEX-SUB-PERP, GOLD-PERP)"],
+            ["resolution", "string", "1h", "Candle resolution: 1m, 5m, 15m, 1h, 4h, 1d"],
           ]}
-          curlExample={`curl "${BASE_URL}/candles?market=CHARIZARD-X&resolution=1h"`}
+          curlExample={`curl "${BASE_URL}/candles?market=ROLEX-SUB-PERP&resolution=1h"`}
           responseExample={`[
   {
-    "time": 1749225600,
-    "open": 245.30,
-    "high": 247.10,
-    "low": 244.80,
-    "close": 246.50
+    "timestamp": 1751500800,
+    "open": 14401.30,
+    "high": 14427.10,
+    "low": 14384.80,
+    "close": 14416.50
   },
   ...
 ]`}
@@ -374,11 +372,11 @@ export default function ApiDocsPage() {
       "collateral": 10.0,
       "leverage": 5,
       "notional": 50.0,
-      "entry_price": 161.50,
-      "exit_price": 165.20,
+      "entry_price": 14401.50,
+      "exit_price": 14465.20,
       "pnl": 1.15,
       "fee": 1.0,
-      "market_id": "PRISMATIC-ETB",
+      "market_id": "ROLEX-SUB-PERP",
       "tx_signature": "4rKm...9xLp"
     },
     ...
@@ -464,12 +462,12 @@ export default function ApiDocsPage() {
 
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, color: "#ccc", fontWeight: 600, marginBottom: 8 }}>JavaScript / TypeScript</div>
-          <Code>{"const BASE = \"https://kronosliquid.xyz/api/v1\";\n\n// Get current ETB price\nconst prices = await fetch(BASE + \"/prices?market=ETB&limit=1\").then(r => r.json());\nconst latest = prices[0];\nconsole.log(\"ETB: $\" + latest.ewma.toFixed(2));\n\n// Get hourly candles for Charizard\nconst candles = await fetch(BASE + \"/candles?market=CHARIZARD-X&resolution=1h\").then(r => r.json());\nconsole.log(candles.length + \" candles, latest close: $\" + candles.at(-1).close);\n\n// Get protocol stats\nconst stats = await fetch(BASE + \"/stats\").then(r => r.json());\nconsole.log(\"24h volume: $\" + stats.total_volume_24h + \", traders: \" + stats.unique_traders_24h);"}</Code>
+          <Code>{"const BASE = \"https://kronosliquid.xyz/api/v1\";\n\n// Get current Rolex Submariner price\nconst prices = await fetch(BASE + \"/prices?market=ROLEX-SUB-PERP&limit=1\").then(r => r.json());\nconst latest = prices[0];\nconsole.log(\"ROLEX-SUB: $\" + latest.ewma.toFixed(2));\n\n// Get hourly candles for the Daytona\nconst candles = await fetch(BASE + \"/candles?market=ROLEX-DAYTONA-PERP&resolution=1h\").then(r => r.json());\nconsole.log(candles.length + \" candles, latest close: $\" + candles.at(-1).close);\n\n// Get protocol stats\nconst stats = await fetch(BASE + \"/stats\").then(r => r.json());\nconsole.log(\"24h volume: $\" + stats.total_volume_24h + \", traders: \" + stats.unique_traders_24h);"}</Code>
         </div>
 
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, color: "#ccc", fontWeight: 600, marginBottom: 8 }}>Python</div>
-          <Code>{"import requests\n\nBASE = \"https://kronosliquid.xyz/api/v1\"\n\n# Get latest prices for all markets\nfor market in [\"ETB\", \"CHARIZARD-X\", \"CHARMANDER\", \"PIKACHU\"]:\n    data = requests.get(f\"{BASE}/prices?market={market}&limit=1\").json()\n    if data:\n        print(f\"{market}: ${data[0]['ewma']:.2f}\")\n\n# Get recent trades\ntrades = requests.get(f\"{BASE}/trades/recent?limit=50\").json()\nfor t in trades[\"trades\"]:\n    print(f\"{t['action']} {t['direction']} {t['market_id']}\")"}</Code>
+          <Code>{"import requests\n\nBASE = \"https://kronosliquid.xyz/api/v1\"\n\n# Get latest prices for a few markets\nfor market in [\"WL500-PERP\", \"GOLD-PERP\", \"ROLEX-SUB-PERP\", \"ROLEX-DAYTONA-PERP\"]:\n    data = requests.get(f\"{BASE}/prices?market={market}&limit=1\").json()\n    if data:\n        print(f\"{market}: ${data[0]['ewma']:.2f}\")\n\n# Get recent trades\ntrades = requests.get(f\"{BASE}/trades/recent?limit=50\").json()\nfor t in trades[\"trades\"]:\n    print(f\"{t['action']} {t['direction']} {t['market_id']}\")"}</Code>
         </div>
 
         {/* On-chain section */}
@@ -491,9 +489,9 @@ export default function ApiDocsPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 12, color: "#00ff41", fontFamily: FONT, wordBreak: "break-all" }}>
-              5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6
+              HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP
             </span>
-            <CopyBtn text="5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6" />
+            <CopyBtn text="HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP" />
           </div>
         </div>
         <p style={{ fontSize: 12, color: "#666", lineHeight: 1.6 }}>

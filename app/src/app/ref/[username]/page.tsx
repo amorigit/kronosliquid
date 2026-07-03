@@ -202,7 +202,7 @@ export default function RefPage() {
         <div className="text-center space-y-3">
           <div className="flex justify-center"><Logo width={280} /></div>
           <p className="text-sm" style={{ color: "#666" }}>
-            Pok&eacute;mon card perpetual futures on Solana
+            Luxury watch perpetual futures on Solana
           </p>
         </div>
 

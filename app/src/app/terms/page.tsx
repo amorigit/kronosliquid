@@ -19,7 +19,7 @@ export default function TermsPage() {
         <h2 className="text-sm font-bold text-primary mb-2">2. Description of Service</h2>
         <p className="text-secondary leading-relaxed">
           Kronos is an experimental decentralized finance (DeFi) protocol deployed on the Solana blockchain.
-          It enables users to trade perpetual futures contracts whose prices are derived from Pok&eacute;mon trading card
+          It enables users to trade perpetual futures contracts whose prices are derived from luxury watch
           market data. The Protocol consists of open-source smart contracts and a web-based interface. The Protocol
           is provided on an experimental, as-is basis.
         </p>

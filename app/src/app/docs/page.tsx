@@ -280,45 +280,47 @@ export default function DocsPage() {
             {/* ════════════ OVERVIEW ════════════ */}
             <H2 id="overview">Overview</H2>
             <P>
-              Kronos is the first on-chain perpetual futures DEX for Pok&eacute;mon TCG products.
-              Built on Solana using the Anchor framework, it offers 67+ markets letting traders go long or short
-              on sealed products and single cards with up to 25x leverage. Prices are sourced from TCGPlayer
-              market data via an automated Playwright scraper with adaptive EWMA smoothing.
+              Kronos is an on-chain perpetual futures DEX for luxury watches. Built on Solana using
+              the Anchor framework, it offers 24 markets letting traders go long or short on iconic
+              watch references, precious metals, and the WL500 watch index with up to 10x leverage.
+              Prices are pushed on-chain by the Kronos keeper.
             </P>
-            <P>Live on Solana Mainnet with real USDC.</P>
+            <P>Live on Solana Devnet with test USDC — no real money is involved.</P>
 
             {/* ════════════ MARKETS ════════════ */}
             <H2 id="markets">Current Markets</H2>
             <Table
-              headers={["Market", "Card", "Set", "Card #", "Live"]}
+              headers={["Market", "Asset", "Category", "Live"]}
               rows={[
-                ["PL500-PERP", "PL500 Index", "Index", "\u2014", "Yes"],
-                ["PRISMATIC-ETB-PERP", "Prismatic Evolutions ETB", "Sealed Product", "\u2014", "Yes"],
-                ["CHARIZARD-125/094-PFL-PERP", "Mega Charizard X ex", "Phantasmal Flames", "125/094", "Yes"],
-                ["CHARMANDER-038-MEP-PERP", "Charmander", "Mega Evolution Promo", "038", "Yes"],
-                ["PIKACHU-276/217-AH-PERP", "Pikachu ex", "Ascended Heroes", "276/217", "Yes"],
-                ["GRENINJA-116/086-CR-PERP", "Mega Greninja ex", "Chaos Rising", "116/086", "Yes"],
-                ["ASCENDED-HEROES-ETB-PERP", "Ascended Heroes ETB", "Sealed Product", "\u2014", "Yes"],
-                ["PSYDUCK-226/217-AH-PERP", "Psyduck", "Ascended Heroes", "226/217", "Yes"],
-                ["MEOWTH-106/094-PFL-PERP", "Meowth", "Phantasmal Flames", "106/094", "Yes"],
-                ["BLACK-BOLT-ETB-PERP", "Black Bolt ETB", "Sealed Product", "\u2014", "Yes"],
-                ["MAGNETON-159-PROMO-PERP", "Magneton", "SV Promo", "159", "Yes"],
-                ["CHARIZARD-199/165-151-PERP", "Charizard ex", "SV 151", "199/165", "Yes"],
-                ["MISTYS-PSYDUCK-193/182-DR-PERP", "Misty's Psyduck", "Destined Rivals", "193/182", "Yes"],
-                ["UMBREON-161/131-PE-PERP", "Umbreon ex", "Prismatic Evolutions", "161/131", "Yes"],
-                ["MEW-232/091-PF-PERP", "Mew ex", "Paldean Fates", "232/091", "Yes"],
-                ["PIKACHU-238/191-SS-PERP", "Pikachu ex", "Surging Sparks", "238/191", "Yes"],
-                ["GIRATINA-GG69/GG70-CZ-PERP", "Giratina VSTAR", "Crown Zenith", "GG69/GG70", "Yes"],
-                ["CHAOS-RISING-BB-PERP", "Chaos Rising Booster Box", "Sealed Product", "\u2014", "Yes"],
-                ["KABUTO-FOSSIL-1E-PERP", "Kabuto", "Fossil 1st Edition", "\u2014", "Yes"],
-                ["GENGAR-284/217-AH-PERP", "Mega Gengar ex", "Ascended Heroes", "284/217", "Yes"],
-                ["DRAGONITE-290/217-AH-PERP", "Mega Dragonite ex", "Ascended Heroes", "290/217", "Yes"],
-                ["CLEFAIRY-094/088-PO-PERP", "Clefairy", "Perfect Order", "094/088", "Yes"],
+                ["WL500-PERP", "WL500 Index \u00b7 Top 500 Luxury Watches", "Index", "Yes"],
+                ["GOLD-PERP", "Gold \u00b7 XAU/USD Troy Oz", "Commodity", "Yes"],
+                ["SILVER-PERP", "Silver \u00b7 XAG/USD Troy Oz", "Commodity", "Yes"],
+                ["PLATINUM-PERP", "Platinum \u00b7 XPT/USD Troy Oz", "Commodity", "Yes"],
+                ["DIAMOND-PERP", "Diamond \u00b7 1ct Round Brilliant", "Commodity", "Yes"],
+                ["ROLEX-SUB-PERP", "Rolex Submariner 126610LN", "Watch", "Yes"],
+                ["PATEK-NAUTILUS-PERP", "Patek Philippe Nautilus 5711/1A", "Watch", "Yes"],
+                ["AP-ROYAL-OAK-PERP", "AP Royal Oak 15500ST", "Watch", "Yes"],
+                ["OMEGA-SPEEDY-PERP", "Omega Speedmaster Professional", "Watch", "Yes"],
+                ["CARTIER-SANTOS-PERP", "Cartier Santos WSSA0018", "Watch", "Yes"],
+                ["RM-11-PERP", "Richard Mille RM 11-03", "Watch", "Yes"],
+                ["VC-OVERSEAS-PERP", "Vacheron Constantin Overseas", "Watch", "Yes"],
+                ["IWC-PILOT-PERP", "IWC Big Pilot IW501001", "Watch", "Yes"],
+                ["TAG-CARRERA-PERP", "TAG Heuer Carrera", "Watch", "Yes"],
+                ["ROLEX-DAYTONA-PERP", "Rolex Daytona 116500LN", "Watch", "Yes"],
+                ["PP-ANNUAL-PERP", "Patek Philippe Annual Calendar", "Watch", "Yes"],
+                ["AP-OFFSHORE-PERP", "AP Royal Oak Offshore", "Watch", "Yes"],
+                ["OMEGA-SEAMASTER-PERP", "Omega Seamaster Diver 300M", "Watch", "Yes"],
+                ["CARTIER-TANK-PERP", "Cartier Tank Must", "Watch", "Yes"],
+                ["HUBLOT-BB-PERP", "Hublot Big Bang", "Watch", "Yes"],
+                ["JLC-REVERSO-PERP", "Jaeger-LeCoultre Reverso", "Watch", "Yes"],
+                ["PANERAI-LUM-PERP", "Panerai Luminor Marina", "Watch", "Yes"],
+                ["BREITLING-NAV-PERP", "Breitling Navitimer", "Watch", "Yes"],
+                ["ROLEX-GMT-PERP", "Rolex GMT-Master II 126710BLNR", "Watch", "Yes"],
               ]}
             />
 
             <H3>Network</H3>
-            <P>Solana Mainnet. All addresses are mainnet PDAs derived from the program.</P>
+            <P>Solana Devnet. All addresses are devnet PDAs derived from the program.</P>
 
             {/* ════════════ GETTING STARTED ════════════ */}
             <H2 id="getting-started">Getting Started</H2>
@@ -347,7 +349,7 @@ export default function DocsPage() {
 
             <H3>5. Open a Position</H3>
             <P>
-              Select a market, choose Long or Short, set your collateral amount and leverage (1-25x),
+              Select a market, choose Long or Short, set your collateral amount and leverage (1-10x),
               optionally set Stop Loss and Take Profit prices, then click to open your position.
             </P>
 
@@ -507,9 +509,11 @@ Liquidation Price (Short):
 
             <H3>Price Source</H3>
             <P>
-              Prices are scraped from TCGPlayer product pages using Playwright (headless Chromium).
-              The keeper runs a browser instance, navigates to each product page, and extracts the
-              current market price. All 22 live markets are scraped in parallel.
+              Prices are pushed by the Kronos keeper (<code>keeper/watch-keeper.js</code>). On devnet
+              the feed is <strong>synthetic demo data</strong>: a bounded random walk seeded from each
+              oracle&rsquo;s current on-chain price. Luxury watches have no free public spot feed; a real
+              deployment would plug a data source (e.g. Chrono24 / WatchCharts) into the same push
+              pipeline.
             </P>
             <P>
               Each market has its own oracle PDA. See the Protocol section below for key addresses.
@@ -518,28 +522,17 @@ Liquidation Price (Short):
 
             <H3>Update Frequency</H3>
             <P>
-              The oracle updates every <strong>5 minutes</strong> (300,000ms). Each market has its own
-              on-chain oracle account (PDA seeded with <code>[&quot;oracle&quot;, market_id]</code>).
+              The keeper pushes updates roughly every <strong>6.5 seconds</strong> per market (the
+              on-chain minimum interval is 5 seconds). Each market has its own on-chain oracle account
+              (PDA seeded with <code>[&quot;oracle&quot;, market_id]</code>).
             </P>
 
-            <H3>Adaptive EWMA Smoothing</H3>
+            <H3>Deviation Guard</H3>
             <P>
-              Raw scraped prices are smoothed using an Adaptive Exponential Weighted Moving Average (EWMA)
-              with 4 tiers based on price deviation from the current EWMA:
+              The program rejects any single oracle update that moves the price more than ~20% from
+              the previous value; the keeper additionally clamps its own updates to &plusmn;15% per push.
+              Large intentional re-pricings converge over several updates instead of jumping at once.
             </P>
-            <Table
-              headers={["Deviation", "Alpha", "Mode", "Behavior"]}
-              rows={[
-                ["< 3%", "1.0", "Direct", "Price passes through unchanged"],
-                ["3\u20135%", "0.3", "Moderate", "Moderate smoothing applied"],
-                ["5\u201315%", "0.1", "Heavy", "Heavy smoothing, slow convergence"],
-                ["> 15%", "0.01", "Spike", "Near-total rejection, spike protection"],
-              ]}
-            />
-            <Code>{`EWMA formula: new_ewma = alpha * raw_price + (1 - alpha) * prev_ewma
-
-Price floor protection: if candidate < floor, update is rejected entirely.
-Each market has a configurable price floor to reject invalid data.`}</Code>
 
             <H3>Staleness Protection</H3>
             <P>
@@ -613,25 +606,26 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
             <Table
               headers={["Property", "Value"]}
               rows={[
-                ["Program ID", "5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6"],
-                ["Network", "Solana Mainnet"],
+                ["Program ID", "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"],
+                ["Network", "Solana Devnet"],
                 ["Framework", "Anchor 1.0.2"],
                 ["Frontend", "kronosliquid.xyz"],
               ]}
             />
 
             <H3>Deployed Addresses</H3>
-            <Addr label="Program" address="5C1cz4kCA8DcD2zjhBphuK86vAjdoCnichK1kdLHPMt6" desc="Kronos program" />
-            <Addr label="ProtocolState" address="6yAYSsp863889v7bhMEwj6tVq5DvFTi1gwzwHFrqwLFL" desc="Global protocol configuration PDA" />
-            <Addr label="Oracle (ETB)" address="FbPBfXaCY1Chm23pyVv7gcesRVK7FxFXHgd5xNb84r4Q" desc="PRISMATIC-ETB-PERP price feed" />
-            <Addr label="Oracle (Charizard)" address="8KU9oyrCAhX58Mz73z8MjKH8P88CyqPcx8zCm61HWzeP" desc="CHARIZARD-125/094-PFL-PERP price feed" />
-            <Addr label="Oracle (Charmander)" address="EN3Y7vWu2a2PXma2V5vfm6swFed8YTFHCG75EQxoHETY" desc="CHARMANDER-038-MEP-PERP price feed" />
-            <Addr label="Oracle (Pikachu)" address="Fx1rYyuEz91rqgpEWHs8MyH7kiLpNeXuDdcAJiSjhN87" desc="PIKACHU-276/217-AH-PERP price feed" />
-            <Addr label="Fee Vault" address="BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt" desc="Protocol revenue vault" />
-            <Addr label="Insurance Fund" address="266CZZpRb1PFDGQf4bNE5ASPVxAUkon6tv6BvRYpP7x9" desc="Bad debt coverage fund" />
-            <Addr label="Liquidity Pool" address="BdvpxuezgBbdAXNkRoiTrHbtEig7eQDV7X4x3Tcf2q9K" desc="LP pool state" />
-            <Addr label="LP Vault" address="H1YCpzUXcoYFnek3Qc8VtekAe4gDTDNZZDVLwYuC9J1C" desc="LP token vault" />
-            <Addr label="USDC Mint" address="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" desc="USDC (SPL Token)" />
+            <Addr label="Program" address="HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP" desc="Kronos program (devnet, non-upgradeable)" />
+            <Addr label="ProtocolState" address="HzpzGHZRTDFrQ7GbEAx1SrCzUq7ykWvF4baBH7z69tcg" desc="Global protocol configuration PDA" />
+            <Addr label="Oracle (WL500)" address="GF1JfkbgH9EcZXC55DZgxZgEkBBsjk1K9YasTeXsUFaB" desc="WL500-PERP price feed" />
+            <Addr label="Oracle (Rolex Sub)" address="GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ" desc="ROLEX-SUB-PERP price feed" />
+            <Addr label="Fee Vault" address="F4wfXD5yNULQy7tdMwVtNag4XZSQBHSdSACxn7TrmCmr" desc="Protocol revenue vault" />
+            <Addr label="Insurance Fund" address="5gS3Q9us8yptZ8cbQoQexqAc1ToC2skchRJMefCRZvfn" desc="Bad debt coverage fund" />
+            <Addr label="Liquidity Pool" address="FZ2vSRqk7bq2YWbSwAcAFDDudQxCs6etDNG448kx16DJ" desc="LP pool state" />
+            <Addr label="USDC Mint" address="3zsAG5W1sqNb9KdAGEceptZTuHGCWGSLCK8nUv4iPQn9" desc="Test USDC mint (devnet PDA)" />
+            <P>
+              Per-market oracle addresses for all 24 markets live in{" "}
+              <code>app/src/lib/markets.bootstrap.json</code>.
+            </P>
 
             <H3>All Instructions</H3>
             <Table
@@ -671,11 +665,11 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
             <H2 id="api">API Reference</H2>
             <P>
               The keeper exposes an HTTP API on port 3001. On the frontend, endpoints are proxied
-              via Vercel rewrites at <code>/api/keeper/*</code>.
+              via Next.js rewrites at <code>/api/keeper/*</code>.
             </P>
 
             <H3>GET /ping</H3>
-            <P>Health check. Returns <code>{`{"ok":true,"timestamp":"..."}`}</code></P>
+            <P>Health check. Returns <code>{`{"ok":true,"timestamp":...}`}</code></P>
 
             <H3>GET /health</H3>
             <P>Comprehensive system health including oracle status, liquidation stats, funding stats, Solana RPC health, and per-market oracle data.</P>
@@ -685,29 +679,28 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
             <Table
               headers={["Param", "Type", "Default", "Description"]}
               rows={[
-                ["market", "string", "ETB", "Market ID (e.g. ETB, CHARIZARD-X, GRENINJA, UMBREON \u2014 see /prices endpoint)"],
-                ["limit", "number", "50", "Number of rows (max 500)"],
+                ["market", "string", "\u2014", "Market ID (e.g. ROLEX-SUB-PERP, GOLD-PERP, WL500-PERP)"],
+                ["limit", "number", "\u2014", "Number of rows returned (most recent)"],
                 ["from", "number", "\u2014", "Unix timestamp range start"],
                 ["to", "number", "\u2014", "Unix timestamp range end"],
               ]}
             />
             <Code>{`Response: [
-  { "id": 1, "timestamp": 1717401600, "raw_price": 161.5, "ewma": 161.6, "deviation": 0.001, "alpha": 1, "tx_signature": "..." },
+  { "timestamp": 1717401600, "ewma": 14405.2, "price": 14405.2 },
   ...
 ]`}</Code>
 
             <H3>GET /candles</H3>
-            <P>OHLC candle data aggregated from raw 5-minute price records. Used for charting.</P>
+            <P>OHLC candle data aggregated from 30-second price records. Used for charting.</P>
             <Table
               headers={["Param", "Type", "Default", "Description"]}
               rows={[
-                ["market", "string", "ETB", "Market ID (ETB, CHARIZARD-X, CHARMANDER, PIKACHU)"],
-                ["resolution", "string", "1h", "Candle resolution: 1h (hourly) or 1d (daily)"],
-                ["limit", "number", "100", "Max candles returned"],
+                ["market", "string", "\u2014", "Market ID (e.g. ROLEX-SUB-PERP, GOLD-PERP)"],
+                ["resolution", "string", "1h", "Candle resolution: 1m, 5m, 15m, 1h, 4h, 1d"],
               ]}
             />
             <Code>{`Response: [
-  { "time": 1717401600, "open": 161.5, "high": 162.0, "low": 160.8, "close": 161.9 },
+  { "timestamp": 1717401600, "open": 14401.5, "high": 14420.0, "low": 14390.8, "close": 14411.9 },
   ...
 ]`}</Code>
 
@@ -742,7 +735,8 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
             </FAQ>
 
             <FAQ q="Is this real money?">
-              Yes. Kronos is live on Solana Mainnet and uses real USDC. Only deposit what you are prepared to lose.
+              No. Kronos runs on Solana Devnet with test USDC. Nothing you deposit or trade has
+              real-world value.
             </FAQ>
 
             <FAQ q="What happens if I close my browser?">
@@ -762,8 +756,9 @@ Each market has a configurable price floor to reject invalid data.`}</Code>
             </FAQ>
 
             <FAQ q="How is the price determined?">
-              Prices come from TCGPlayer market data, scraped every 5 minutes using Playwright. Raw prices
-              are smoothed with an adaptive EWMA algorithm that protects against manipulation and price spikes.
+              On devnet, prices are synthetic: the keeper drives each market with a bounded random walk
+              seeded from its on-chain price, pushing updates every ~6.5 seconds. A production deployment
+              would replace the walk with a real watch-market data source using the same on-chain pipeline.
             </FAQ>
 
             <FAQ q="What is the profit cap?">

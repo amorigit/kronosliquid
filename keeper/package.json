@@ -1,10 +1,10 @@
 {
   "name": "kronos-keeper",
-  "version": "1.0.0",
-  "description": "Price oracle keeper for CHARIZARD-PERP (Kronos)",
-  "main": "keeper.js",
+  "version": "2.0.0",
+  "description": "Price keeper + local history API for the Kronos watch markets (devnet)",
+  "main": "watch-keeper.js",
   "scripts": {
-    "start": "node keeper.js",
+    "start": "node watch-keeper.js",
     "pm2:start": "pm2 start pm2.config.js",
     "pm2:stop": "pm2 stop kronos-keeper",
     "pm2:logs": "pm2 logs kronos-keeper"
@@ -13,11 +13,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@solana/spl-token": "^0.4.9",
-    "@solana/web3.js": "^1.98.0",
-    "better-sqlite3": "^12.10.0",
-    "dotenv": "^16.4.5",
-    "playwright": "^1.44.0"
+    "@solana/web3.js": "^1.98.0"
   },
   "devDependencies": {
     "pm2": "^5.4.2"

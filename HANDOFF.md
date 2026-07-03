@@ -1,12 +1,67 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.0
-**Date:** 2026-07-01
+**Document version:** 4.3
+**Date:** 2026-07-03
 **Status:** Program is **fully bootstrapped on devnet** (pool + 24 luxury-watch markets).
-Static site and Next.js app are both wired to devnet. All Pokémon branding removed from code.
+Static site (kronosliquid.xyz) deployed via GitHub Pages with devnet prices. Keeper v2 runs
+under **pm2** on the Mac mini, pushing all 24/24 markets, serving history + **trade indexer**
+API on port 3001. The 2026-07-01 oracle-deviation freeze and the Pokémon-server dependency are fixed.
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
+
+---
+
+## 0. KNOWN ISSUES (as of 2026-07-03 v4.3, ordered by severity)
+
+All P0/P1 items from v4.1 are **RESOLVED** — details in §0.1 below. What remains:
+
+### P2 — Helius API key is still in public git history
+
+Commit `67d0ea6` hardcoded the Helius devnet key in `keeper/watch-keeper.js`. The code no
+longer contains it (env-only via `keeper/.env`, gitignored), but the key remains visible in
+the public repo's history. **User decision 2026-07-02: keep the key** (free-tier devnet, low
+stakes). Rotate at helius.dev if it ever gets abused.
+
+### P2 — Trade indexer limitations (new in v4.3)
+
+`keeper/trade-indexer.js` indexes `PositionOpened` / `PositionClosed` / `PositionLiquidated`
+events from program logs. `/trades`, `/stats`, and `/leaderboard` return real data when devnet
+trades exist. Limitations: no `position_index` in events (always 0); liquidated direction
+unknown; backfill capped at `INDEXER_BACKFILL_SIGS` (default 300); `/spins` still stubbed.
+
+### P3 — WL500 methodology undefined
+
+WL500 was re-seeded from ~$47,600 down to **$5,000** (ramped ≤15%/update; user decision
+2026-07-02). There is still no constituent list or index formula — the level is arbitrary.
+
+### P3 — Misc
+
+- History retention is 48 h at 30 s granularity (in-memory + `keeper/history.json`); 1d candles
+  only become meaningful after a couple of days of uptime.
+- `pm2 startup` (launchd boot persistence) needs sudo — one manual command, see §8.5.
+- GitHub Pages has `https_enforced: false` (site also serves over plain HTTP).
+- Next.js app auth APIs (signup/login) need Postgres + JWT env vars that don't exist locally —
+  email auth fails; guest/wallet mode works. App is local-only by decision (2026-07-02).
+- Devnet wallet balance ~5.7 SOL (keeper burn ≈ 0.05 SOL/day — fine for weeks).
+
+### 0.1 Resolved in v4.2 (2026-07-02)
+
+- **P0 oracle-deviation freeze** — keeper rewritten: no more Yahoo spot; all markets random-walk
+  from their current on-chain price, every update clamped to ±15% (< the ~20% on-chain cap), and
+  failed batches fall back to per-market transactions. All 24/24 markets push cleanly.
+- **P1 old Pokémon server dependency** — `app/vercel.json` rewrites to `157.180.67.25:3001`
+  removed (server is not ours; decision 2026-07-02). The app now proxies `/api/keeper/*` and
+  `/api/v1/*` to the **local keeper API** (`localhost:3001`) via `app/next.config.js` rewrites.
+- **P1 hardcoded Helius key** — stripped from code; RPC comes from `keeper/.env` only.
+- **P2 Pokémon sweep** — docs, api-docs, terms, ref, TradeHistory, NotificationProvider,
+  positions, useOracle, markets.ts all rewritten for watch markets; leftover card datasets and
+  ~26 legacy Pokémon-era scripts deleted (incl. old `keeper/keeper.js`).
+- **P2 keeper persistence** — runs under pm2 (`kronos-keeper`), auto-restart on crash,
+  process list saved.
+- **Latent PDA bug** — `open_position`/`close_position` derived `MarketState` PDAs from the short
+  display id (e.g. `"WL500"`) instead of the on-chain market_id (`"WL500-PERP"`); trading on any
+  non-default market would have failed. Fixed to use `priceApiMarket` everywhere.
 
 ---
 
@@ -59,7 +114,7 @@ and **24 watch markets** — each with `init_market_oracle` (seeded price) + `in
 > for the program address.
 
 > **Funded by:** devnet airdrop cron (`scripts/devnet-airdrop-cron.sh`) + manual `faucet.solana.com`
-> top-ups. ~7 SOL used for non-upgradeable deploy. Airdrop cron still runs (`TARGET_SOL=10`).
+> top-ups. ~7 SOL used for non-upgradeable deploy. Airdrop cron still runs (`TARGET_SOL=100`).
 
 Markets created (market_id → oracle): `WL500-PERP`, `GOLD-PERP`, `SILVER-PERP`, `PLATINUM-PERP`,
 `DIAMOND-PERP`, `ROLEX-SUB-PERP`, `PATEK-NAUTILUS-PERP`, `AP-ROYAL-OAK-PERP`, `OMEGA-SPEEDY-PERP`,
@@ -151,9 +206,10 @@ Program was rebuilt and **redeployed** to the local validator with these fixes (
 
 ---
 
-## 6. Rebrand status — COMPLETE
+## 6. Rebrand status — COMPLETE (v4.2)
 
-All Pokémon branding has been removed. Summary of what was done:
+All app pages, components, and scripts are Pokémon-free (verified by repo-wide sweep of
+`app/src`, static site, and `scripts/`). Summary of what was done:
 
 **Brand & config (done in v3.0):**
 - All `pokeliquid` / `PokeLiquid` / `poke` → `kronos` / `Kronos` (246 files), files/dirs renamed.
@@ -174,28 +230,31 @@ All Pokémon branding has been removed. Summary of what was done:
 - `PnlExport.tsx` — replaced Pokémon `MARKET_LABELS` map with watch market IDs.
 - `stats/page.tsx` — removed `tcgplayerId` / TCGPlayer source label; uses "Kronos Keeper" instead.
 
-**Remaining Pokémon references (none in user-facing code):**
-- `scripts/pl500-*.js`, `scripts/scrape-sv151.js`, `scripts/keeper-*.js` — legacy scraper scripts.
-  These are unused by the live app; delete or archive when convenient.
+**Final sweep (done in v4.2 / 2026-07-02):**
+- `docs/page.tsx` — watch market table, devnet addresses, keeper/oracle copy, devnet FAQ, 10x leverage.
+- `api-docs/page.tsx` — watch market examples, new API response shapes, devnet program ID.
+- `terms/page.tsx`, `ref/[username]/page.tsx` — luxury-watch copy.
+- `TradeHistory.tsx` `MARKET_LABELS`, `NotificationProvider.tsx` alert copy,
+  `positions/page.tsx` + `page.tsx` market-id fallbacks, `useOracle.ts` default market,
+  `markets.ts` / `gen-app-markets.js` `tcgplayerId` field removed.
+- Deleted: `app/src/data/{dr,pae,pf,pre}-cards.json`, old `keeper/keeper.js` (TCGPlayer/Playwright),
+  and ~25 legacy scripts (`pl500-*`, `sv151*`, `init-etb-market`, `init-mainnet`, `e2e-test`,
+  raffle tooling, old keeper patches). `keeper/README.md`, `package.json`, `.env.example` rewritten.
 
 ---
 
 ## 7. Remaining work (suggested order)
 
-Items from previous versions are done. What's left:
+Keeper fix, API, Pokémon sweep, pm2, and trade indexer (v4.3) are DONE. What's left:
 
-1. **Start the keeper** — without a running keeper, oracle prices stay at their seed values, funding
-   won't accrue, and liquidations won't fire. Run `keeper/watch-keeper.js` (or `keeper/keeper.js`)
-   pointed at devnet. It needs price sources for all 24 markets.
-2. **WL500 constituents** — the `WL500-PERP` index market exists on-chain but has no constituent
-   list. Either define the basket (e.g. 500 watches weighted by market cap) or repurpose it as a
-   curated top-10 index. The `/wl500` route could document the methodology.
-3. **Tier 2 review items** — see [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) for
+1. **Run `pm2 startup` once with sudo** so the keeper survives reboots (§8.5).
+2. **Commit + push v4.3** — keeper rework, sweep, PDA fix, and trade indexer.
+3. **WL500 constituents (§0 P3)** — define the basket/formula; level is now $5,000 by decision.
+4. **Tier 2 review items** — see [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) for
    remaining hardening suggestions and the full QA checklist.
-4. **Legacy scraper scripts** — `scripts/pl500-*.js`, `scripts/scrape-sv151.js`, etc. are unused.
-   Delete or archive them.
 5. **Mainnet** — when ready, generate a new program keypair, `anchor keys sync`, update
-   `Anchor.toml` cluster, fund with real SOL, and redeploy.
+   `Anchor.toml` cluster, fund with real SOL, and redeploy. A real deployment also needs a real
+   watch-price data source (Chrono24/WatchCharts) instead of the synthetic walk.
 
 ---
 
@@ -209,9 +268,40 @@ write-transaction rate limits. Key facts:
   bypassing the public RPC's rate-limit bottleneck.
 - **Funding:** CLI faucet is IP-rate-limited (~2 SOL/request). Used
   [faucet.solana.com](https://faucet.solana.com) (GitHub login, ~10 SOL/day) + secondary wallets.
-- **Airdrop cron:** `scripts/devnet-airdrop-cron.sh` runs hourly, targeting 10 SOL (`TARGET_SOL=10`).
+- **Airdrop cron:** `scripts/devnet-airdrop-cron.sh` runs every 3 hours (`30 */3 * * *`), targeting 100 SOL (`TARGET_SOL=100`).
 - **Deploy-ready ping:** `scripts/devnet-deploy-ready-ping.sh` fires a macOS notification when
   balance ≥ 8 SOL.
+
+### Keeper v2 (as of 2026-07-02, running under pm2)
+
+`keeper/watch-keeper.js` runs as pm2 app **`kronos-keeper`** on the Mac mini
+(`pm2 status` / `pm2 logs kronos-keeper`; logs in `keeper/logs/`). Config in `keeper/.env`
+(gitignored: Helius RPC URL, wallet path; see `keeper/.env.example`). Behavior:
+
+- **All 24 markets** — bounded random walk seeded from each oracle's current on-chain price
+  (±0.6%/tick, mean-reverting, clamped 0.5×–1.5× of seed). **Synthetic demo prices** — the
+  Yahoo commodity feed was removed by decision (2026-07-02) after it triggered the deviation
+  freeze.
+- Every update is hard-clamped to **±15%** of the last pushed price (on-chain cap is ~20%),
+  so `OraclePriceDeviation` can no longer occur.
+- **WL500** ramped from ~$47.6k to **$5,000** (`WL500_TARGET`, ≤15%/update) and now walks there.
+- Pushes 24 updates every 6.5 s in 3 transactions of 8; if a batch fails, each market retries
+  in its own transaction (failure isolation). 429-retry with backoff; chunked startup reads.
+- **HTTP API on port 3001**: `/prices/all`, `/prices`, `/candles` (1m–1d), `/health`, `/ping`,
+  plus stubs for `/trades`, `/leaderboard`, `/stats`, `/spins`. History: 30 s granularity,
+  48 h retention, persisted to `keeper/history.json` every 5 min.
+- The Next.js app reaches it via `app/next.config.js` rewrites (`/api/keeper/*` and
+  `/api/v1/*` → `http://localhost:3001`, overridable with `KEEPER_API_URL`).
+
+**Boot persistence:** run once with sudo (from `pm2 startup` output):
+
+```bash
+sudo env PATH=$PATH:/Users/amori/.hermes/node/bin \
+  /Users/amori/.local/lib/node_modules/pm2/bin/pm2 startup launchd -u amori --hp /Users/amori
+```
+
+The old Pokémon keeper (`keeper/keeper.js`) has been deleted from the repo. The foreign
+instance at `157.180.67.25:3001` is not ours and the app no longer references it.
 
 ### Redeploy to mainnet
 
@@ -234,7 +324,12 @@ Then re-run the bootstrap scripts with `ANCHOR_PROVIDER_URL=https://api.mainnet-
 ## 9. Git history
 
 ```
-(v4.0 changes — not yet committed)  Remove Pokémon branding from app UI; devnet wiring.
+(uncommitted) v4.2 — keeper v2 + local API, Pokémon sweep complete, PDA fix, pm2
+67d0ea6 Remove Pokemon branding, wire devnet keeper with live commodity prices  (pushed; live on Pages)
+83677e3 Add keeper scripts, watch image tooling, and header updates.
+610022b Ship local watch photos, live charts, and keeper tooling to the static site.
+9308ccc Bootstrap watch markets on-chain, wire UI to chain, apply Tier 1 fixes
+ec420b2 Add current build/deploy handoff; preserve original code review.
 5129857 Build Kronos program: fix payout stack overflow, sync new program ID.
 2ce84bb Fix Kronos domain/config values and convert Pokemon domain copy to luxury watches.
 aefef44 Add Kronos on-chain protocol: Anchor program, SDK, keeper, and Next.js app.
@@ -254,9 +349,10 @@ The vendored protocol was copied **without** upstream git history (no `origin`, 
 2. **Devnet can be reset by Solana Labs** — rare, but if it happens all on-chain state is wiped.
    Addresses are deterministic so re-bootstrap will produce the same PDAs; the program keypair
    (`target/deploy/kronos-keypair.json`, gitignored) must be backed up to reuse the same program ID.
-3. **No keeper running** — oracle prices are frozen at seed values. Funding won't accrue,
-   liquidations won't fire. Start `keeper/watch-keeper.js` to push live prices.
+3. **Keeper depends on this Mac mini** — pm2 restarts it on crash, but boot persistence needs
+   the one-time sudo `pm2 startup` command (§8.5), and the machine sleeping stops price pushes
+   and the history API.
 4. **Program is non-upgradeable** (`--final` on devnet). Any bug fix requires a new deploy with a
    new program ID, plus updating all env vars / addresses.ts defaults.
-5. **Legacy scraper scripts** in `scripts/` still reference Pokémon markets — not user-facing but
-   should be cleaned up to avoid confusion.
+5. **Prices are synthetic** — the random walk is demo data; nothing on-chain reflects real watch
+   or commodity markets.

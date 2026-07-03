@@ -1,113 +1,82 @@
-# Kronos Oracle Keeper
+# Kronos Watch Keeper
 
-Continuously pushes Charizard 4/102 Base Set Unlimited PSA 10 prices from
-eBay onto the Kronos devnet oracle every 5 minutes.
+Pushes prices to all 24 Kronos watch-market oracles on devnet and serves a
+local HTTP API (port 3001) with price history, candles, and health data for
+the Next.js app.
 
 ## How it works
 
-Each cycle:
-1. Fetches an OAuth 2.0 token from eBay (cached for 2 hours, auto-refreshed).
-2. Queries the eBay Browse API for the 10 most recently listed fixed-price
-   listings matching `"charizard 4/102 base set unlimited psa 10"`, filtered
-   to prices ≥ $1,000.
-3. Extracts the price from each result and takes the **median**.
-4. Runs sanity checks against the previous accepted price:
-   - `> 25%` deviation → logs `WARN`, still submits.
-   - `> 50%` deviation → logs `CRITICAL`, rejects and resubmits last good price.
-5. Rejects any price below $1,000 (catches unrelated cards / data errors).
-6. Scales to `u64`: `price * 1_000_000` (6 decimal places).
-7. Calls `update_oracle` on the Kronos program via a raw Solana transaction.
-8. Logs one line per cycle and a health summary every hour.
+- On startup the keeper reads the market manifest
+  (`app/src/lib/markets.bootstrap.json`) and seeds its price state from each
+  oracle's **current on-chain value**.
+- Prices are **synthetic demo data**: a bounded random walk (±0.6%/tick,
+  mean-reverting, clamped to ±15% per update so the on-chain ~20% deviation
+  guard can never reject an update).
+- `WL500-PERP` ramps toward `WL500_TARGET` (default $5,000) at ≤15% per
+  update, then random-walks around it.
+- Updates are batched 8 markets per transaction every ~6.5 s. If a batch
+  fails, each market is retried in its own transaction so one bad update
+  can't freeze its neighbors.
+- Price history is recorded every 30 s (48 h retention), kept in memory, and
+  persisted to `keeper/history.json` every 5 minutes.
+- **Trade indexer** (`trade-indexer.js`) polls devnet program transactions every 30 s,
+  parses anchor trade events from logs, persists to `keeper/trades.json`, and powers
+  `/trades`, `/stats`, `/leaderboard`.
 
-API and Solana RPC errors are each retried 3× with exponential back-off
-(5 s / 15 s / 45 s). The process never crashes — all errors are caught,
-logged, and fall back to the last known-good price.
+## HTTP API (port 3001)
 
----
+| Endpoint | Description |
+|----------|-------------|
+| `GET /prices/all` | Latest price for every market (micro-USD raw + USD ewma) |
+| `GET /prices?market=&from=&to=&limit=` | Historical points `{timestamp, ewma, price}` |
+| `GET /candles?market=&resolution=` | OHLC candles (`1m 5m 15m 1h 4h 1d`) |
+| `GET /health` | Keeper status + per-market freshness |
+| `GET /stats` | 24h/7d volume, trades, liquidations, fees, unique traders |
+| `GET /trades?user=&limit=` | User trade history (indexed from on-chain events) |
+| `GET /trades/recent?limit=` | Recent trades across all users |
+| `GET /leaderboard` | Top traders by PnL (`{ traders: [...] }`) |
+| `GET /spins`, … | Stubs (rewards not implemented) |
 
-## Prerequisites
-
-- Node.js >= 18 (for native `fetch`)
-- An eBay Developer account with a Production app (Client ID + Cert ID)
-- The admin keypair that owns the Kronos protocol (`ADMIN_KEYPAIR_PATH`)
-
----
+The app reaches it through the Next.js rewrite `/api/keeper/* → localhost:3001/*`
+(see `app/next.config.js`).
 
 ## Setup
 
 ```bash
 cd keeper
 npm install
-cp .env.example .env
-$EDITOR .env
 ```
 
-### .env values to fill in
+Create `keeper/.env` (gitignored):
 
-| Key | Description |
-|-----|-------------|
-| `EBAY_CLIENT_ID` | eBay Production App ID (e.g. `Name-app-PRD-xxx-xxx`) |
-| `EBAY_CLIENT_SECRET` | eBay Production Cert ID (e.g. `PRD-xxx-xxx-xxx-xxx`) |
-| `ADMIN_KEYPAIR_PATH` | Path to your Solana keypair JSON file |
-
-All other values default to the deployed devnet addresses and sane settings.
-
----
+```
+RPC_URL=https://devnet.helius-rpc.com/?api-key=YOUR_KEY
+ANCHOR_WALLET=/Users/you/.config/solana/id.json   # must be the protocol admin
+# Optional:
+# UPDATE_INTERVAL_MS=6500
+# PRICE_VOLATILITY=0.006
+# WL500_TARGET=5000
+# API_PORT=3001
+```
 
 ## Run
 
-### Directly (foreground, useful for testing)
-
 ```bash
-node keeper.js
-```
+# Foreground
+node watch-keeper.js
 
-### With PM2 (persistent background process)
-
-```bash
+# Persistent with pm2
 npm install -g pm2
-
-pm2 start keeper.js --name keeper
-pm2 logs keeper
-
-# Restart after .env changes
-pm2 restart keeper --update-env
-
-# Auto-start on system boot
-pm2 startup
-pm2 save
+pm2 start pm2.config.js
+pm2 logs kronos-keeper
+pm2 startup && pm2 save   # auto-start on boot
 ```
-
----
-
-## Log format
-
-**Per-cycle:**
-```
-[2026-01-01T12:00:00.000Z] ebay_psa10_median=$3200.00 (n=8) price=$3200.00 on_chain=3200000000 deviation=+2.1% tx=abc123...
-```
-
-**OAuth refresh:**
-```
-[2026-01-01T12:00:00.000Z] INFO  eBay OAuth token refreshed — expires in 7200s
-```
-
-**Hourly health summary:**
-```
-[HEALTH] uptime=60min updates=12 errors=0 last_price=$3200.00 last_update=2026-01-01T12:00:00.000Z ebay_token=valid (expires in 90min)
-```
-
-**Warning / error prefixes:**
-- `WARN`     — price deviation >25%, API fallback, or no valid samples
-- `ERROR`    — retriable failure (API or RPC), cycle skipped
-- `CRITICAL` — price deviation >50%, new price rejected
-
----
 
 ## Deployed addresses (devnet)
 
 | Account | Address |
 |---------|---------|
-| Program | `7DVf9oEMcKPV6VUUz5BpptbwqpgBfXunwxjTNNQmZvbJ` |
-| OracleAccount | `2euE9eMGTNwyW7jqG63JvRZfHeo7psKZgBCizfNMjW12` |
-| ProtocolState | `8cGem2Q8BrqYpvnwqscnGiKjoEZPXpyb8KziueJ24SiK` |
+| Program | `HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP` |
+| ProtocolState | `HzpzGHZRTDFrQ7GbEAx1SrCzUq7ykWvF4baBH7z69tcg` |
+
+Per-market oracle addresses: `app/src/lib/markets.bootstrap.json`.

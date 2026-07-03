@@ -76,7 +76,6 @@ export type Market = {
   live: boolean;
   oracleAddress: string;
   programId: string;
-  tcgplayerId?: number;
   image?: string;
   /** Keeper API market query param (matches on-chain market_id) */
   priceApiMarket: string;

@@ -399,7 +399,7 @@ function StatsContent() {
               <PriceChart prices={priceHistory} />
             </div>
 
-            {/* TCGPlayer Stats / Price Range */}
+            {/* Price Range */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               <div className="bg-bg border border-border p-2 md:p-3">
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Session High</div>

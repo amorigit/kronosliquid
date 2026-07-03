@@ -42,3 +42,6 @@ keeper/prices.db-wal
 keeper/prices.json
 tsconfig.tsbuildinfo
 **/tsconfig.tsbuildinfo
+keeper/history.json
+keeper/trades.json
+keeper/indexer-cursor.json

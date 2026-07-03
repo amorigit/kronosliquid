@@ -170,7 +170,7 @@ export function useOracle(
 ): OracleData {
   const { connection } = useConnection();
   const key = oracleAddress || ORACLE_ACCOUNT.toBase58();
-  const marketParam = priceApiMarket || "ETB";
+  const marketParam = priceApiMarket || "WL500-PERP";
 
   const [, setTick] = useState(0);
   const rerender = () => setTick((t) => t + 1);

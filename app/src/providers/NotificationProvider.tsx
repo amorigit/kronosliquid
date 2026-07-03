@@ -251,7 +251,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       addNotification(
         "info",
         `Price ${up ? "up" : "down"}: $${currentUsd.toFixed(2)} (${up ? "+" : ""}${pctChange.toFixed(1)}%)`,
-        `PRISMATIC-ETB-PERP moved ${Math.abs(pctChange).toFixed(1)}% from $${prev.toFixed(2)}`
+        `Market moved ${Math.abs(pctChange).toFixed(1)}% from $${prev.toFixed(2)}`
       );
     }
   }, [active, oracle.price, oracle.isLoading, addNotification]);

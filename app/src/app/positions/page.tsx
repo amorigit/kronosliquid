@@ -47,8 +47,9 @@ function getMarketStatePDA(marketId: string): PublicKey {
   return pda;
 }
 
+// On-chain market_id (PDA seed), e.g. "WL500-PERP" — not the short display id.
 function getMarketIdForOracle(oracleAddr: string): string {
-  return getMarketForOracle(oracleAddr)?.id ?? "PRISMATIC-ETB";
+  return getMarketForOracle(oracleAddr)?.priceApiMarket ?? "WL500-PERP";
 }
 
 function useLiveTimer(openTimestamp: number) {

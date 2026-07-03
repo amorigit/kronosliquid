@@ -130,7 +130,7 @@ export default function TradePage() {
   const { markets, selectedMarket, setSelectedMarket } = useMarket();
   const oracle = useOracle(selectedMarket.oracleAddress, selectedMarket.priceApiMarket);
   const protocol = useProtocolState();
-  const marketState = useMarketState(selectedMarket.id);
+  const marketState = useMarketState(selectedMarket.priceApiMarket);
   const margin = useMarginAccount();
   const stats = useStats(selectedMarket.id);
   const walletUsdc = useWalletUsdc();
@@ -459,7 +459,7 @@ export default function TradePage() {
                 walletUsdc={walletUsdc}
                 onRefresh={handleRefresh}
                 oracleAddress={selectedMarket.oracleAddress}
-                marketId={selectedMarket.id}
+                marketId={selectedMarket.priceApiMarket}
                 onPositionOpened={() => {}}
               />
             </div>
@@ -515,7 +515,7 @@ type CardInfoData = {
   isSealed: boolean;
 };
 
-function ChartSection({ oracle, priceApiMarket = "ETB", marketId, marketImage, showCardInfo, cardInfo, positions = [], selectedOracleAddress }: { oracle: ReturnType<typeof useOracle>; priceApiMarket?: string; marketId?: string; marketImage?: string; showCardInfo: boolean; cardInfo: CardInfoData | null; positions?: Position[]; selectedOracleAddress?: string }) {
+function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketImage, showCardInfo, cardInfo, positions = [], selectedOracleAddress }: { oracle: ReturnType<typeof useOracle>; priceApiMarket?: string; marketId?: string; marketImage?: string; showCardInfo: boolean; cardInfo: CardInfoData | null; positions?: Position[]; selectedOracleAddress?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof import("lightweight-charts").createChart> | null>(null);
   const seriesRef = useRef<any>(null);
@@ -744,13 +744,12 @@ function ChartSection({ oracle, priceApiMarket = "ETB", marketId, marketImage, s
             Loading chart...
           </div>
         ) : chartData.length < 2 ? (
-          marketId === "PL500" ? (
+          marketId === "WL500" ? (
             <div className="flex flex-col items-center justify-center h-full px-6 text-center gap-2">
               <div className="text-[13px] font-bold text-primary tracking-wide">The S&P 500 of Luxury Watches</div>
               <div className="text-[11px] text-secondary leading-relaxed max-w-[360px]">
-                Tracks the combined market value of the top 500 best-selling luxury watches on TCGPlayer. Updated every 60s.
+                Tracks the combined market value of the top 500 luxury watches. Updated continuously.
               </div>
-              <a href="/pl500" className="text-[10px] text-long hover:underline mt-1">View methodology & all 500 cards &rarr;</a>
               <div className="text-[9px] text-secondary/50 mt-1">Chart will appear as price history builds</div>
             </div>
           ) : (
@@ -968,7 +967,7 @@ function OrderEntry({
           protocolState: PROTOCOL_STATE,
           marginAccount: marginPda,
           oracle: oracleAddress ? new PublicKey(oracleAddress) : ORACLE_ACCOUNT,
-          marketState: marketId ? getMarketStatePDA(marketId) : getMarketStatePDA("PRISMATIC-ETB"),
+          marketState: marketId ? getMarketStatePDA(marketId) : getMarketStatePDA("WL500-PERP"),
           feeVault: FEE_VAULT,
           insuranceFund: INSURANCE_FUND,
           liquidityPool: PublicKey.findProgramAddressSync([Buffer.from("liquidity_pool")], PROGRAM_ID)[0],
@@ -1392,8 +1391,9 @@ function getMarketForOracle(oracleAddr: string): Market | undefined {
   return MARKETS.find((m) => m.oracleAddress === oracleAddr);
 }
 
+// On-chain market_id (PDA seed), e.g. "WL500-PERP" — not the short display id.
 function getMarketIdForOracle(oracleAddr: string): string {
-  return getMarketForOracle(oracleAddr)?.id ?? "PRISMATIC-ETB";
+  return getMarketForOracle(oracleAddr)?.priceApiMarket ?? "WL500-PERP";
 }
 
 // ── Individual position row (has its own price hook) ────────────────────────

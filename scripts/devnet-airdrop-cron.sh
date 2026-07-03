@@ -2,13 +2,13 @@
 # devnet-airdrop-cron.sh — periodic single-wallet devnet airdrop (cron-safe).
 #
 # Requests ONE airdrop for the primary deploy wallet when balance is below
-# TARGET_SOL. Designed to respect faucet rate limits (run every 8h, not in bursts).
+# TARGET_SOL. Designed to respect faucet rate limits (run every 3h, not in bursts).
 #
-# Cron example (every 8 hours):
-#   30 */8 * * * /Users/amori/Projects/watch-liquid/scripts/devnet-airdrop-cron.sh
+# Cron example (every 3 hours):
+#   30 */3 * * * /Users/amori/Projects/watch-liquid/scripts/devnet-airdrop-cron.sh
 #
 # Env overrides:
-#   TARGET_SOL=5   AMOUNT=1   RPC=https://api.devnet.solana.com
+#   TARGET_SOL=100   AMOUNT=1   RPC=https://api.devnet.solana.com
 #   PRIMARY_KEY=~/.config/solana/id.json
 #   LOG_FILE=~/Projects/watch-liquid/logs/devnet-airdrop.log
 
@@ -18,7 +18,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="${LOG_DIR:-$ROOT/logs}"
 LOG_FILE="${LOG_FILE:-$LOG_DIR/devnet-airdrop.log}"
 RPC="${RPC:-https://api.devnet.solana.com}"
-TARGET_SOL="${TARGET_SOL:-5}"
+TARGET_SOL="${TARGET_SOL:-100}"
 AMOUNT="${AMOUNT:-1}"
 PRIMARY_KEY="${PRIMARY_KEY:-$HOME/.config/solana/id.json}"
 

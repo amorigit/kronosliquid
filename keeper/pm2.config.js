@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: "kronos-keeper",
-      script: "keeper.js",
+      script: "watch-keeper.js",
       cwd: __dirname,
 
       // Restart automatically on crash, with exponential back-off
