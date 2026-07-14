@@ -35,6 +35,8 @@ const {
   }
 })();
 
+const { sendAlert } = require("./telegram");
+
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
 const INTERVAL_MS = Math.max(parseInt(process.env.CRANK_INTERVAL_MS || "30000", 10), 10000);
 const KEY_PATH =
@@ -314,17 +316,27 @@ async function main() {
     } catch (e) {
       stats.last_error = String(e.message || e).slice(0, 200);
       log(`ERROR ${stats.last_error}`);
+      sendAlert("CRITICAL", "Crank scan failed", {
+        error: stats.last_error,
+      }).catch(() => {});
     }
     persistStats();
   }
 
   await runCrank();
   setInterval(() => {
-    runCrank().catch((e) => log(`tick error: ${e.message || e}`));
+    runCrank().catch((e) => {
+      log(`tick error: ${e.message || e}`);
+      sendAlert("CRITICAL", "Crank tick failed", {
+        error: String(e.message || e).slice(0, 200),
+      }).catch(() => {});
+    });
   }, INTERVAL_MS);
 }
 
 main().catch((e) => {
   console.error("FATAL crank:", e);
-  process.exit(1);
+  sendAlert("CRITICAL", "Crank fatal exit", {
+    error: String(e.message || e).slice(0, 200),
+  }).finally(() => process.exit(1));
 });

@@ -3,8 +3,8 @@
 import Link from "next/link";
 
 /**
- * WL500 methodology — index level targets $5,000 (devnet seed / ramp decision 2026-07-02).
- * Constituent weights are equal among the 19 listed watch perps; metals are excluded from the basket.
+ * WL500 methodology — equal-weighted basket of 19 watch perps, scaled to ~$5,000
+ * index level via keeper/feeds.json (live on DEVnet).
  */
 
 const CONSTITUENTS: { id: string; name: string; weight: string }[] = [
@@ -40,7 +40,8 @@ export default function Wl500Page() {
           <h1 className="mt-3 text-2xl font-bold tracking-wide">WL500 Index</h1>
           <p className="mt-2 text-sm text-secondary leading-relaxed">
             Equal-weighted basket of Kronos&rsquo;s 19 listed luxury-watch perpetual markets.
-            Target index level on devnet: <span className="text-primary font-mono">$5,000</span>.
+            Index level ≈ <span className="text-primary font-mono">$5,000</span> via a fixed
+            scale on the equal-weight mid of constituent reference prices.
           </p>
         </div>
 
@@ -58,17 +59,17 @@ export default function Wl500Page() {
             </li>
             <li>
               <strong className="text-primary">Level:</strong> the on-chain WL500 oracle is an{" "}
-              <em>index level</em>, not a sum of watch prices. Devnet target is $5,000 (ramped from the
-              earlier ~$47.6k seed).
+              <em>index level</em> (not a raw sum of watch prices). It is the equal-weight mean of
+              constituent USD reference mids multiplied by a fixed scale so the level sits near $5,000.
             </li>
             <li>
-              <strong className="text-primary">Pricing (devnet):</strong> synthetic — the keeper drives
-              WL500 with a bounded random walk around $5,000. A production build would recompute the
-              level from constituent oracle prices each tick:
+              <strong className="text-primary">Pricing (devnet):</strong> live — the keeper recomputes
+              WL500 from curated watch reference mids in <code className="text-primary">keeper/feeds.json</code>{" "}
+              and ramps the on-chain oracle toward that target (≤15% per update):
               <code className="block mt-2 text-[11px] font-mono text-primary/80 bg-panel border border-border p-3 overflow-x-auto">
-                WL500_t = 5000 × Σ_i (P_i,t / P_i,0) / 19
+                WL500 = scale × (Σ_i weight_i × P_i) / Σ_i weight_i
               </code>
-              where P_i,0 is each constituent&rsquo;s base price at index inception.
+              Metals use Yahoo spot/futures; watches use editable Chrono24/WatchCharts-style mids.
             </li>
             <li>
               <strong className="text-primary">Rebalance:</strong> none in v1. Adding/removing markets

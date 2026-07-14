@@ -3,11 +3,9 @@
 /**
  * watch-keeper.js — price keeper + local history API for the Kronos watch markets.
  *
- * Prices: bounded random walk per market, seeded from each oracle's CURRENT
- * on-chain price (synthetic demo data — no external price source).
- * WL500 ramps down to WL500_TARGET (default $5,000) at ≤15% per update, then
- * random-walks around it. Every update is clamped to ±15% of the last pushed
- * price so the on-chain deviation guard (~20%) can never reject it.
+ * Prices: live targets from price-feeds.js (Yahoo metals + curated watch mids +
+ * WL500 basket). Each tick ramps on-chain EWMA toward the target at ≤15%/update
+ * so the on-chain ~20% deviation guard never rejects an update.
  *
  * HTTP API (default port 3001) serves the endpoints the Next.js app expects
  * (`/prices/all`, `/prices`, `/candles`, `/health`, `/stats`, `/trades`,
@@ -20,10 +18,10 @@
  *   RPC_URL              default https://api.devnet.solana.com
  *   ANCHOR_WALLET        default ~/.config/solana/id.json (must be protocol admin)
  *   UPDATE_INTERVAL_MS   default 6500 (must be > on-chain MIN_ORACLE_UPDATE_INTERVAL = 5 s)
- *   PRICE_VOLATILITY     default 0.006 (±0.6% per tick)
- *   WL500_TARGET         default 5000 (USD; ramp target for the WL500 index)
+ *   FEED_REFRESH_MS      default 180000 (metal/watch target refresh)
  *   API_PORT             default 3001
  *   MANIFEST_PATH        default ../app/src/lib/markets.bootstrap.json
+ *   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID  optional hard-failure alerts
  *
  * Run:  node keeper/watch-keeper.js        (or via keeper/pm2.config.js)
  */
@@ -31,17 +29,8 @@ const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const { createHash } = require("crypto");
-const {
-  Connection,
-  Keypair,
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} = require("@solana/web3.js");
-const tradeIndexer = require("./trade-indexer");
 
-// ── Env (keeper/.env, no dotenv dependency) ──────────────────────────────────
-
+// ── Env (keeper/.env) before local modules that read process.env at load ──────
 (function loadEnvFile() {
   const p = path.join(__dirname, ".env");
   if (!fs.existsSync(p)) return;
@@ -51,10 +40,19 @@ const tradeIndexer = require("./trade-indexer");
   }
 })();
 
+const {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} = require("@solana/web3.js");
+const tradeIndexer = require("./trade-indexer");
+const priceFeeds = require("./price-feeds");
+const { sendAlert } = require("./telegram");
+
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
 const INTERVAL_MS = Math.max(parseInt(process.env.UPDATE_INTERVAL_MS || "6500", 10), 5500);
-const VOLATILITY = parseFloat(process.env.PRICE_VOLATILITY || "0.006");
-const WL500_TARGET = parseFloat(process.env.WL500_TARGET || "5000");
 const API_PORT = parseInt(process.env.API_PORT || "3001", 10);
 const KEY_PATH =
   process.env.ANCHOR_WALLET || path.join(process.env.HOME, ".config/solana/id.json");
@@ -244,8 +242,11 @@ function startApi() {
       const anyMarket = Object.values(state).find(Boolean);
       const lastOk = Math.max(0, ...Object.values(state).map((s) => (s ? s.lastOk || 0 : 0)));
       pushesLastHour = pushesLastHour.filter((t) => t > now - 3600);
+      const feedStatus = priceFeeds.getStatus();
       return json(res, 200, {
         status: now - lastOk < 120 ? "healthy" : "stale",
+        price_mode: "live",
+        feeds: feedStatus,
         oracle: {
           ewma: anyMarket ? +anyMarket.price.toFixed(2) : 0,
           last_updated: lastOk,
@@ -274,14 +275,20 @@ function startApi() {
         markets: Object.fromEntries(
           Object.entries(state)
             .filter(([, s]) => s)
-            .map(([id, s]) => [
-              id,
-              {
-                ewma: +s.price.toFixed(2),
-                last_ok: s.lastOk || 0,
-                seconds_since_update: s.lastOk ? now - s.lastOk : -1,
-              },
-            ])
+            .map(([id, s]) => {
+              const feed = priceFeeds.getTarget(id);
+              return [
+                id,
+                {
+                  ewma: +s.price.toFixed(2),
+                  target: feed ? +feed.target.toFixed(2) : null,
+                  feed_source: feed ? feed.source : null,
+                  feed_age_s: feed ? feed.age_s : null,
+                  last_ok: s.lastOk || 0,
+                  seconds_since_update: s.lastOk ? now - s.lastOk : -1,
+                },
+              ];
+            })
         ),
       });
     }
@@ -334,30 +341,21 @@ function startApi() {
 // ── Price engine ──────────────────────────────────────────────────────────────
 
 /**
- * Next price for a market: random walk around `seed`, clamped to ±MAX_STEP of
- * the last pushed value. Markets with a ramp `target` move toward it at up to
- * MAX_STEP per update; once within one step, the target becomes the new seed.
+ * Ramp on-chain price toward live feed target at ≤ MAX_STEP per update.
+ * If no feed yet, hold the last pushed price.
  */
-function nextPrice(s) {
-  if (s.target && Math.abs(s.target - s.price) / s.price > MAX_STEP) {
-    const dir = s.target > s.price ? 1 : -1;
+function nextPrice(marketId, s) {
+  const feed = priceFeeds.getTarget(marketId);
+  const target = feed && feed.target > 0 ? feed.target : s.price;
+  s.target = target;
+  if (!(s.price > 0)) return target;
+  const gap = Math.abs(target - s.price) / s.price;
+  if (gap <= 0.0005) return target; // within 5 bps — snap
+  if (gap > MAX_STEP) {
+    const dir = target > s.price ? 1 : -1;
     return s.price * (1 + dir * MAX_STEP * 0.99);
   }
-  if (s.target) {
-    // Arrived — lock the walk around the target from now on.
-    s.seed = s.target;
-    s.target = null;
-    return s.seed;
-  }
-  const step = (Math.random() * 2 - 1) * VOLATILITY;
-  const pull = ((s.seed - s.price) / s.seed) * 0.05;
-  let next = s.price * (1 + step + pull);
-  if (next < s.seed * 0.5) next = s.seed * 0.5;
-  if (next > s.seed * 1.5) next = s.seed * 1.5;
-  // Deviation-guard clamp (belt & suspenders; walk steps are far below this).
-  const cap = s.price * MAX_STEP;
-  if (Math.abs(next - s.price) > cap) next = s.price + Math.sign(next - s.price) * cap;
-  return next;
+  return target;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -378,11 +376,13 @@ async function main() {
   log(`  RPC:        ${RPC_URL.replace(/api-key=[^&]+/, "api-key=***")}`);
   log(`  Program:    ${programId.toBase58()}`);
   log(`  Admin:      ${admin.publicKey.toBase58()}`);
-  log(`  Markets:    ${markets.length} (random walk; WL500 ramping to $${WL500_TARGET})`);
-  log(`  Interval:   ${INTERVAL_MS}ms   Volatility: ±${(VOLATILITY * 100).toFixed(2)}%/tick`);
+  log(`  Markets:    ${markets.length} (live feeds → ramp ≤${MAX_STEP * 100}%/tick)`);
+  log(`  Interval:   ${INTERVAL_MS}ms`);
 
   loadHistory();
   startApi();
+
+  await priceFeeds.start();
 
   const oracleToMarket = new Map(
     manifest.markets.map((m) => [m.oracle, m.marketId])
@@ -404,20 +404,28 @@ async function main() {
         return;
       }
       const raw = Number(info.data.readBigUInt64LE(8)) / 1e6;
-      state[m.marketId] = { price: raw, seed: raw, target: null, lastOk: 0 };
+      const feed = priceFeeds.getTarget(m.marketId);
+      state[m.marketId] = {
+        price: raw,
+        seed: raw,
+        target: feed ? feed.target : raw,
+        lastOk: 0,
+      };
     });
     if (i + FETCH_CHUNK < markets.length) await sleep(300);
   }
 
-  // WL500 ramp-down to a conventional index level.
-  const wl = state["WL500-PERP"];
-  if (wl && Math.abs(wl.price - WL500_TARGET) / WL500_TARGET > 0.01) {
-    wl.target = WL500_TARGET;
-    log(`  WL500: ramping $${wl.price.toFixed(0)} → $${WL500_TARGET} (≤${MAX_STEP * 100}%/update)`);
-  }
-
   const active = markets.filter((m) => state[m.marketId]);
-  log(`  Seeded ${active.length} markets from chain. Pushing updates…`);
+  log(`  Seeded ${active.length} markets from chain. Pushing toward live targets…`);
+  for (const m of active.slice(0, 4)) {
+    const s = state[m.marketId];
+    const feed = priceFeeds.getTarget(m.marketId);
+    log(
+      `  sample ${m.marketId}: on-chain=$${s.price.toFixed(2)} target=$${
+        feed ? feed.target.toFixed(2) : "?"
+      } (${feed ? feed.source : "none"})`
+    );
+  }
 
   async function sendTx(ixs, label) {
     const tx = new Transaction();
@@ -445,7 +453,7 @@ async function main() {
       const group = active.slice(i, i + TX_CHUNK);
       const entries = group.map((m) => {
         const s = state[m.marketId];
-        const price = nextPrice(s);
+        const price = nextPrice(m.marketId, s);
         return { m, s, price, ix: buildIx(programId, admin.publicKey, protocolState, m.oracle, m.marketId, scale(price)) };
       });
 
@@ -471,6 +479,9 @@ async function main() {
             pushed++;
           } catch (err2) {
             log(`  ERROR ${e.m.marketId}: ${String(err2.message || err2).slice(0, 110)}`);
+            sendAlert("WARN", `Oracle push failed: ${e.m.marketId}`, {
+              error: String(err2.message || err2).slice(0, 200),
+            }).catch(() => {});
           }
           await sleep(120);
         }
@@ -489,14 +500,31 @@ async function main() {
 
   await runTick();
   setInterval(() => {
-    runTick().catch((e) => log(`ERROR tick: ${String(e.message || e)}`));
+    runTick().catch((e) => {
+      log(`ERROR tick: ${String(e.message || e)}`);
+      sendAlert("CRITICAL", "Keeper tick failed", {
+        error: String(e.message || e).slice(0, 200),
+      }).catch(() => {});
+    });
   }, INTERVAL_MS);
   setInterval(persistHistory, PERSIST_INTERVAL_MS);
-  process.on("SIGINT", () => { persistHistory(); tradeIndexer.stop(); process.exit(0); });
-  process.on("SIGTERM", () => { persistHistory(); tradeIndexer.stop(); process.exit(0); });
+  process.on("SIGINT", () => {
+    persistHistory();
+    tradeIndexer.stop();
+    priceFeeds.stop();
+    process.exit(0);
+  });
+  process.on("SIGTERM", () => {
+    persistHistory();
+    tradeIndexer.stop();
+    priceFeeds.stop();
+    process.exit(0);
+  });
 }
 
 main().catch((e) => {
   console.error("FATAL:", e);
-  process.exit(1);
+  sendAlert("CRITICAL", "Keeper fatal exit", {
+    error: String(e.message || e).slice(0, 200),
+  }).finally(() => process.exit(1));
 });

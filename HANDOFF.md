@@ -1,11 +1,11 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.6
+**Document version:** 4.7
 **Date:** 2026-07-14
-**Status:** **Full DEVnet product** (test SOL only — not mainnet). Program `HEZg…ziP` live with
-24 markets. Public Next.js app + price keeper + **crank keeper** (funding/liq/SL-TP) on Mac mini
-via Cloudflare tunnels. Users mint test USDC in-app. Mainnet keypair `6pYT…` kept in
-`keys/mainnet/` for later; live stack stays on DEVnet.
+**Status:** **DEVnet mainnet-parity** (test SOL / test USDC). Live oracle feeds: Yahoo metals +
+curated watch mids (`keeper/feeds.json`) + WL500 basket; ramp ≤15%/tick. Crank, mint USDC, app
+via Cloudflare tunnels. Mainnet keypair `6pYT…` reserved — not deployed.
+
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
@@ -290,6 +290,8 @@ cd app && npm run build && pm2 restart kronos-app
 pm2 save
 ```
 
+**DEVnet live prices (2026-07-14):** `price-feeds.js` + `feeds.json`; `/health` reports `price_mode: "live"`.
+
 **DEVnet full-feature (2026-07-14):** Mint test USDC in CollateralPanel; SwapModal redirects to mint; `kronos-crank` settles funding / tries liq+SL-TP; `/daily-volume` from trades indexer. App: `cat app/public-app-url.txt`.
 
 **Mainnet** remains optional later (keypair `6pYTo53Br89ji26huJKRiTyaQCF8eeTpsSSZmsaMRPxy` in `keys/mainnet/`). Run `./scripts/prepare-mainnet-check.sh` before C1+.
@@ -420,5 +422,4 @@ The vendored protocol was copied **without** upstream git history (no `origin`, 
    and the history API.
 4. **Program is non-upgradeable** (`--final` on devnet). Any bug fix requires a new deploy with a
    new program ID, plus updating all env vars / addresses.ts defaults.
-5. **Prices are synthetic** — the random walk is demo data; nothing on-chain reflects real watch
-   or commodity markets.
+5. **Watch mids are curated** — edit `keeper/feeds.json` to refresh Chrono24-style refs; metals are live Yahoo. Ramp ≤15%/tick when far from target.

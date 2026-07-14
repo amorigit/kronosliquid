@@ -510,10 +510,11 @@ Liquidation Price (Short):
             <H3>Price Source</H3>
             <P>
               Prices are pushed by the Kronos keeper (<code>keeper/watch-keeper.js</code>). On devnet
-              the feed is <strong>synthetic demo data</strong>: a bounded random walk seeded from each
-              oracle&rsquo;s current on-chain price. Luxury watches have no free public spot feed; a real
-              deployment would plug a data source (e.g. Chrono24 / WatchCharts) into the same push
-              pipeline.
+              the feed is <strong>live</strong>: metals (gold, silver, platinum) from Yahoo Finance
+              spot/futures; luxury watches and diamond from curated USD reference mids in
+              <code>keeper/feeds.json</code> (Chrono24 / WatchCharts-style). WL500 is the scaled
+              equal-weight basket of those watch refs. Each on-chain update ramps at most ±15% toward
+              the target so the protocol&rsquo;s ~20% deviation guard never freezes the oracle.
             </P>
             <P>
               Each market has its own oracle PDA. See the Protocol section below for key addresses.
@@ -756,9 +757,10 @@ Liquidation Price (Short):
             </FAQ>
 
             <FAQ q="How is the price determined?">
-              On devnet, prices are synthetic: the keeper drives each market with a bounded random walk
-              seeded from its on-chain price, pushing updates every ~6.5 seconds. A production deployment
-              would replace the walk with a real watch-market data source using the same on-chain pipeline.
+              On devnet, metals track Yahoo spot/futures and watches track curated reference mids in
+              keeper/feeds.json. The keeper pushes updates every ~6.5 seconds, ramping toward each
+              market&rsquo;s target at ≤15% per tick. Edit feeds.json (and restart the keeper) to refresh
+              watch mids; metals refresh automatically every few minutes.
             </FAQ>
 
             <FAQ q="What is the profit cap?">

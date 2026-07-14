@@ -2,19 +2,23 @@
 
 const https = require("https");
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
-const TELEGRAM_CHAT_ID   = process.env.TELEGRAM_CHAT_ID || "";
-
 const EMOJI = { INFO: "\u2139\ufe0f", WARN: "\u26a0\ufe0f", CRITICAL: "\ud83d\udea8" };
 
 // Per-level rate limits (ms)
 const RATE_LIMITS = {
-  CRITICAL: 60 * 1000,         // 1 min (urgent)
-  WARN:     5 * 60 * 1000,     // 5 min
-  INFO:     0,                 // no limit (used for daily digest only)
+  CRITICAL: 60 * 1000, // 1 min (urgent)
+  WARN: 5 * 60 * 1000, // 5 min
+  INFO: 0, // no limit (used for daily digest only)
 };
 
 const lastSent = { CRITICAL: 0, WARN: 0, INFO: 0 };
+
+function telegramCreds() {
+  return {
+    token: process.env.TELEGRAM_BOT_TOKEN || "",
+    chatId: process.env.TELEGRAM_CHAT_ID || "",
+  };
+}
 
 /**
  * Send a Telegram alert.
@@ -24,7 +28,8 @@ const lastSent = { CRITICAL: 0, WARN: 0, INFO: 0 };
  * @returns {Promise<boolean>} true if sent
  */
 async function sendAlert(level, message, data = {}) {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return false;
+  const { token, chatId } = telegramCreds();
+  if (!token || !chatId) return false;
 
   const now = Date.now();
   const limit = RATE_LIMITS[level] || 0;
@@ -46,7 +51,7 @@ async function sendAlert(level, message, data = {}) {
 
   return new Promise((resolve) => {
     const body = JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
+      chat_id: chatId,
       text,
       parse_mode: "HTML",
       disable_web_page_preview: true,
@@ -55,7 +60,7 @@ async function sendAlert(level, message, data = {}) {
     const req = https.request(
       {
         hostname: "api.telegram.org",
-        path: `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        path: `/bot${token}/sendMessage`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +70,9 @@ async function sendAlert(level, message, data = {}) {
       (res) => {
         lastSent[level] = Date.now();
         if (res.statusCode !== 200) {
-          console.log(`[${new Date().toISOString()}] WARN  Telegram ${level} alert failed: HTTP ${res.statusCode}`);
+          console.log(
+            `[${new Date().toISOString()}] WARN  Telegram ${level} alert failed: HTTP ${res.statusCode}`
+          );
           resolve(false);
         } else {
           resolve(true);
@@ -86,7 +93,8 @@ async function sendAlert(level, message, data = {}) {
  * Send the daily digest (bypasses rate limits).
  */
 async function sendDailyDigest(stats) {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return false;
+  const { token, chatId } = telegramCreds();
+  if (!token || !chatId) return false;
 
   const text = [
     `\ud83d\udcca <b>Kronos Daily Digest</b>`,
@@ -105,7 +113,7 @@ async function sendDailyDigest(stats) {
 
   return new Promise((resolve) => {
     const body = JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
+      chat_id: chatId,
       text,
       parse_mode: "HTML",
       disable_web_page_preview: true,
@@ -114,7 +122,7 @@ async function sendDailyDigest(stats) {
     const req = https.request(
       {
         hostname: "api.telegram.org",
-        path: `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        path: `/bot${token}/sendMessage`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",

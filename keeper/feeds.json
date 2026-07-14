@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "updated": "2026-07-14",
+  "notes": "Metals: Yahoo Finance spot/futures. Watches + diamond: curated Chrono24/WatchCharts-style USD mids (edit and restart keeper). WL500 = equal-weight mean of watch refs × scale (~$5,000 index level).",
+  "wl500": {
+    "kind": "wl500",
+    "scale": 0.14475087612372392,
+    "indexLevelApprox": 5000,
+    "constituents": "all markets with kind=static and weight>0 (watches only; metals/diamond excluded)"
+  },
+  "markets": [
+    {
+      "marketId": "GOLD-PERP",
+      "kind": "yahoo",
+      "symbol": "GC=F",
+      "fallbackUsd": 2350
+    },
+    {
+      "marketId": "SILVER-PERP",
+      "kind": "yahoo",
+      "symbol": "SI=F",
+      "fallbackUsd": 30
+    },
+    {
+      "marketId": "PLATINUM-PERP",
+      "kind": "yahoo",
+      "symbol": "PL=F",
+      "fallbackUsd": 1000
+    },
+    {
+      "marketId": "DIAMOND-PERP",
+      "kind": "static",
+      "priceUsd": 4800,
+      "weight": 0,
+      "note": "1ct D-IF round brilliant proxy index"
+    },
+    {
+      "marketId": "ROLEX-SUB-PERP",
+      "kind": "static",
+      "priceUsd": 14800,
+      "weight": 1,
+      "note": "Rolex Submariner 126610LN secondary mid"
+    },
+    {
+      "marketId": "PATEK-NAUTILUS-PERP",
+      "kind": "static",
+      "priceUsd": 98000,
+      "weight": 1,
+      "note": "Patek Philippe Nautilus 5711/1A secondary mid"
+    },
+    {
+      "marketId": "AP-ROYAL-OAK-PERP",
+      "kind": "static",
+      "priceUsd": 52000,
+      "weight": 1,
+      "note": "AP Royal Oak 15500ST secondary mid"
+    },
+    {
+      "marketId": "OMEGA-SPEEDY-PERP",
+      "kind": "static",
+      "priceUsd": 7200,
+      "weight": 1,
+      "note": "Omega Speedmaster Professional secondary mid"
+    },
+    {
+      "marketId": "CARTIER-SANTOS-PERP",
+      "kind": "static",
+      "priceUsd": 7800,
+      "weight": 1,
+      "note": "Cartier Santos WSSA0018 secondary mid"
+    },
+    {
+      "marketId": "RM-11-PERP",
+      "kind": "static",
+      "priceUsd": 245000,
+      "weight": 1,
+      "note": "Richard Mille RM 11-03 secondary mid"
+    },
+    {
+      "marketId": "VC-OVERSEAS-PERP",
+      "kind": "static",
+      "priceUsd": 28500,
+      "weight": 1,
+      "note": "Vacheron Constantin Overseas secondary mid"
+    },
+    {
+      "marketId": "IWC-PILOT-PERP",
+      "kind": "static",
+      "priceUsd": 12500,
+      "weight": 1,
+      "note": "IWC Big Pilot secondary mid"
+    },
+    {
+      "marketId": "TAG-CARRERA-PERP",
+      "kind": "static",
+      "priceUsd": 5500,
+      "weight": 1,
+      "note": "TAG Heuer Carrera secondary mid"
+    },
+    {
+      "marketId": "ROLEX-DAYTONA-PERP",
+      "kind": "static",
+      "priceUsd": 28500,
+      "weight": 1,
+      "note": "Rolex Daytona 116500LN secondary mid"
+    },
+    {
+      "marketId": "PP-ANNUAL-PERP",
+      "kind": "static",
+      "priceUsd": 48000,
+      "weight": 1,
+      "note": "Patek Philippe Annual Calendar secondary mid"
+    },
+    {
+      "marketId": "AP-OFFSHORE-PERP",
+      "kind": "static",
+      "priceUsd": 42000,
+      "weight": 1,
+      "note": "AP Royal Oak Offshore secondary mid"
+    },
+    {
+      "marketId": "OMEGA-SEAMASTER-PERP",
+      "kind": "static",
+      "priceUsd": 5200,
+      "weight": 1,
+      "note": "Omega Seamaster Diver 300M secondary mid"
+    },
+    {
+      "marketId": "CARTIER-TANK-PERP",
+      "kind": "static",
+      "priceUsd": 3800,
+      "weight": 1,
+      "note": "Cartier Tank Must secondary mid"
+    },
+    {
+      "marketId": "HUBLOT-BB-PERP",
+      "kind": "static",
+      "priceUsd": 14500,
+      "weight": 1,
+      "note": "Hublot Big Bang secondary mid"
+    },
+    {
+      "marketId": "JLC-REVERSO-PERP",
+      "kind": "static",
+      "priceUsd": 9500,
+      "weight": 1,
+      "note": "Jaeger-LeCoultre Reverso secondary mid"
+    },
+    {
+      "marketId": "PANERAI-LUM-PERP",
+      "kind": "static",
+      "priceUsd": 8200,
+      "weight": 1,
+      "note": "Panerai Luminor Marina secondary mid"
+    },
+    {
+      "marketId": "BREITLING-NAV-PERP",
+      "kind": "static",
+      "priceUsd": 7800,
+      "weight": 1,
+      "note": "Breitling Navitimer secondary mid"
+    },
+    {
+      "marketId": "ROLEX-GMT-PERP",
+      "kind": "static",
+      "priceUsd": 17500,
+      "weight": 1,
+      "note": "Rolex GMT-Master II secondary mid"
+    },
+    {
+      "marketId": "WL500-PERP",
+      "kind": "wl500"
+    }
+  ]
+}

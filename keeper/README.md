@@ -1,27 +1,29 @@
 # Kronos Watch Keeper
 
-Pushes prices to all 24 Kronos watch-market oracles on devnet and serves a
+Pushes prices to all 24 Kronos watch-market oracles on DEVnet and serves a
 local HTTP API (port 3001) with price history, candles, and health data for
 the Next.js app.
 
 ## How it works
 
 - On startup the keeper reads the market manifest
-  (`app/src/lib/markets.bootstrap.json`) and seeds its price state from each
-  oracle's **current on-chain value**.
-- Prices are **synthetic demo data**: a bounded random walk (±0.6%/tick,
-  mean-reverting, clamped to ±15% per update so the on-chain ~20% deviation
-  guard can never reject an update).
-- `WL500-PERP` ramps toward `WL500_TARGET` (default $5,000) at ≤15% per
-  update, then random-walks around it.
-- Updates are batched 8 markets per transaction every ~6.5 s. If a batch
-  fails, each market is retried in its own transaction so one bad update
-  can't freeze its neighbors.
-- Price history is recorded every 30 s (48 h retention), kept in memory, and
-  persisted to `keeper/history.json` every 5 minutes.
-- **Trade indexer** (`trade-indexer.js`) polls devnet program transactions every 30 s,
-  parses anchor trade events from logs, persists to `keeper/trades.json`, and powers
-  `/trades`, `/stats`, `/leaderboard`.
+  (`app/src/lib/markets.bootstrap.json`) and seeds from each oracle's **current
+  on-chain value**.
+- **Live targets** come from [`price-feeds.js`](./price-feeds.js) +
+  [`feeds.json`](./feeds.json):
+  - **GOLD / SILVER / PLATINUM** — Yahoo Finance (`GC=F`, `SI=F`, `PL=F`), refreshed
+    every `FEED_REFRESH_MS` (default 3 min). On fetch failure, last good target is held.
+  - **Watches + DIAMOND** — curated USD mids in `feeds.json` (edit + restart to refresh).
+  - **WL500** — equal-weight mean of weighted watch refs × `wl500.scale` (~$5,000 index).
+- Each tick **ramps** on-chain price toward the target at ≤15%/update (on-chain
+  deviation cap is ~20%).
+- Updates are batched 8 markets per transaction every ~6.5 s. If a batch fails,
+  each market is retried alone.
+- Price history is recorded every 30 s (48 h retention), persisted to
+  `keeper/history.json` every 5 minutes.
+- **Trade indexer** (`trade-indexer.js`) powers `/trades`, `/stats`, `/leaderboard`.
+- **Crank** (`crank-keeper.js`, pm2 `kronos-crank`) settles funding / tries liq + SL-TP.
+- Optional Telegram alerts when `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` are set.
 
 ## HTTP API (port 3001)
 
@@ -30,7 +32,7 @@ the Next.js app.
 | `GET /prices/all` | Latest price for every market (micro-USD raw + USD ewma) |
 | `GET /prices?market=&from=&to=&limit=` | Historical points `{timestamp, ewma, price}` |
 | `GET /candles?market=&resolution=` | OHLC candles (`1m 5m 15m 1h 4h 1d`) |
-| `GET /health` | Keeper status + per-market freshness |
+| `GET /health` | Keeper status + `price_mode: "live"` + per-market target/feed age |
 | `GET /stats` | 24h/7d volume, trades, liquidations, fees, unique traders |
 | `GET /trades?user=&limit=` | User trade history (indexed from on-chain events) |
 | `GET /trades/recent?limit=` | Recent trades across all users |
@@ -54,9 +56,10 @@ RPC_URL=https://devnet.helius-rpc.com/?api-key=YOUR_KEY
 ANCHOR_WALLET=/Users/you/.config/solana/id.json   # must be the protocol admin
 # Optional:
 # UPDATE_INTERVAL_MS=6500
-# PRICE_VOLATILITY=0.006
-# WL500_TARGET=5000
+# FEED_REFRESH_MS=180000
 # API_PORT=3001
+# TELEGRAM_BOT_TOKEN=
+# TELEGRAM_CHAT_ID=
 ```
 
 ## Run
