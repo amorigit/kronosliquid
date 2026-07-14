@@ -1,18 +1,19 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.3
-**Date:** 2026-07-03
+**Document version:** 4.4
+**Date:** 2026-07-14
 **Status:** Program is **fully bootstrapped on devnet** (pool + 24 luxury-watch markets).
 Static site (kronosliquid.xyz) deployed via GitHub Pages with devnet prices. Keeper v2 runs
-under **pm2** on the Mac mini, pushing all 24/24 markets, serving history + **trade indexer**
-API on port 3001. The 2026-07-01 oracle-deviation freeze and the Pokémon-server dependency are fixed.
+under **pm2** on the Mac mini (boot-persistent via LaunchAgent), pushing all 24/24 markets,
+serving history + **trade indexer** API on port 3001. See §7 for the remaining path to a
+“full” public/mainnet deploy.
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
 
 ---
 
-## 0. KNOWN ISSUES (as of 2026-07-03 v4.3, ordered by severity)
+## 0. KNOWN ISSUES (as of 2026-07-14 v4.4, ordered by severity)
 
 All P0/P1 items from v4.1 are **RESOLVED** — details in §0.1 below. What remains:
 
@@ -23,12 +24,19 @@ longer contains it (env-only via `keeper/.env`, gitignored), but the key remains
 the public repo's history. **User decision 2026-07-02: keep the key** (free-tier devnet, low
 stakes). Rotate at helius.dev if it ever gets abused.
 
-### P2 — Trade indexer limitations (new in v4.3)
+### P2 — Trade indexer limitations (from v4.3)
 
 `keeper/trade-indexer.js` indexes `PositionOpened` / `PositionClosed` / `PositionLiquidated`
 events from program logs. `/trades`, `/stats`, and `/leaderboard` return real data when devnet
 trades exist. Limitations: no `position_index` in events (always 0); liquidated direction
 unknown; backfill capped at `INDEXER_BACKFILL_SIGS` (default 300); `/spins` still stubbed.
+
+### P2 — CLI faucet cannot top up toward TARGET_SOL=100
+
+Airdrop cron runs every 3 hours (`30 */3 * * *`, target 100 SOL) but CLI airdrops have failed
+continuously since ~2026-06-30 (rate limit + intermittent DNS/RPC). Wallet sits at
+**~5.35 SOL** as of 2026-07-14. Use [faucet.solana.com](https://faucet.solana.com) for large
+top-ups; cron will keep trying.
 
 ### P3 — WL500 methodology undefined
 
@@ -39,11 +47,10 @@ WL500 was re-seeded from ~$47,600 down to **$5,000** (ramped ≤15%/update; user
 
 - History retention is 48 h at 30 s granularity (in-memory + `keeper/history.json`); 1d candles
   only become meaningful after a couple of days of uptime.
-- `pm2 startup` (launchd boot persistence) needs sudo — one manual command, see §8.5.
 - GitHub Pages has `https_enforced: false` (site also serves over plain HTTP).
 - Next.js app auth APIs (signup/login) need Postgres + JWT env vars that don't exist locally —
   email auth fails; guest/wallet mode works. App is local-only by decision (2026-07-02).
-- Devnet wallet balance ~5.7 SOL (keeper burn ≈ 0.05 SOL/day — fine for weeks).
+- Devnet wallet balance ~5.35 SOL (keeper burn ≈ 0.02–0.05 SOL/day — fine for months).
 
 ### 0.1 Resolved in v4.2 (2026-07-02)
 
@@ -77,8 +84,7 @@ WL500 was re-seeded from ~$47,600 down to **$5,000** (ramped ≤15%/update; user
    - `programs/kronos/` — Anchor program (Rust)
    - `sdk/` — TypeScript client
    - `keeper/` — price keeper / oracle pusher
-   - `app/` — Next.js frontend (the protocol's own UI; market **config** is now the watch catalog
-     pointed at chain, but per-card datasets/set pages are still Pokémon — see §6)
+   - `app/` — Next.js frontend (watch catalog pointed at chain; Pokémon pages/datasets removed)
    - `scripts/`, `tests/`, `migrations/`
 
 The static site is now wired to chain for **read-only live prices** via `chain.js` (polls the
@@ -243,18 +249,46 @@ All app pages, components, and scripts are Pokémon-free (verified by repo-wide 
 
 ---
 
-## 7. Remaining work (suggested order)
+## 7. Path to a full Kronos deploy (ordered)
 
-Keeper fix, API, Pokémon sweep, pm2, and trade indexer (v4.3) are DONE. What's left:
+### Already done (devnet core)
 
-1. **Run `pm2 startup` once with sudo** so the keeper survives reboots (§8.5).
-2. **Commit + push v4.3** — keeper rework, sweep, PDA fix, and trade indexer.
-3. **WL500 constituents (§0 P3)** — define the basket/formula; level is now $5,000 by decision.
-4. **Tier 2 review items** — see [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) for
-   remaining hardening suggestions and the full QA checklist.
-5. **Mainnet** — when ready, generate a new program keypair, `anchor keys sync`, update
-   `Anchor.toml` cluster, fund with real SOL, and redeploy. A real deployment also needs a real
-   watch-price data source (Chrono24/WatchCharts) instead of the synthetic walk.
+- Program deployed + bootstrapped on **devnet** (24 markets, pool, vaults).
+- Static site live at **kronosliquid.xyz** (GitHub Pages) with on-chain prices.
+- Keeper v2 + history API + trade indexer under **pm2**.
+- Pokémon sweep, PDA market-id fix, foreign-server detach.
+
+### Phase A — finish the local/devnet product surface
+
+| # | Step | Status |
+|---|------|--------|
+| A1 | **Keeper boot persistence** — LaunchAgent `com.kronos.pm2` runs `pm2 resurrect` at login | **DONE 2026-07-14** |
+| A2 | **Push `main` to origin** — local branch is **ahead 1** (`47255b7` v4.3); push when ready | NEXT |
+| A3 | **Fund wallet** (optional) — top up via [faucet.solana.com](https://faucet.solana.com) toward 100 SOL; cron alone is rate-limited | pending |
+| A4 | **Smoke-test the Next.js app** — `cd app && npm run dev`, connect wallet, open/close a position against local keeper API | pending |
+| A5 | **WL500 methodology** — define constituents / formula (level already $5,000) | pending |
+| A6 | **Tier 2 hardening** — see [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) QA checklist | pending |
+
+### Phase B — public app (still on devnet oracles)
+
+| # | Step | Status |
+|---|------|--------|
+| B1 | Host keeper+API on a VPS (or keep Mac mini always-on) so charts/history work off-machine | pending |
+| B2 | Deploy Next.js app (Vercel / own domain e.g. `app.kronosliquid.xyz`) with `NEXT_PUBLIC_RPC_ENDPOINT` + `KEEPER_API_URL` | pending |
+| B3 | Wire auth (Postgres + JWT) if email login is required; guest/wallet works without it | pending |
+| B4 | Enforce HTTPS on GitHub Pages (`https_enforced: true`) | pending |
+
+### Phase C — mainnet (real money)
+
+| # | Step | Status |
+|---|------|--------|
+| C1 | New program keypair + `anchor keys sync` (devnet program is `--final`, not reusable) | pending |
+| C2 | Fund deploy wallet with **real SOL**; deploy with `--final --use-quic` | pending |
+| C3 | Bootstrap with **real USDC mint**; re-run market bootstrap | pending |
+| C4 | Replace synthetic random walk with a real watch/commodity price source | pending |
+| C5 | Audit / Tier 2 fixes, mainnet RPC, monitoring, insurance funding | pending |
+
+**Next actionable item after A1:** **A2 — `git push origin main`** (needs your go-ahead to push).
 
 ---
 
@@ -293,12 +327,18 @@ write-transaction rate limits. Key facts:
 - The Next.js app reaches it via `app/next.config.js` rewrites (`/api/keeper/*` and
   `/api/v1/*` → `http://localhost:3001`, overridable with `KEEPER_API_URL`).
 
-**Boot persistence:** run once with sudo (from `pm2 startup` output):
+**Boot persistence (DONE 2026-07-14):** user LaunchAgent
+`~/Library/LaunchAgents/com.kronos.pm2.plist` runs `pm2 resurrect` at login (no sudo).
+Process list is saved via `pm2 save` (`~/.pm2/dump.pm2`). Optional system-wide alternative
+still works if you want it later:
 
 ```bash
 sudo env PATH=$PATH:/Users/amori/.hermes/node/bin \
   /Users/amori/.local/lib/node_modules/pm2/bin/pm2 startup launchd -u amori --hp /Users/amori
 ```
+
+On 2026-07-14 the pm2 daemon had an empty process list after a respawn; `kronos-keeper` was
+restarted, saved, and the LaunchAgent loaded. API ping: `{"ok":true}` on port 3001.
 
 The old Pokémon keeper (`keeper/keeper.js`) has been deleted from the repo. The foreign
 instance at `157.180.67.25:3001` is not ours and the app no longer references it.
@@ -324,7 +364,8 @@ Then re-run the bootstrap scripts with `ANCHOR_PROVIDER_URL=https://api.mainnet-
 ## 9. Git history
 
 ```
-(uncommitted) v4.2 — keeper v2 + local API, Pokémon sweep complete, PDA fix, pm2
+(local, unpushed) 47255b7 Ship keeper v4.3: trade indexer, Pokémon sweep, and oracle fixes.
+(uncommitted) v4.4 — pm2 LaunchAgent boot persistence + full-deploy roadmap
 67d0ea6 Remove Pokemon branding, wire devnet keeper with live commodity prices  (pushed; live on Pages)
 83677e3 Add keeper scripts, watch image tooling, and header updates.
 610022b Ship local watch photos, live charts, and keeper tooling to the static site.
