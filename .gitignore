@@ -45,3 +45,5 @@ tsconfig.tsbuildinfo
 keeper/history.json
 keeper/trades.json
 keeper/indexer-cursor.json
+keeper/public-api-url.txt
+app/public-app-url.txt

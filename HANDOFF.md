@@ -1,12 +1,10 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.4
+**Document version:** 4.5
 **Date:** 2026-07-14
-**Status:** Program is **fully bootstrapped on devnet** (pool + 24 luxury-watch markets).
-Static site (kronosliquid.xyz) deployed via GitHub Pages with devnet prices. Keeper v2 runs
-under **pm2** on the Mac mini (boot-persistent via LaunchAgent), pushing all 24/24 markets,
-serving history + **trade indexer** API on port 3001. See §7 for the remaining path to a
-“full” public/mainnet deploy.
+**Status:** Program is **fully bootstrapped on devnet**. Static site at kronosliquid.xyz.
+Keeper + **public Next.js trading app** run on the Mac mini under pm2, exposed via Cloudflare
+quick tunnels (Vercel skipped — account login unavailable). See §7 for Phase C (mainnet).
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
@@ -258,38 +256,62 @@ All app pages, components, and scripts are Pokémon-free (verified by repo-wide 
 - Keeper v2 + history API + trade indexer under **pm2**.
 - Pokémon sweep, PDA market-id fix, foreign-server detach.
 
-### Phase A — finish the local/devnet product surface
+### Phase A — local/devnet product surface — DONE (2026-07-14)
 
 | # | Step | Status |
 |---|------|--------|
-| A1 | **Keeper boot persistence** — LaunchAgent `com.kronos.pm2` runs `pm2 resurrect` at login | **DONE 2026-07-14** |
-| A2 | **Push `main` to origin** — local branch is **ahead 1** (`47255b7` v4.3); push when ready | NEXT |
-| A3 | **Fund wallet** (optional) — top up via [faucet.solana.com](https://faucet.solana.com) toward 100 SOL; cron alone is rate-limited | pending |
-| A4 | **Smoke-test the Next.js app** — `cd app && npm run dev`, connect wallet, open/close a position against local keeper API | pending |
-| A5 | **WL500 methodology** — define constituents / formula (level already $5,000) | pending |
-| A6 | **Tier 2 hardening** — see [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) QA checklist | pending |
+| A1 | Keeper boot persistence (`com.kronos.pm2` LaunchAgent) | **DONE** |
+| A2 | Push `main` to origin (`f69aac2` / earlier v4.3) | **DONE** |
+| A3 | Fund wallet to 100 SOL | **BLOCKED** — CLI faucet rate-limited; use [faucet.solana.com](https://faucet.solana.com); balance ~5.35 SOL (enough for months of keeper) |
+| A4 | Smoke-test Next.js + keeper API | **DONE** — `/`, `/wl500`, `/docs`, `/stats`, `/api/keeper/{ping,health,prices}` all 200 |
+| A5 | WL500 methodology | **DONE** — `/wl500` page (19 watch constituents, equal weight, $5k level) |
+| A6 | Tier 2 review pass | **DONE** — branding/config items confirmed; settlement refactor deferred to Phase C — see [`docs/TIER2-STATUS.md`](./docs/TIER2-STATUS.md) |
 
-### Phase B — public app (still on devnet oracles)
+### Phase B — public app (devnet oracles) — DONE via Mac mini (no Vercel)
 
-| # | Step | Status |
-|---|------|--------|
-| B1 | Host keeper+API on a VPS (or keep Mac mini always-on) so charts/history work off-machine | pending |
-| B2 | Deploy Next.js app (Vercel / own domain e.g. `app.kronosliquid.xyz`) with `NEXT_PUBLIC_RPC_ENDPOINT` + `KEEPER_API_URL` | pending |
-| B3 | Wire auth (Postgres + JWT) if email login is required; guest/wallet works without it | pending |
-| B4 | Enforce HTTPS on GitHub Pages (`https_enforced: true`) | pending |
-
-### Phase C — mainnet (real money)
+Vercel login was unavailable; hosting is **this Mac mini + Cloudflare quick tunnels**.
 
 | # | Step | Status |
 |---|------|--------|
-| C1 | New program keypair + `anchor keys sync` (devnet program is `--final`, not reusable) | pending |
-| C2 | Fund deploy wallet with **real SOL**; deploy with `--final --use-quic` | pending |
-| C3 | Bootstrap with **real USDC mint**; re-run market bootstrap | pending |
-| C4 | Replace synthetic random walk with a real watch/commodity price source | pending |
-| C5 | Audit / Tier 2 fixes, mainnet RPC, monitoring, insurance funding | pending |
+| B1 | Public keeper/API | **DONE** — `kronos-keeper` + `kronos-api-tunnel` (pm2). URL in `keeper/public-api-url.txt` |
+| B2 | Public Next.js app | **DONE** — `kronos-app` (`next start :3000`) + `kronos-app-tunnel`. **App URL:** see `app/public-app-url.txt` (current: `https://teaching-reducing-establish-thickness.trycloudflare.com`). Proxies `/api/keeper/*` → `127.0.0.1:3001` |
+| B3 | Email auth (Postgres + JWT) | **DEFERRED** — guest / session-wallet / browser wallet work without DB. Signup/login APIs need Postgres env when you want email |
+| B4 | Enforce HTTPS on kronosliquid.xyz Pages | **BLOCKED** — GitHub returns “certificate does not exist yet”; DNS A records point at Pages. Re-try `https_enforced` after GitHub provisions the cert, or wait/re-add custom domain in repo Settings → Pages |
 
-**Next actionable item after A1:** **A2 — `git push origin main`** (needs your go-ahead to push).
+**Ops notes (Phase B):**
 
+```bash
+pm2 status                          # kronos-keeper, kronos-api-tunnel, kronos-app, kronos-app-tunnel
+cat app/public-app-url.txt          # current public trading UI
+cat keeper/public-api-url.txt       # direct keeper API (optional)
+# After code changes:
+cd app && npm run build && pm2 restart kronos-app
+pm2 save
+```
+
+**Next actionable item:** Phase **C0** go/no-go, then **C1** new mainnet program keypair (do not reuse HEZg…). Run `./scripts/prepare-mainnet-check.sh` anytime for a read-only preflight. Quick-tunnel app URL: `cat app/public-app-url.txt`.
+
+**2026-07-14 follow-up:** mainnet preflight script added (`scripts/prepare-mainnet-check.sh` — 8 pass / 2 warn). Pages HTTPS still blocked (no cert yet). Public app still serving via Cloudflare tunnel.
+
+Do these **in order**. Devnet program is `--final` and **cannot** be reused.
+
+| # | Step | Detail |
+|---|------|--------|
+| **C0** | Go / no-go | Confirm legal/risk disclosure, insurance funding plan, and that Tier 2 settlement dedup (`docs/TIER2-STATUS.md` deferred items) is scheduled or accepted as residual risk |
+| **C1** | New program keypair | `solana-keygen new -o target/deploy/kronos-keypair.json --force` → `anchor keys sync` → update `declare_id!`, `Anchor.toml` `[programs.mainnet]`, app env defaults |
+| **C2** | Build & size check | `anchor build`; note `.so` size; plan `solana program extend` if upgrading later (prefer `--final` only after bake-in) |
+| **C3** | Fund deploy wallet | Real SOL on mainnet (non-upgradeable ~same order as devnet ~7+ SOL plus buffer for bootstrap txs) |
+| **C4** | Deploy | Prefer **upgradeable** first for bake-in, or `--final --use-quic` if you accept redeploy-on-bug. Cluster `mainnet-beta`, paid RPC recommended |
+| **C5** | Collateral mint | Point protocol at **real USDC** (`EPjFWdd5…Dt1v`), not the devnet test mint |
+| **C6** | Bootstrap | `initialize` → `initialize_pool` → `bootstrap-watch-markets.ts` with mainnet RPC/wallet; write new `markets.bootstrap.json`; `node scripts/gen-app-markets.js`; copy IDL |
+| **C7** | Real oracle feeds | Replace random walk: Chrono24/WatchCharts (or paid API) for watches; Yahoo/other for metals; keep ±15% ramp + per-market isolation |
+| **C8** | Keeper hosting | Move keeper off the Mac mini to a VPS; named Cloudflare tunnel or public HTTPS; pm2/systemd; alerts (Telegram already stubbed) |
+| **C9** | App cutover | Point production app env at mainnet program/PDAs/RPC; stable domain (`app.kronosliquid.xyz`); turn on HTTPS everywhere |
+| **C10** | Auth (optional) | Provision Postgres + `JWT_SECRET` + mailer if email accounts are required |
+| **C11** | Safety nets | Insurance fund capitalization; admin runbooks; liquidation/funding keeper jobs verified on mainnet; rate limits / admin key hygiene |
+| **C12** | Soft launch | Caps on max OI / deposit; small allowlist or low limits; monitor for 1–2 weeks before removing caps |
+
+**Rough cost/time (indicative):** C1–C6 a focused day once funded; C7–C8 several days (data + hosting); C9–C12 product/ops.
 ---
 
 ## 8. Devnet deploy — DONE (2026-06-30)

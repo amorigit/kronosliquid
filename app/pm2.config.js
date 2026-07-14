@@ -1,37 +1,34 @@
 "use strict";
 
+/** PM2 config for the Kronos Next.js trading app (runs on this Mac mini). */
 module.exports = {
   apps: [
     {
-      name: "kronos-keeper",
-      script: "watch-keeper.js",
+      name: "kronos-app",
       cwd: __dirname,
-
-      // Restart automatically on crash, with exponential back-off
+      script: "node_modules/next/dist/bin/next",
+      args: "start -p 3000 -H 127.0.0.1",
+      instances: 1,
       autorestart: true,
       max_restarts: 10,
       min_uptime: "30s",
       restart_delay: 5000,
-      exp_backoff_restart_delay: 100,
-
-      // Memory limit: restart if > 500MB
-      max_memory_restart: "500M",
-
-      // Log config
-      out_file: "./logs/keeper-out.log",
-      error_file: "./logs/keeper-err.log",
+      max_memory_restart: "800M",
+      out_file: "./logs/app-out.log",
+      error_file: "./logs/app-err.log",
       merge_logs: true,
       log_date_format: "YYYY-MM-DDTHH:mm:ssZ",
-
-      // Environment
       env: {
         NODE_ENV: "production",
+        // Server-side rewrites proxy /api/keeper/* to the local keeper.
+        KEEPER_API_URL: "http://127.0.0.1:3001",
+        PORT: "3000",
       },
     },
     {
-      name: "kronos-api-tunnel",
-      script: "cloudflare-tunnel.sh",
+      name: "kronos-app-tunnel",
       cwd: __dirname,
+      script: "cloudflare-app-tunnel.sh",
       interpreter: "bash",
       autorestart: true,
       max_restarts: 20,

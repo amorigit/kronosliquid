@@ -23,7 +23,7 @@ security_txt! {
     source_code: "https://github.com/amorigit/kronosliquid"
 }
 
-// Mainnet program ID
+// Program ID (devnet deploy — non-upgradeable; mainnet needs a new keypair)
 declare_id!("HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP");
 
 #[program]
