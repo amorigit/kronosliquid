@@ -1,12 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "updated": "2026-07-14",
-  "notes": "Metals: Yahoo Finance spot/futures. Watches + diamond: curated Chrono24/WatchCharts-style USD mids (edit and restart keeper). WL500 = equal-weight mean of watch refs × scale (~$5,000 index level).",
+  "notes": "Metals: Yahoo Finance. Watches: auto mid from Bob's Watches + The 1916 Company using `queries` (no hand price edits). fallbackUsd used only when live listings are unavailable. WL500 = equal-weight mean of weighted watch targets × scale (~$5,000). Diamond removed from product catalog.",
   "wl500": {
     "kind": "wl500",
     "scale": 0.14475087612372392,
     "indexLevelApprox": 5000,
-    "constituents": "all markets with kind=static and weight>0 (watches only; metals/diamond excluded)"
+    "constituents": "all markets with kind=watch and weight>0"
   },
   "markets": [
     {
@@ -28,144 +28,156 @@
       "fallbackUsd": 1000
     },
     {
-      "marketId": "DIAMOND-PERP",
-      "kind": "static",
-      "priceUsd": 4800,
-      "weight": 0,
-      "note": "1ct D-IF round brilliant proxy index"
-    },
-    {
       "marketId": "ROLEX-SUB-PERP",
-      "kind": "static",
-      "priceUsd": 14800,
+      "kind": "watch",
+      "queries": ["126610LN", "Submariner Date 126610"],
+      "fallbackUsd": 14800,
       "weight": 1,
-      "note": "Rolex Submariner 126610LN secondary mid"
+      "note": "Rolex Submariner 126610LN"
     },
     {
       "marketId": "PATEK-NAUTILUS-PERP",
-      "kind": "static",
-      "priceUsd": 98000,
+      "kind": "watch",
+      "queries": ["Nautilus", "5711", "5726"],
+      "fallbackUsd": 98000,
       "weight": 1,
-      "note": "Patek Philippe Nautilus 5711/1A secondary mid"
+      "note": "Patek Philippe Nautilus family mid"
     },
     {
       "marketId": "AP-ROYAL-OAK-PERP",
-      "kind": "static",
-      "priceUsd": 52000,
+      "kind": "watch",
+      "queries": ["15500ST", "Royal Oak 15500", "Royal Oak Selfwinding"],
+      "fallbackUsd": 52000,
       "weight": 1,
-      "note": "AP Royal Oak 15500ST secondary mid"
+      "note": "AP Royal Oak 15500ST"
     },
     {
       "marketId": "OMEGA-SPEEDY-PERP",
-      "kind": "static",
-      "priceUsd": 7200,
+      "kind": "watch",
+      "queries": ["Speedmaster Professional", "Moonwatch Professional"],
+      "fallbackUsd": 7200,
       "weight": 1,
-      "note": "Omega Speedmaster Professional secondary mid"
+      "note": "Omega Speedmaster Professional"
     },
     {
       "marketId": "CARTIER-SANTOS-PERP",
-      "kind": "static",
-      "priceUsd": 7800,
+      "kind": "watch",
+      "queries": ["WSSA0018", "Santos de Cartier"],
+      "fallbackUsd": 7800,
       "weight": 1,
-      "note": "Cartier Santos WSSA0018 secondary mid"
+      "note": "Cartier Santos WSSA0018"
     },
     {
       "marketId": "RM-11-PERP",
-      "kind": "static",
-      "priceUsd": 245000,
+      "kind": "watch",
+      "queries": ["Richard Mille", "RM 11", "RM011"],
+      "fallbackUsd": 245000,
       "weight": 1,
-      "note": "Richard Mille RM 11-03 secondary mid"
+      "note": "Richard Mille RM 11 — often inquire-only; may use fallback"
     },
     {
       "marketId": "VC-OVERSEAS-PERP",
-      "kind": "static",
-      "priceUsd": 28500,
+      "kind": "watch",
+      "queries": ["Overseas", "Vacheron Overseas"],
+      "fallbackUsd": 28500,
       "weight": 1,
-      "note": "Vacheron Constantin Overseas secondary mid"
+      "note": "Vacheron Constantin Overseas"
     },
     {
       "marketId": "IWC-PILOT-PERP",
-      "kind": "static",
-      "priceUsd": 12500,
+      "kind": "watch",
+      "queries": ["Big Pilot", "IWC Pilot"],
+      "fallbackUsd": 12500,
       "weight": 1,
-      "note": "IWC Big Pilot secondary mid"
+      "note": "IWC Big Pilot"
     },
     {
       "marketId": "TAG-CARRERA-PERP",
-      "kind": "static",
-      "priceUsd": 5500,
+      "kind": "watch",
+      "queries": ["TAG Heuer Carrera", "Carrera Chronograph", "Carrera"],
+      "fallbackUsd": 5500,
       "weight": 1,
-      "note": "TAG Heuer Carrera secondary mid"
+      "note": "TAG Heuer Carrera"
     },
     {
       "marketId": "ROLEX-DAYTONA-PERP",
-      "kind": "static",
-      "priceUsd": 28500,
+      "kind": "watch",
+      "queries": ["116500LN", "Daytona 116500", "Cosmograph Daytona"],
+      "fallbackUsd": 28500,
       "weight": 1,
-      "note": "Rolex Daytona 116500LN secondary mid"
+      "note": "Rolex Daytona 116500LN"
     },
     {
       "marketId": "PP-ANNUAL-PERP",
-      "kind": "static",
-      "priceUsd": 48000,
+      "kind": "watch",
+      "queries": ["Annual Calendar", "Patek Annual Calendar"],
+      "fallbackUsd": 48000,
       "weight": 1,
-      "note": "Patek Philippe Annual Calendar secondary mid"
+      "note": "Patek Philippe Annual Calendar"
     },
     {
       "marketId": "AP-OFFSHORE-PERP",
-      "kind": "static",
-      "priceUsd": 42000,
+      "kind": "watch",
+      "queries": ["Royal Oak Offshore", "Offshore"],
+      "fallbackUsd": 42000,
       "weight": 1,
-      "note": "AP Royal Oak Offshore secondary mid"
+      "note": "AP Royal Oak Offshore"
     },
     {
       "marketId": "OMEGA-SEAMASTER-PERP",
-      "kind": "static",
-      "priceUsd": 5200,
+      "kind": "watch",
+      "queries": ["Seamaster Diver", "Seamaster 300"],
+      "fallbackUsd": 5200,
       "weight": 1,
-      "note": "Omega Seamaster Diver 300M secondary mid"
+      "note": "Omega Seamaster Diver 300M"
     },
     {
       "marketId": "CARTIER-TANK-PERP",
-      "kind": "static",
-      "priceUsd": 3800,
+      "kind": "watch",
+      "queries": ["Tank Must", "Cartier Tank"],
+      "fallbackUsd": 3800,
       "weight": 1,
-      "note": "Cartier Tank Must secondary mid"
+      "note": "Cartier Tank Must"
     },
     {
       "marketId": "HUBLOT-BB-PERP",
-      "kind": "static",
-      "priceUsd": 14500,
+      "kind": "watch",
+      "queries": ["Hublot Big Bang", "Big Bang", "Hublot"],
+      "fallbackUsd": 14500,
       "weight": 1,
-      "note": "Hublot Big Bang secondary mid"
+      "note": "Hublot Big Bang"
     },
     {
       "marketId": "JLC-REVERSO-PERP",
-      "kind": "static",
-      "priceUsd": 9500,
+      "kind": "watch",
+      "queries": ["Reverso", "Jaeger Reverso"],
+      "fallbackUsd": 9500,
       "weight": 1,
-      "note": "Jaeger-LeCoultre Reverso secondary mid"
+      "note": "Jaeger-LeCoultre Reverso"
     },
     {
       "marketId": "PANERAI-LUM-PERP",
-      "kind": "static",
-      "priceUsd": 8200,
+      "kind": "watch",
+      "queries": ["Luminor Marina", "Panerai Luminor"],
+      "fallbackUsd": 8200,
       "weight": 1,
-      "note": "Panerai Luminor Marina secondary mid"
+      "note": "Panerai Luminor Marina"
     },
     {
       "marketId": "BREITLING-NAV-PERP",
-      "kind": "static",
-      "priceUsd": 7800,
+      "kind": "watch",
+      "queries": ["Navitimer", "Breitling Navitimer"],
+      "fallbackUsd": 7800,
       "weight": 1,
-      "note": "Breitling Navitimer secondary mid"
+      "note": "Breitling Navitimer"
     },
     {
       "marketId": "ROLEX-GMT-PERP",
-      "kind": "static",
-      "priceUsd": 17500,
+      "kind": "watch",
+      "queries": ["GMT-Master II Batman", "126710BLNR", "GMT-Master II"],
+      "fallbackUsd": 17500,
       "weight": 1,
-      "note": "Rolex GMT-Master II secondary mid"
+      "note": "Rolex GMT-Master II"
     },
     {
       "marketId": "WL500-PERP",

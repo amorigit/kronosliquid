@@ -3,7 +3,6 @@ const MARKETS = [
   { id: "gold", tab: "GOLD", name: "GOLD-PERP", subtitle: "Gold · XAU/USD · Troy Oz Spot", productId: "XAU-USD", price: 2348.5, live: true },
   { id: "silver", tab: "SILVER", name: "SILVER-PERP", subtitle: "Silver · XAG/USD · Troy Oz Spot", productId: "XAG-USD", price: 28.65, live: true },
   { id: "platinum", tab: "PLATINUM", name: "PLATINUM-PERP", subtitle: "Platinum · XPT/USD · Troy Oz Spot", productId: "XPT-USD", price: 982.4, live: true },
-  { id: "diamond", tab: "DIAMOND", name: "DIAMOND-PERP", subtitle: "Diamond · 1ct Round Brilliant · Rapaport", productId: "RAP-1CT-RB", price: 4850.0, live: true },
   { id: "rolex-sub", tab: "ROLEX-SUB", name: "ROLEX-SUB-PERP", subtitle: "Rolex Submariner · 126610LN", productId: "RX-126610LN", price: 14250.0, live: true },
   { id: "patek-nautilus", tab: "PATEK-NAUT", name: "PATEK-NAUTILUS-PERP", subtitle: "Patek Philippe · Nautilus 5711/1A", productId: "PP-5711-1A", price: 98400.0, live: true },
   { id: "ap-royal-oak", tab: "AP-RO", name: "AP-ROYAL-OAK-PERP", subtitle: "Audemars Piguet · Royal Oak 15500ST", productId: "AP-15500ST", price: 52800.0, live: true },

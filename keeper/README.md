@@ -13,13 +13,16 @@ the Next.js app.
   [`feeds.json`](./feeds.json):
   - **GOLD / SILVER / PLATINUM** — Yahoo Finance (`GC=F`, `SI=F`, `PL=F`), refreshed
     every `FEED_REFRESH_MS` (default 3 min). On fetch failure, last good target is held.
-  - **Watches + DIAMOND** — curated USD mids in `feeds.json` (edit + restart to refresh).
-  - **WL500** — equal-weight mean of weighted watch refs × `wl500.scale` (~$5,000 index).
+  - **Watches** — auto mid from **Bob's Watches** product feed + **The 1916 Company**
+    search using `queries` in `feeds.json` (no hand price edits). Falls back to
+    `feeds-cache.json` then `fallbackUsd` if listings are inquire-only / empty.
+  - **WL500** — equal-weight mean of weighted watch targets × `wl500.scale` (~$5,000 index).
+  - **DIAMOND** — removed from catalog / feeds (on-chain account may still exist unused).
 - Each tick **ramps** on-chain price toward the target at ≤15%/update (on-chain
   deviation cap is ~20%).
 - Updates are batched 8 markets per transaction every ~6.5 s. If a batch fails,
   each market is retried alone.
-- Price history is recorded every 30 s (48 h retention), persisted to
+- Price history is recorded every 10 s (48 h retention), persisted to
   `keeper/history.json` every 5 minutes.
 - **Trade indexer** (`trade-indexer.js`) powers `/trades`, `/stats`, `/leaderboard`.
 - **Crank** (`crank-keeper.js`, pm2 `kronos-crank`) settles funding / tries liq + SL-TP.

@@ -296,7 +296,6 @@ export default function DocsPage() {
                 ["GOLD-PERP", "Gold \u00b7 XAU/USD Troy Oz", "Commodity", "Yes"],
                 ["SILVER-PERP", "Silver \u00b7 XAG/USD Troy Oz", "Commodity", "Yes"],
                 ["PLATINUM-PERP", "Platinum \u00b7 XPT/USD Troy Oz", "Commodity", "Yes"],
-                ["DIAMOND-PERP", "Diamond \u00b7 1ct Round Brilliant", "Commodity", "Yes"],
                 ["ROLEX-SUB-PERP", "Rolex Submariner 126610LN", "Watch", "Yes"],
                 ["PATEK-NAUTILUS-PERP", "Patek Philippe Nautilus 5711/1A", "Watch", "Yes"],
                 ["AP-ROYAL-OAK-PERP", "AP Royal Oak 15500ST", "Watch", "Yes"],
@@ -511,10 +510,11 @@ Liquidation Price (Short):
             <P>
               Prices are pushed by the Kronos keeper (<code>keeper/watch-keeper.js</code>). On devnet
               the feed is <strong>live</strong>: metals (gold, silver, platinum) from Yahoo Finance
-              spot/futures; luxury watches and diamond from curated USD reference mids in
-              <code>keeper/feeds.json</code> (Chrono24 / WatchCharts-style). WL500 is the scaled
-              equal-weight basket of those watch refs. Each on-chain update ramps at most ±15% toward
-              the target so the protocol&rsquo;s ~20% deviation guard never freezes the oracle.
+              spot/futures; luxury watches from live secondary-market ask mids (Bob&apos;s Watches +
+              The 1916 Company) using search queries in <code>keeper/feeds.json</code>. WL500 is the
+              scaled equal-weight basket of those watch targets. Each on-chain update ramps at most
+              ±15% toward the target so the protocol&rsquo;s ~20% deviation guard never freezes the
+              oracle.
             </P>
             <P>
               Each market has its own oracle PDA. See the Protocol section below for key addresses.

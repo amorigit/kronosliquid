@@ -3,7 +3,6 @@ const MARKET_IMAGES = {
   "GOLD-PERP": "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
   "SILVER-PERP": "https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
   "PLATINUM-PERP": "https://images.pexels.com/photos/291762/pexels-photo-291762.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
-  "DIAMOND-PERP": "https://images.pexels.com/photos/1300556/pexels-photo-1300556.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop",
   "ROLEX-SUB-PERP": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Rolex-Submariner.jpg/500px-Rolex-Submariner.jpg",
   "ROLEX-DAYTONA-PERP": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Rolex_Daytona_Cosmograph.jpg/500px-Rolex_Daytona_Cosmograph.jpg",
   "ROLEX-GMT-PERP": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Rolex_GMT_Master_II_-_16710_in_it_sitting_on_top_of_the_box.jpg/500px-Rolex_GMT_Master_II_-_16710_in_it_sitting_on_top_of_the_box.jpg",

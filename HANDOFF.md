@@ -1,10 +1,10 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.8
+**Document version:** 4.10
 **Date:** 2026-07-14
 **Status:** **DEVnet mainnet-parity** (test SOL / test USDC). Live oracle feeds: Yahoo metals +
-curated watch mids (`keeper/feeds.json`) + WL500 basket; ramp ≤15%/tick. Crank, mint USDC, app
-via Cloudflare tunnels. Ticker shows live prices without reset; % = **day change** (local midnight).
+**auto watch mids** (Bob's + 1916) + WL500; **DIAMOND removed** from catalog. Ramp ≤15%/tick.
+Crank, mint USDC, app via Cloudflare tunnels. Ticker % = **day change**.
 Mainnet keypair `6pYT…` reserved — not deployed.
 
 > **This file is the project handbook.** Update it on every meaningful change (see
@@ -16,7 +16,7 @@ Mainnet keypair `6pYT…` reserved — not deployed.
 
 ---
 
-## 0. KNOWN ISSUES (as of 2026-07-14 v4.8, ordered by severity)
+## 0. KNOWN ISSUES (as of 2026-07-14 v4.10, ordered by severity)
 
 All P0/P1 items from v4.1 are **RESOLVED** — details in §0.1 below. What remains:
 
@@ -89,6 +89,12 @@ formal index methodology — level/weights remain product decisions, not on-chai
 - **Ticker stability + day % (v4.8)** — `useOracle` keeps `lastGoodPrice` (no flash to `—. —`);
   merges server history with live ticks (never wipe on poll); `dayChangePercent()` vs local
   midnight open. Header ticker, BinderCard, trade page, LandingAuth all use day %.
+- **Auto watch prices (v4.9)** — watches no longer need hand-edited `priceUsd`. Keeper pulls
+  ask mids from Bob's Watches AJAX feed + The 1916 Company search using `queries` in
+  `feeds.json`; caches to `feeds-cache.json`; `fallbackUsd` only if listings are empty /
+  inquire-only. WL500 recomputed from live watch targets.
+- **DIAMOND removed (v4.10)** — dropped from `markets.bootstrap.json`, feeds, app catalog,
+  static site. On-chain DIAMOND accounts may still exist unused (non-upgradeable program).
 
 ---
 
@@ -143,7 +149,7 @@ and **24 watch markets** — each with `init_market_oracle` (seeded price) + `in
 > top-ups. ~7 SOL used for non-upgradeable deploy. Airdrop cron still runs (`TARGET_SOL=100`).
 
 Markets created (market_id → oracle): `WL500-PERP`, `GOLD-PERP`, `SILVER-PERP`, `PLATINUM-PERP`,
-`DIAMOND-PERP`, `ROLEX-SUB-PERP`, `PATEK-NAUTILUS-PERP`, `AP-ROYAL-OAK-PERP`, `OMEGA-SPEEDY-PERP`,
+`DIAMOND-PERP` (removed from catalog v4.10), `ROLEX-SUB-PERP`, `PATEK-NAUTILUS-PERP`, `AP-ROYAL-OAK-PERP`, `OMEGA-SPEEDY-PERP`,
 `CARTIER-SANTOS-PERP`, `RM-11-PERP`, `VC-OVERSEAS-PERP`, `IWC-PILOT-PERP`, `TAG-CARRERA-PERP`,
 `ROLEX-DAYTONA-PERP`, `PP-ANNUAL-PERP`, `AP-OFFSHORE-PERP`, `OMEGA-SEAMASTER-PERP`,
 `CARTIER-TANK-PERP`, `HUBLOT-BB-PERP`, `JLC-REVERSO-PERP`, `PANERAI-LUM-PERP`, `BREITLING-NAV-PERP`,
@@ -312,7 +318,8 @@ pm2 save
 ```
 
 **DEVnet live prices (2026-07-14):** `keeper/price-feeds.js` + `keeper/feeds.json`; `/health`
-reports `price_mode: "live"`. Yahoo metals; curated watch mids; WL500 basket; ramp ≤15%/tick.
+reports `price_mode: "live"`. Yahoo metals; **auto watch mids** (Bob's + 1916); WL500 basket;
+ramp ≤15%/tick. Edit `queries` / `fallbackUsd` only — not dollar mids.
 
 **DEVnet full-feature (2026-07-14):** Mint test USDC in CollateralPanel; SwapModal redirects to
 mint; `kronos-crank` settles funding / tries liq+SL-TP; `/daily-volume` from trades indexer.
@@ -337,7 +344,7 @@ Do these **in order**. Devnet program is `--final` and **cannot** be reused.
 | **C4** | Deploy | Prefer **upgradeable** first for bake-in, or `--final --use-quic` if you accept redeploy-on-bug. Cluster `mainnet-beta`, paid RPC recommended |
 | **C5** | Collateral mint | Point protocol at **real USDC** (`EPjFWdd5…Dt1v`), not the devnet test mint |
 | **C6** | Bootstrap | `initialize` → `initialize_pool` → `bootstrap-watch-markets.ts` with mainnet RPC/wallet; write new `markets.bootstrap.json`; `node scripts/gen-app-markets.js`; copy IDL |
-| **C7** | Real oracle feeds | **Partial on DEVnet** — Yahoo metals + curated `feeds.json` watches + WL500. Mainnet: paid Chrono24/WatchCharts (or similar); keep ±15% ramp + isolation |
+| **C7** | Real oracle feeds | **DEVnet done for metals + watches** (Yahoo + Bob's/1916 auto mids). Mainnet: paid Chrono24/WatchCharts still nicer for depth; keep ±15% ramp + isolation |
 | **C8** | Keeper hosting | Move keeper off the Mac mini to a VPS; named Cloudflare tunnel or public HTTPS; pm2/systemd; alerts (Telegram already stubbed) |
 | **C9** | App cutover | Point production app env at mainnet program/PDAs/RPC; stable domain (`app.kronosliquid.xyz`); turn on HTTPS everywhere |
 | **C10** | Auth (optional) | Provision Postgres + `JWT_SECRET` + mailer if email accounts are required |
@@ -369,8 +376,9 @@ write-transaction rate limits. Key facts:
 
 - **Price mode: live** (`price-feeds.js` + `feeds.json`). `/health` → `"price_mode":"live"`.
   - **Metals** — Yahoo Finance (gold / silver / platinum).
-  - **Watches** — curated mids in `keeper/feeds.json` (edit to refresh Chrono24-style refs).
-  - **WL500** — basket from watch constituents (~$5,000 level).
+  - **Watches** — auto mid from Bob's Watches + The 1916 Company (`queries` in `feeds.json`).
+    Cache: `keeper/feeds-cache.json`. Fallback only when listings lack ask prices.
+  - **WL500** — basket from live watch targets (~$5,000 level).
   - Targets refresh ~every 3 min; on-chain push still ramps **≤15%/tick** (on-chain cap ~20%).
   - Random walk remains only as **fallback** if live targets unavailable.
 - Pushes all markets in batched txs; batch failure → per-market retry. 429 backoff.
@@ -382,6 +390,15 @@ write-transaction rate limits. Key facts:
 
 **pm2 processes (expected online):** `kronos-keeper`, `kronos-crank`, `kronos-app`,
 `kronos-api-tunnel`, `kronos-app-tunnel`.
+
+**Keeper update cadence:**
+
+| Loop | Default | Env var | What it does |
+|------|---------|---------|--------------|
+| On-chain oracle push | **every 6.5 s** | `UPDATE_INTERVAL_MS` (min 5500) | Ramps each market ≤15% toward its target |
+| External feed refresh | **every 3 min** | `FEED_REFRESH_MS` (min 60s) | Yahoo metals + Bob's/1916 watch mids |
+| History points | **every 10 s** | (code `RECORD_INTERVAL_S`) | Chart / day-% history |
+| History disk persist | **every 5 min** | — | Writes `keeper/history.json` |
 
 **Boot persistence (DONE 2026-07-14):** user LaunchAgent
 `~/Library/LaunchAgents/com.kronos.pm2.plist` runs `pm2 resurrect` at login (no sudo).
@@ -420,8 +437,10 @@ Then re-run the bootstrap scripts with `ANCHOR_PROVIDER_URL=https://api.mainnet-
 ## 9. Git history
 
 ```
-(uncommitted) v4.8 — ticker last-good price, dayChangePercent, positions UX, 2dp prices
+(pending push) v4.10 — auto watch mids (Bob's/1916); remove DIAMOND; keeper cadence docs
+ffa16f6 Stabilize ticker on live prices with day % change and refresh handbook.
 9fad861 Ship live DEVnet oracle feeds: Yahoo metals, curated watches, WL500 basket.
+
 f01d468 Ship full DEVnet product: mint test USDC, crank keeper, and volume wiring.
 8b63940 Ship Mac mini public app hosting, WL500 methodology, and mainnet preflight.
 f69aac2 Document v4.4 full-deploy roadmap and keeper boot persistence.
@@ -449,8 +468,8 @@ The vendored protocol was copied **without** upstream git history (no `origin`, 
    machine sleep still stops price pushes and the history API.
 4. **Program is non-upgradeable** (`--final` on devnet). Any bug fix requires a new deploy with a
    new program ID, plus updating all env vars / addresses.ts defaults.
-5. **Watch mids are curated** — edit `keeper/feeds.json` to refresh Chrono24-style refs; metals
-   are live Yahoo. Ramp ≤15%/tick when far from target.
+5. **Watch queries are curated, prices are not** — edit `queries` in `keeper/feeds.json` if a
+   model ref changes; dollar mids auto-refresh. Metals are live Yahoo. Ramp ≤15%/tick.
 6. **Quick-tunnel URLs rotate** — do not hardcode; read `app/public-app-url.txt` /
    `keeper/public-api-url.txt`.
 
@@ -460,6 +479,8 @@ The vendored protocol was copied **without** upstream git history (no `origin`, 
 
 | Ver | Date | Notes |
 |-----|------|-------|
+| **4.10** | 2026-07-14 | Remove DIAMOND from catalog/feeds; document keeper intervals |
+| **4.9** | 2026-07-14 | Auto watch mids from Bob's + 1916; no hand price edits |
 | **4.8** | 2026-07-14 | Ticker stability + day %; live-feed keeper docs; positions UX; always-update rule |
 | 4.7 | 2026-07-14 | Live feeds (Yahoo + feeds.json + WL500); DEVnet parity status |
 | 4.6 | 2026-07-14 | Mint test USDC, crank, daily volume |

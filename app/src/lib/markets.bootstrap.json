@@ -26,11 +26,6 @@
       "market": "HShtmTseCxykhV4uqZGa9uZuh464prWcY1r8uNED3bh8"
     },
     {
-      "marketId": "DIAMOND-PERP",
-      "oracle": "6d95HD5RirZraqLg7se1RXNRe8abgNcNxBFNPY3UdPxc",
-      "market": "5gaMEM2WGun5KHbSg9chZRszDAh8kDQaVU9JQTNVThXv"
-    },
-    {
       "marketId": "ROLEX-SUB-PERP",
       "oracle": "GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ",
       "market": "3T2ifQviBnon1mWth1JuFn38sKK9pS2S8KZbPHE1h8Bp"

@@ -47,7 +47,6 @@ const MARKETS: MarketConfig[] = [
   { marketId: "GOLD-PERP", seedPrice: 2348.5 },
   { marketId: "SILVER-PERP", seedPrice: 28.65 },
   { marketId: "PLATINUM-PERP", seedPrice: 982.4 },
-  { marketId: "DIAMOND-PERP", seedPrice: 4850.0 },
   { marketId: "ROLEX-SUB-PERP", seedPrice: 14250.0 },
   { marketId: "PATEK-NAUTILUS-PERP", seedPrice: 98400.0 },
   { marketId: "AP-ROYAL-OAK-PERP", seedPrice: 52800.0 },

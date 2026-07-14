@@ -45,6 +45,7 @@ keeper/prices.json
 tsconfig.tsbuildinfo
 **/tsconfig.tsbuildinfo
 keeper/history.json
+keeper/feeds-cache.json
 keeper/trades.json
 keeper/indexer-cursor.json
 keeper/public-api-url.txt

@@ -21,7 +21,6 @@
       "GOLD-PERP": "69LH9Z52mf25jxvrZMFAnfGp6Sw7whLGs7oKFDAjJKpY",
       "SILVER-PERP": "GUPesVEyUiPpYR6Uv5YeStMXxpU9oxZrMujASZSQvxqX",
       "PLATINUM-PERP": "FLYN91RZc8Hta45RXcqyiQxyc5nohaotLhvhrYo9zojP",
-      "DIAMOND-PERP": "6d95HD5RirZraqLg7se1RXNRe8abgNcNxBFNPY3UdPxc",
       "ROLEX-SUB-PERP": "GR6QD45YKdgbQxVjzpigN22NsQqDd2TPxjsqoCiw9feJ",
       "PATEK-NAUTILUS-PERP": "5CynvHovsGzyRAhWymJWkcTStwFjHpqxeeu7YWGwJDDN",
       "AP-ROYAL-OAK-PERP": "BeKjGVEnwJRGwgRXNMHRUEBkubdAHZDezCJY4AAqUskm",

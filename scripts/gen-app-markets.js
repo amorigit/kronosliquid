@@ -19,7 +19,6 @@ const CATALOG = {
   "GOLD-PERP": { subtitle: "Gold \u00B7 XAU/USD \u00B7 Troy Oz Spot", badge: "COMMODITY", type: "INDEX" },
   "SILVER-PERP": { subtitle: "Silver \u00B7 XAG/USD \u00B7 Troy Oz Spot", badge: "COMMODITY", type: "INDEX" },
   "PLATINUM-PERP": { subtitle: "Platinum \u00B7 XPT/USD \u00B7 Troy Oz Spot", badge: "COMMODITY", type: "INDEX" },
-  "DIAMOND-PERP": { subtitle: "Diamond \u00B7 1ct Round Brilliant \u00B7 Rapaport Index", badge: "COMMODITY", type: "INDEX" },
   "ROLEX-SUB-PERP": { subtitle: "Rolex Submariner \u00B7 126610LN \u00B7 Oystersteel", badge: "HOT", type: "CARDS" },
   "PATEK-NAUTILUS-PERP": { subtitle: "Patek Philippe \u00B7 Nautilus 5711/1A", badge: "", type: "CARDS" },
   "AP-ROYAL-OAK-PERP": { subtitle: "Audemars Piguet \u00B7 Royal Oak 15500ST", badge: "NEW", type: "CARDS" },

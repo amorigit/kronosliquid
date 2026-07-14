@@ -67,18 +67,6 @@ export const MARKETS: Market[] = [
     "type": "INDEX"
   },
   {
-    "id": "DIAMOND",
-    "name": "DIAMOND-PERP",
-    "subtitle": "Diamond · 1ct Round Brilliant · Rapaport Index",
-    "badge": "COMMODITY",
-    "live": true,
-    "oracleAddress": "6d95HD5RirZraqLg7se1RXNRe8abgNcNxBFNPY3UdPxc",
-    "programId": "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP",
-    "image": "/watches/diamond.jpg",
-    "priceApiMarket": "DIAMOND-PERP",
-    "type": "INDEX"
-  },
-  {
     "id": "ROLEX-SUB",
     "name": "ROLEX-SUB-PERP",
     "subtitle": "Rolex Submariner · 126610LN · Oystersteel",

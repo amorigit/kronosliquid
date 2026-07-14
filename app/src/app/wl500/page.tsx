@@ -51,7 +51,7 @@ export default function Wl500Page() {
             <li>
               <strong className="text-primary">Universe:</strong> all live watch perps on Kronos
               (Rolex, Patek, AP, Omega, Cartier, RM, VC, IWC, TAG, Hublot, JLC, Panerai, Breitling).
-              Commodity markets (GOLD, SILVER, PLATINUM, DIAMOND) are <em>not</em> in the basket.
+              Commodity markets (GOLD, SILVER, PLATINUM) are <em>not</em> in the basket.
             </li>
             <li>
               <strong className="text-primary">Weighting:</strong> equal weight (1/19 each). No market-cap
