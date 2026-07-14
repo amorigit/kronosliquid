@@ -6,13 +6,15 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
+# Live non-upgradeable deploy (2026-06-30). Keypair backup: keys/devnet-backup/
 kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 
 [programs.localnet]
 kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
 
 [programs.mainnet]
-kronos = "HEZgFANPKb5hCCDZYzz1gdnbsD7C52gAPx5GNU1ifziP"
+# New program ID for mainnet (C1 2026-07-14). Keypair: keys/mainnet/ + target/deploy/
+kronos = "6pYTo53Br89ji26huJKRiTyaQCF8eeTpsSSZmsaMRPxy"
 
 [provider]
 cluster = "devnet"

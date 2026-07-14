@@ -32,6 +32,7 @@ export function CollateralPanel({ margin, onRefresh }: Props) {
   const [mode, setMode] = useState<Mode>("idle");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [minting, setMinting] = useState(false);
   const [txStatus, setTxStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [walletBalanceRaw, setWalletBalanceRaw] = useState<number>(0);
@@ -60,6 +61,48 @@ export function CollateralPanel({ margin, onRefresh }: Props) {
     return () => { cancelled = true; clearInterval(id); };
   }, [connection, publicKey]);
 
+  async function handleMintTestUsdc() {
+    if (!publicKey || !anchorWallet) return;
+    setMinting(true);
+    setTxStatus(null);
+    try {
+      const program = getProgram(connection, anchorWallet);
+      const ata = await getAssociatedTokenAddress(USDC_MINT, publicKey);
+      const preIxs = [];
+      try {
+        await getAccount(connection, ata);
+      } catch {
+        preIxs.push(createAssociatedTokenAccountInstruction(publicKey, ata, publicKey, USDC_MINT));
+      }
+
+      const builder = (program.methods as any)
+        .mintDevnetUsdc()
+        .accounts({
+          user: publicKey,
+          protocolState: PROTOCOL_STATE,
+          usdcMint: USDC_MINT,
+          userTokenAccount: ata,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        });
+
+      if (preIxs.length) await builder.preInstructions(preIxs).rpc();
+      else await builder.rpc();
+
+      setTxStatus({ type: "success", msg: "Minted 1,000 test USDC (devnet)" });
+      try {
+        const acc = await getAccount(connection, ata, "confirmed");
+        const raw = Number(acc.amount);
+        setWalletBalanceRaw(raw);
+        setWalletBalance(raw / 1e6);
+      } catch { /* ignore */ }
+      setTimeout(onRefresh, 1500);
+    } catch (e: any) {
+      setTxStatus({ type: "error", msg: e?.message ?? "Mint failed" });
+    } finally {
+      setMinting(false);
+    }
+  }
+
   if (!connected) return null;
 
   const freeCollateral = rawToUsdc(margin.collateral);
@@ -84,7 +127,7 @@ export function CollateralPanel({ margin, onRefresh }: Props) {
         const acc = await getAccount(connection, ata, "confirmed");
         actualRaw = Number(acc.amount);
       } catch {
-        setTxStatus({ type: "error", msg: "No USDC token account found. Swap SOL → USDC first." });
+        setTxStatus({ type: "error", msg: "No USDC token account. Click “Mint 1,000 test USDC” first." });
         setLoading(false);
         return;
       }
@@ -209,6 +252,14 @@ export function CollateralPanel({ margin, onRefresh }: Props) {
           Wallet: ${walletBalance < 0.01 ? walletBalance.toFixed(6) : walletBalance.toFixed(2)} USDC
         </div>
       )}
+
+      <button
+        onClick={handleMintTestUsdc}
+        disabled={loading || minting}
+        className="w-full py-2.5 text-xs font-bold border border-primary/40 text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+      >
+        {minting ? "Minting…" : "Mint 1,000 test USDC (devnet)"}
+      </button>
 
       {/* Deposit / Withdraw buttons */}
       {mode === "idle" ? (

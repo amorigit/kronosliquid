@@ -42,5 +42,22 @@ module.exports = {
       merge_logs: true,
       log_date_format: "YYYY-MM-DDTHH:mm:ssZ",
     },
+    {
+      name: "kronos-crank",
+      script: "crank-keeper.js",
+      cwd: __dirname,
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: "30s",
+      restart_delay: 5000,
+      max_memory_restart: "300M",
+      out_file: "./logs/crank-out.log",
+      error_file: "./logs/crank-err.log",
+      merge_logs: true,
+      log_date_format: "YYYY-MM-DDTHH:mm:ssZ",
+      env: {
+        NODE_ENV: "production",
+      },
+    },
   ],
 };

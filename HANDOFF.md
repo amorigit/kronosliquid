@@ -1,10 +1,11 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.5
+**Document version:** 4.6
 **Date:** 2026-07-14
-**Status:** Program is **fully bootstrapped on devnet**. Static site at kronosliquid.xyz.
-Keeper + **public Next.js trading app** run on the Mac mini under pm2, exposed via Cloudflare
-quick tunnels (Vercel skipped — account login unavailable). See §7 for Phase C (mainnet).
+**Status:** **Full DEVnet product** (test SOL only — not mainnet). Program `HEZg…ziP` live with
+24 markets. Public Next.js app + price keeper + **crank keeper** (funding/liq/SL-TP) on Mac mini
+via Cloudflare tunnels. Users mint test USDC in-app. Mainnet keypair `6pYT…` kept in
+`keys/mainnet/` for later; live stack stays on DEVnet.
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
@@ -289,7 +290,9 @@ cd app && npm run build && pm2 restart kronos-app
 pm2 save
 ```
 
-**Next actionable item:** Phase **C0** go/no-go, then **C1** new mainnet program keypair (do not reuse HEZg…). Run `./scripts/prepare-mainnet-check.sh` anytime for a read-only preflight. Quick-tunnel app URL: `cat app/public-app-url.txt`.
+**DEVnet full-feature (2026-07-14):** Mint test USDC in CollateralPanel; SwapModal redirects to mint; `kronos-crank` settles funding / tries liq+SL-TP; `/daily-volume` from trades indexer. App: `cat app/public-app-url.txt`.
+
+**Mainnet** remains optional later (keypair `6pYTo53Br89ji26huJKRiTyaQCF8eeTpsSSZmsaMRPxy` in `keys/mainnet/`). Run `./scripts/prepare-mainnet-check.sh` before C1+.
 
 **2026-07-14 follow-up:** mainnet preflight script added (`scripts/prepare-mainnet-check.sh` — 8 pass / 2 warn). Pages HTTPS still blocked (no cert yet). Public app still serving via Cloudflare tunnel.
 

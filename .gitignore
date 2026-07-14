@@ -17,6 +17,8 @@ keeper/admin.json
 **/id.json
 *.pem
 keys/devnet/
+keys/devnet-backup/
+keys/mainnet/
 
 # Dependencies
 node_modules/
@@ -47,3 +49,4 @@ keeper/trades.json
 keeper/indexer-cursor.json
 keeper/public-api-url.txt
 app/public-app-url.txt
+keeper/crank-stats.json

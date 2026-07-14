@@ -255,8 +255,22 @@ function startApi() {
         keeper: {
           uptime_minutes: Math.floor((Date.now() - startedAt) / 60000),
         },
-        liquidation: { checks_1h: 0 },
-        funding: { settlements_24h: 0 },
+        liquidation: (() => {
+          try {
+            const s = JSON.parse(fs.readFileSync(path.join(__dirname, "crank-stats.json"), "utf8"));
+            return { checks_1h: s.liquidation_checks_1h || 0, liquidations_1h: s.liquidations_1h || 0 };
+          } catch {
+            return { checks_1h: 0, liquidations_1h: 0 };
+          }
+        })(),
+        funding: (() => {
+          try {
+            const s = JSON.parse(fs.readFileSync(path.join(__dirname, "crank-stats.json"), "utf8"));
+            return { settlements_24h: s.funding_settlements_1h || 0, settlements_1h: s.funding_settlements_1h || 0 };
+          } catch {
+            return { settlements_24h: 0, settlements_1h: 0 };
+          }
+        })(),
         markets: Object.fromEntries(
           Object.entries(state)
             .filter(([, s]) => s)
@@ -292,7 +306,22 @@ function startApi() {
     }
     if (route === "/spins") return json(res, 200, { spins: [] });
     if (route === "/spin-eligible") return json(res, 200, { eligible: false });
-    if (route === "/daily-volume") return json(res, 200, { volume: 0 });
+    if (route === "/daily-volume") {
+      let volume = 0;
+      try {
+        const store = JSON.parse(fs.readFileSync(path.join(__dirname, "trades.json"), "utf8"));
+        const day = q.get("date"); // YYYY-MM-DD optional
+        const trades = Array.isArray(store.trades) ? store.trades : [];
+        for (const t of trades) {
+          const ts = t.timestamp || t.ts || 0;
+          const d = new Date(ts * 1000).toISOString().slice(0, 10);
+          if (!day || d === day) volume += Number(t.notional || t.volume || 0);
+        }
+      } catch {
+        /* empty */
+      }
+      return json(res, 200, { volume, date: q.get("date") || null });
+    }
     if (route === "/card-info") return json(res, 404, { error: "Not available" });
 
     return json(res, 404, { error: "Not found" });
