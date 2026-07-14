@@ -1,7 +1,8 @@
 "use client";
 
-import { useOracle } from "@/hooks/useOracle";
+import { useOracle, dayChangePercent } from "@/hooks/useOracle";
 import { Market } from "@/lib/markets";
+import { formatUsdExact } from "@/lib/utils";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -14,12 +15,7 @@ export function BinderCard({
 }) {
   const { price, readings, isLoading } = useOracle(market.oracleAddress, market.priceApiMarket);
   const priceUsd = price / 1_000_000;
-
-  let pctChange = 0;
-  if (readings.length >= 2) {
-    const oldest = readings[0].price / 1_000_000;
-    if (oldest > 0) pctChange = ((priceUsd - oldest) / oldest) * 100;
-  }
+  const pctChange = dayChangePercent(price, readings);
 
   const noPrice = !isLoading && price === 0;
   const disabled = !market.live || noPrice;
@@ -155,7 +151,7 @@ export function BinderCard({
               className="font-mono font-bold"
               style={{ color: "#fff", fontSize: 15 }}
             >
-              {isLoading ? "-.--" : noPrice ? "--" : `$${priceUsd.toFixed(2)}`}
+              {isLoading ? "-.--" : noPrice ? "--" : `$${formatUsdExact(priceUsd)}`}
             </span>
             {!isLoading && !noPrice && (
               <span

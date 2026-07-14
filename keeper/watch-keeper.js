@@ -63,7 +63,7 @@ const HISTORY_PATH = path.join(__dirname, "history.json");
 const FETCH_CHUNK = 8;          // oracle accounts per read call
 const TX_CHUNK = 8;             // markets per push transaction
 const MAX_STEP = 0.15;          // hard clamp per update (< on-chain ~20% deviation cap)
-const RECORD_INTERVAL_S = 30;   // history granularity
+const RECORD_INTERVAL_S = 10;   // history granularity (live chart feed)
 const HISTORY_MAX_POINTS = (48 * 3600) / RECORD_INTERVAL_S; // 48 h
 const PERSIST_INTERVAL_MS = 5 * 60 * 1000;
 

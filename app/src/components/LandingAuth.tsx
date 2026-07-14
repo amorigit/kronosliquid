@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
 import { Keypair } from "@solana/web3.js";
-import { useOracle } from "@/hooks/useOracle";
+import { useOracle, dayChangePercent } from "@/hooks/useOracle";
 import {
   setSessionFromPrivateKey,
   setSavedEmail,
@@ -40,11 +40,7 @@ export function LandingAuth({ onPass }: { onPass?: () => void } = {}) {
   // Live price
   const { price: rawPrice, readings, isLoading: priceLoading } = useOracle(ROLEX_SUB_ORACLE, "ROLEX-SUB-PERP");
   const livePrice = rawPrice / 1_000_000;
-  let pctChange = 0;
-  if (readings.length >= 2) {
-    const oldest = readings[0].price / 1_000_000;
-    if (oldest > 0) pctChange = ((livePrice - oldest) / oldest) * 100;
-  }
+  const pctChange = dayChangePercent(rawPrice, readings);
 
   // Simulated PnL from live price (entry = price - 5%, 2x leverage)
   const entryPrice = livePrice > 0 ? livePrice * 0.95 : 0;

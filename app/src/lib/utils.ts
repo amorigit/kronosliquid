@@ -20,18 +20,29 @@ export function usdcToRaw(usdc: number): number {
   return Math.floor(usdc * USDC_SCALE);
 }
 
+/**
+ * USD price string from on-chain micro-USD (u64).
+ * Always shows exactly 2 digits after the decimal point.
+ */
 export function formatPrice(raw: BN | number): string {
-  return rawToPrice(raw).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const n = typeof raw === "number" ? raw : raw.toNumber();
+  if (!Number.isFinite(n)) return "—";
+  return (n / PRICE_SCALE).toFixed(2);
+}
+
+/**
+ * USD display from a float already scaled by 1e6.
+ * Always shows exactly 2 digits after the decimal point.
+ */
+export function formatUsdExact(usd: number): string {
+  if (!Number.isFinite(usd)) return "—";
+  return usd.toFixed(2);
 }
 
 export function formatUsdc(raw: BN | number, decimals = 2): string {
-  return rawToUsdc(raw).toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  const usd = rawToUsdc(raw);
+  if (!Number.isFinite(usd)) return "—";
+  return usd.toFixed(decimals);
 }
 
 export function formatSol(lamports: number): string {

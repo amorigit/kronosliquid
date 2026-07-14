@@ -1,36 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useConnection } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { getReadonlyProgram } from "@/lib/program";
+import { useOracle } from "./useOracle";
+import { MARKETS } from "@/lib/markets";
 
+/**
+ * Mark price for a position's oracle — uses the shared keeper price cache
+ * (polled every ~5s) so PnL stays in sync with the ticker.
+ */
 export function usePositionPrice(oracleAddress: string): number {
-  const { connection } = useConnection();
-  const [price, setPrice] = useState(0);
-
-  useEffect(() => {
-    if (!oracleAddress) return;
-    let cancelled = false;
-    let pubkey: PublicKey;
-    try {
-      pubkey = new PublicKey(oracleAddress);
-    } catch {
-      return;
-    }
-
-    const fetch = async () => {
-      try {
-        const program = getReadonlyProgram(connection);
-        const oracle = await (program.account as any).oracleAccount.fetch(pubkey);
-        if (!cancelled) setPrice(oracle.price.toNumber());
-      } catch { /* ignore */ }
-    };
-
-    fetch();
-    const id = setInterval(fetch, 10_000);
-    return () => { cancelled = true; clearInterval(id); };
-  }, [connection, oracleAddress]);
-
+  const market = MARKETS.find((m) => m.oracleAddress === oracleAddress);
+  const { price } = useOracle(oracleAddress, market?.priceApiMarket);
   return price;
 }

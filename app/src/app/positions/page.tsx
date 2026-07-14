@@ -27,6 +27,7 @@ import {
   calcPnl,
   calcLiqPriceLong,
   calcLiqPriceShort,
+  formatUsdExact,
 } from "@/lib/utils";
 import { MARKETS } from "@/lib/markets";
 import { TradeHistory } from "@/components/TradeHistory";
@@ -82,8 +83,8 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
 
   const [loading, setLoading] = useState(false);
   const [txStatus, setTxStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
-  const [slInput, setSlInput] = useState(pos.slPrice ? rawToPrice(pos.slPrice).toFixed(2) : "");
-  const [tpInput, setTpInput] = useState(pos.tpPrice ? rawToPrice(pos.tpPrice).toFixed(2) : "");
+  const [slInput, setSlInput] = useState(pos.slPrice ? formatUsdExact(rawToPrice(pos.slPrice)) : "");
+  const [tpInput, setTpInput] = useState(pos.tpPrice ? formatUsdExact(rawToPrice(pos.tpPrice)) : "");
   const [marginMode, setMarginMode] = useState<"idle" | "add" | "remove">("idle");
   const [marginInput, setMarginInput] = useState("");
   const [confirmClose, setConfirmClose] = useState(false);
@@ -202,6 +203,8 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
         oracle: new PublicKey(oracleAddr),
       }).rpc();
       setTxStatus({ type: "success", msg: "SL/TP updated" });
+      onMarginRefresh();
+      setTimeout(onMarginRefresh, 1500);
     } catch (e: any) {
       setTxStatus({ type: "error", msg: e?.message ?? "Failed" });
     } finally {
@@ -228,6 +231,8 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
       setTxStatus({ type: "success", msg: `${marginMode === "add" ? "+" : "-"}$${amt.toFixed(2)} margin` });
       setMarginMode("idle");
       setMarginInput("");
+      onMarginRefresh();
+      setTimeout(onMarginRefresh, 1500);
     } catch (e: any) {
       setTxStatus({ type: "error", msg: e?.message ?? "Failed" });
     } finally {
@@ -305,9 +310,9 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
         {[
           ["Size", `$${notionalUsdc.toFixed(2)}`],
           ["Collateral", `$${collateralUsdc.toFixed(2)}`],
-          ["Entry", `$${entryPriceUsd.toFixed(2)}`],
-          ["Current", `$${currentPriceUsd.toFixed(2)}`],
-          ["Liq Price", `$${liqPrice.toFixed(2)}`],
+          ["Entry", `$${formatUsdExact(entryPriceUsd)}`],
+          ["Current", `$${formatUsdExact(currentPriceUsd)}`],
+          ["Liq Price", `$${formatUsdExact(liqPrice)}`],
           ["Time", timeStr],
         ].map(([label, value]) => (
           <div key={label} style={{ padding: "8px 16px", background: "#111" }}>
@@ -353,12 +358,12 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               <div>
                 <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>
-                  SL {slPriceUsd ? `($${slPriceUsd.toFixed(2)})` : "(not set)"}
+                  SL {slPriceUsd ? `($${formatUsdExact(slPriceUsd)})` : "(not set)"}
                 </div>
                 <input
                   type="number" step="0.01" value={slInput}
                   onChange={(e) => setSlInput(e.target.value)}
-                  placeholder={isLong ? `< ${entryPriceUsd.toFixed(2)}` : `> ${entryPriceUsd.toFixed(2)}`}
+                  placeholder={isLong ? `< ${formatUsdExact(entryPriceUsd)}` : `> ${formatUsdExact(entryPriceUsd)}`}
                   style={{
                     width: "100%", background: "transparent", fontSize: 12, color: "#ccc",
                     border: `1px solid ${slVal > 0 && !slValid ? "#ff3333" : "#333"}`,
@@ -368,12 +373,12 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
               </div>
               <div>
                 <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>
-                  TP {tpPriceUsd ? `($${tpPriceUsd.toFixed(2)})` : "(not set)"}
+                  TP {tpPriceUsd ? `($${formatUsdExact(tpPriceUsd)})` : "(not set)"}
                 </div>
                 <input
                   type="number" step="0.01" value={tpInput}
                   onChange={(e) => setTpInput(e.target.value)}
-                  placeholder={isLong ? `> ${entryPriceUsd.toFixed(2)}` : `< ${entryPriceUsd.toFixed(2)}`}
+                  placeholder={isLong ? `> ${formatUsdExact(entryPriceUsd)}` : `< ${formatUsdExact(entryPriceUsd)}`}
                   style={{
                     width: "100%", background: "transparent", fontSize: 12, color: "#ccc",
                     border: `1px solid ${tpVal > 0 && !tpValid ? "#ff3333" : "#333"}`,
@@ -497,7 +502,7 @@ function PositionCardStandalone({ pos, freeCollateral, onMarginRefresh }: { pos:
             </button>
           ) : (
             <div style={{ background: "#0d0d0d", border: "1px solid #1a1a1a", padding: 12 }}>
-              <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>Close at ${currentPriceUsd.toFixed(2)}</div>
+              <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>Close at ${formatUsdExact(currentPriceUsd)}</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 11, marginBottom: 12 }}>
                 <div>
                   <span style={{ color: "#666" }}>PnL: </span>

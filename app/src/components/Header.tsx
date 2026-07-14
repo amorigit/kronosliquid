@@ -8,7 +8,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletButton } from "./WalletButton";
 import { NotificationBell } from "./NotificationBell";
 import { Logo } from "./Logo";
-import { useOracle, OracleHealth } from "@/hooks/useOracle";
+import { useOracle, dayChangePercent, OracleHealth } from "@/hooks/useOracle";
+import { formatUsdExact } from "@/lib/utils";
 import { getSavedEmail, clearSessionWallet, SessionWalletName } from "@/lib/session-wallet";
 import { clearLastWallet, setForceDisconnect } from "@/providers/SessionWalletProvider";
 import { MARKETS } from "@/lib/markets";
@@ -81,19 +82,13 @@ function OracleDot() {
 function useTickerItem(m: typeof MARKETS[0]) {
   const { price, readings, isLoading } = useOracle(m.oracleAddress, m.priceApiMarket);
   const priceUsd = price / 1_000_000;
-
-  let pctChange = 0;
-  if (readings.length >= 2) {
-    const oldest = readings[0].price / 1_000_000;
-    if (oldest > 0) pctChange = ((priceUsd - oldest) / oldest) * 100;
-  }
-
+  const pctChange = dayChangePercent(price, readings);
   const positive = pctChange >= 0;
   return {
     id: m.id,
     name: m.name,
-    price: isLoading ? "-.--" : priceUsd.toFixed(2),
-    change: isLoading ? "+0.00%" : `${positive ? "+" : ""}${pctChange.toFixed(1)}%`,
+    price: isLoading ? "-.--" : formatUsdExact(priceUsd),
+    change: isLoading ? "+0.00%" : `${positive ? "+" : ""}${pctChange.toFixed(2)}%`,
     color: isLoading ? "#666" : positive ? "#00ff41" : "#ff3333",
     live: m.live,
   };
@@ -102,13 +97,26 @@ function useTickerItem(m: typeof MARKETS[0]) {
 // ─── Desktop Ticker Bar ─────────────────────────────────────────────────────────
 
 function TickerBar() {
-  const item0 = useTickerItem(MARKETS[0]);
-  const item1 = useTickerItem(MARKETS[1]);
-  const item2 = useTickerItem(MARKETS[2]);
-  const item3 = useTickerItem(MARKETS[3]);
-  const items = [item0, item1, item2, item3];
+  const tickerMarkets = MARKETS.filter((m) => m.live).slice(0, 12);
+  return <TickerBarInner markets={tickerMarkets.length ? tickerMarkets : MARKETS.slice(0, 4)} />;
+}
 
-  const copies = Math.max(6, Math.ceil(12 / items.length));
+function TickerBarInner({ markets }: { markets: typeof MARKETS }) {
+  const t0 = useTickerItem(markets[0] ?? MARKETS[0]);
+  const t1 = useTickerItem(markets[1] ?? MARKETS[0]);
+  const t2 = useTickerItem(markets[2] ?? MARKETS[0]);
+  const t3 = useTickerItem(markets[3] ?? MARKETS[0]);
+  const t4 = useTickerItem(markets[4] ?? MARKETS[0]);
+  const t5 = useTickerItem(markets[5] ?? MARKETS[0]);
+  const t6 = useTickerItem(markets[6] ?? MARKETS[0]);
+  const t7 = useTickerItem(markets[7] ?? MARKETS[0]);
+  const t8 = useTickerItem(markets[8] ?? MARKETS[0]);
+  const t9 = useTickerItem(markets[9] ?? MARKETS[0]);
+  const t10 = useTickerItem(markets[10] ?? MARKETS[0]);
+  const t11 = useTickerItem(markets[11] ?? MARKETS[0]);
+  const all = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11];
+  const items = all.slice(0, Math.max(4, Math.min(markets.length, 12)));
+  const copies = Math.max(4, Math.ceil(16 / items.length));
   const repeated = Array.from({ length: copies }, () => items).flat();
 
   return (
@@ -121,7 +129,7 @@ function TickerBar() {
         .ticker-track {
           display: flex;
           width: max-content;
-          animation: ticker-scroll 100s linear infinite;
+          animation: ticker-scroll 80s linear infinite;
           will-change: transform;
         }
         .ticker-track:hover {
@@ -141,10 +149,11 @@ function TickerBar() {
           position: "relative",
         }}
       >
-        <div className="ticker-track">
+        {/* Stable track node — only text nodes update so CSS animation does not restart */}
+        <div className="ticker-track" key="kronos-ticker-track">
           {repeated.map((item, i) => (
             <span
-              key={i}
+              key={`t-${item.id}-${i}`}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -404,7 +413,7 @@ function MobileMenu({
             <OracleDot />
           </div>
           <div style={{ fontSize: 12, color: "#ccc" }}>
-            Oracle: {isLoading ? "-.--" : `$${priceUsd.toFixed(2)}`}
+            Oracle: {isLoading ? "-.--" : `$${formatUsdExact(priceUsd)}`}
           </div>
           {ago !== null && (
             <div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>
@@ -646,7 +655,7 @@ export function Header() {
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
             <OracleDot />
             <span style={{ fontSize: 11, color: "#888", fontFamily: "'JetBrains Mono', monospace" }}>
-              {oracleLoading ? "-.--" : `$${mobilePriceUsd.toFixed(2)}`}
+              {oracleLoading ? "-.--" : `$${formatUsdExact(mobilePriceUsd)}`}
             </span>
           </div>
         </div>

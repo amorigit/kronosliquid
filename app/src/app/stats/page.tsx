@@ -9,6 +9,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { MARKETS } from "@/lib/markets";
 import {
   rawToPrice,
+  formatUsdExact,
   rawToUsdc,
   bpsToPercent,
   calcSkewRate,
@@ -365,7 +366,7 @@ function StatsContent() {
               <div>
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Current Price</div>
                 <div className="text-xl md:text-2xl font-mono font-bold text-primary">
-                  ${currentPrice.toFixed(2)}
+                  ${formatUsdExact(currentPrice)}
                 </div>
               </div>
               <div>
@@ -404,19 +405,19 @@ function StatsContent() {
               <div className="bg-bg border border-border p-2 md:p-3">
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Session High</div>
                 <div className="text-xs md:text-sm font-mono font-semibold text-long">
-                  ${priceHigh.toFixed(2)}
+                  ${formatUsdExact(priceHigh)}
                 </div>
               </div>
               <div className="bg-bg border border-border p-2 md:p-3">
                 <div className="text-[10px] md:text-xs text-secondary mb-1">Session Low</div>
                 <div className="text-xs md:text-sm font-mono font-semibold text-short">
-                  ${priceLow.toFixed(2)}
+                  ${formatUsdExact(priceLow)}
                 </div>
               </div>
               <div className="bg-bg border border-border p-2 md:p-3">
                 <div className="text-[10px] md:text-xs text-secondary mb-1">EWMA Price</div>
                 <div className="text-xs md:text-sm font-mono font-semibold text-primary">
-                  ${healthData?.ewma?.toFixed(2) ?? currentPrice.toFixed(2)}
+                  ${healthData?.ewma != null ? formatUsdExact(healthData.ewma) : formatUsdExact(currentPrice)}
                 </div>
               </div>
               <div className="bg-bg border border-border p-2 md:p-3">

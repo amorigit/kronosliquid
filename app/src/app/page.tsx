@@ -6,7 +6,7 @@ import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, getAccount } from "@solana/spl-token";
 import BN from "bn.js";
 
-import { useOracle } from "@/hooks/useOracle";
+import { useOracle, getMarketChange, dayChangePercent } from "@/hooks/useOracle";
 import { useProtocolState } from "@/hooks/useProtocolState";
 import { useMarginAccount, Position } from "@/hooks/useMarginAccount";
 import { useMarket } from "@/hooks/useMarket";
@@ -16,7 +16,6 @@ import { useNotifications } from "@/providers/NotificationProvider";
 import { incrementTradeCount } from "@/components/SaveWalletSheet";
 import { getProgram } from "@/lib/program";
 import { MARKETS, Market, MarketType } from "@/lib/markets";
-import { getMarketChange } from "@/hooks/useOracle";
 import { LandingAuth } from "@/components/LandingAuth";
 import { BinderCard } from "@/components/BinderCard";
 import { SwapModal } from "@/components/SwapModal";
@@ -27,6 +26,7 @@ import {
   rawToUsdc,
   usdcToRaw,
   formatPrice,
+  formatUsdExact,
   calcLiqPriceLong,
   calcLiqPriceShort,
   calcPnl,
@@ -136,6 +136,8 @@ export default function TradePage() {
   const walletUsdc = useWalletUsdc();
   const { addNotification } = useNotifications();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [focusPositionIdx, setFocusPositionIdx] = useState<number | null>(null);
+  const [pendingOpen, setPendingOpen] = useState(false);
   const [showCardInfo, setShowCardInfo] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfoData | null>(null);
   const [tradeSheetOpen, setTradeSheetOpen] = useState(false);
@@ -154,7 +156,19 @@ export default function TradePage() {
 
   const handleRefresh = useCallback(() => { setRefreshKey((k) => k + 1); margin.refresh(); }, [margin]);
 
-
+  // After a successful open, wait for positions to appear then expand the newest one
+  useEffect(() => {
+    if (!pendingOpen) return;
+    if (margin.positions.length === 0) return;
+    const newest = [...margin.positions].sort((a, b) => b.openTimestamp - a.openTimestamp)[0];
+    if (newest) {
+      setFocusPositionIdx(newest.index);
+      setPendingOpen(false);
+      setTimeout(() => {
+        document.getElementById("positions-table")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [pendingOpen, margin.positions]);
 
   // Always show landing page on first load / refresh.
   // Module-level flag resets on page reload but persists across in-app navigation.
@@ -178,14 +192,8 @@ export default function TradePage() {
   const currentPrice = rawToPrice(oracle.price);
   const totalOI = marketState.longOi + marketState.shortOi;
 
-  // 24h change from readings
-  const readings = oracle.readings;
-  let change24h = 0;
-  if (readings.length >= 2) {
-    const first = rawToPrice(readings[0].price);
-    const last = rawToPrice(readings[readings.length - 1].price);
-    if (first > 0) change24h = ((last - first) / first) * 100;
-  }
+  // Day change vs local midnight open
+  const change24h = dayChangePercent(oracle.price, oracle.readings);
 
   // Binder filtering + sorting
   const binderMarkets = markets
@@ -338,13 +346,15 @@ export default function TradePage() {
         })()}
       </div>
 
-      {/* ── Positions bar (always visible below binder when connected) ── */}
-      {connected && margin.positions.length > 0 && (
+      {/* ── Positions bar (visible when connected with positions, or right after open) ── */}
+      {connected && (margin.positions.length > 0 || pendingOpen) && (
         <PositionsTable
           positions={margin.positions}
           protocol={protocol}
           margin={margin}
           onRefresh={handleRefresh}
+          focusIdx={focusPositionIdx}
+          onFocusConsumed={() => setFocusPositionIdx(null)}
         />
       )}
 
@@ -393,12 +403,12 @@ export default function TradePage() {
             {/* Market header stats */}
             <div className="flex items-center gap-4 md:gap-6 px-4 py-3 border-b border-border flex-wrap" style={{ backgroundColor: "#111" }}>
               <div>
-                <div className="text-lg font-bold text-long font-mono">${oracle.isLoading ? "\u2014" : currentPrice.toFixed(2)}</div>
+                <div className="text-lg font-bold text-long font-mono">${oracle.isLoading ? "\u2014" : formatUsdExact(currentPrice)}</div>
               </div>
               <div className="text-[11px]">
                 <div className="text-secondary text-[9px] uppercase font-mono">24h Change</div>
                 <div className={`font-mono ${change24h >= 0 ? "text-long" : "text-short"}`}>
-                  {readings.length < 2 ? "\u2014" : `${change24h >= 0 ? "+" : ""}${change24h.toFixed(2)}%`}
+                  {oracle.readings.length < 1 ? "\u2014" : `${change24h >= 0 ? "+" : ""}${change24h.toFixed(2)}%`}
                 </div>
               </div>
               <div className="text-[11px]">
@@ -460,17 +470,22 @@ export default function TradePage() {
                 onRefresh={handleRefresh}
                 oracleAddress={selectedMarket.oracleAddress}
                 marketId={selectedMarket.priceApiMarket}
-                onPositionOpened={() => {}}
+                onPositionOpened={() => {
+                  setPendingOpen(true);
+                  handleRefresh();
+                }}
               />
             </div>
 
             {/* Positions in sheet */}
-            {connected && margin.positions.length > 0 && (
+            {connected && (margin.positions.length > 0 || pendingOpen) && (
               <PositionsTable
                 positions={margin.positions}
                 protocol={protocol}
                 margin={margin}
                 onRefresh={handleRefresh}
+                focusIdx={focusPositionIdx}
+                onFocusConsumed={() => setFocusPositionIdx(null)}
               />
             )}
           </div>
@@ -485,13 +500,44 @@ export default function TradePage() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 type ChartPoint = { timestamp: number; price: number; open: number; high: number; low: number; close: number };
-type Timeframe = "1h" | "1d";
+type Timeframe = "live" | "1h" | "1d";
 type ChartMode = "line" | "candle";
 
-const TF_CONFIG: Record<Timeframe, { resolution: string }> = {
-  "1h": { resolution: "1h" },  // 1-hour candles, 7 days
-  "1d": { resolution: "1d" },  // 1-day candles, 30 days
+const TF_CONFIG: Record<Timeframe, { resolution: string; bucketSec: number }> = {
+  live: { resolution: "1m", bucketSec: 5 },   // live ticks → 5s buckets
+  "1h": { resolution: "1h", bucketSec: 3600 },
+  "1d": { resolution: "1d", bucketSec: 86400 },
 };
+
+/** Merge a live USD price into candle/line series (update last bar or append). */
+function applyLivePrice(points: ChartPoint[], usd: number, bucketSec: number, nowSec: number): ChartPoint[] {
+  if (!(usd > 0)) return points;
+  const bucket = Math.floor(nowSec / bucketSec) * bucketSec;
+  if (points.length === 0) {
+    return [{ timestamp: bucket, price: usd, open: usd, high: usd, low: usd, close: usd }];
+  }
+  const next = points.slice();
+  const last = next[next.length - 1];
+  if (last.timestamp === bucket) {
+    next[next.length - 1] = {
+      ...last,
+      high: Math.max(last.high, usd),
+      low: Math.min(last.low, usd),
+      close: usd,
+      price: usd,
+    };
+  } else if (bucket > last.timestamp) {
+    next.push({
+      timestamp: bucket,
+      price: usd,
+      open: last.close,
+      high: Math.max(last.close, usd),
+      low: Math.min(last.close, usd),
+      close: usd,
+    });
+  }
+  return next;
+}
 
 type CardInfoData = {
   productName: string | null;
@@ -519,36 +565,60 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof import("lightweight-charts").createChart> | null>(null);
   const seriesRef = useRef<any>(null);
-  const [timeframe, setTimeframe] = useState<Timeframe>("1h");
-  const [chartMode, setChartMode] = useState<ChartMode>("candle");
+  const priceLineRef = useRef<any>(null);
+  const entryLinesRef = useRef<any[]>([]);
+  const [timeframe, setTimeframe] = useState<Timeframe>("live");
+  const [chartMode, setChartMode] = useState<ChartMode>("line");
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
+  const [tickCount, setTickCount] = useState(0);
+  const lastLiveRef = useRef(0);
 
-  // Fetch price data from keeper API
+  // Seed from keeper candles / price history, then keep extending with live ticks
   useEffect(() => {
     let cancelled = false;
+    const { resolution, bucketSec } = TF_CONFIG[timeframe];
+
     const load = () => {
       setChartLoading(true);
-      const { resolution } = TF_CONFIG[timeframe];
-      fetch(`${API_BASE}/candles?market=${priceApiMarket}&resolution=${resolution}`)
+      const endpoint =
+        timeframe === "live"
+          ? `${API_BASE}/prices?market=${priceApiMarket}&limit=500`
+          : `${API_BASE}/candles?market=${priceApiMarket}&resolution=${resolution}`;
+
+      fetch(endpoint)
         .then((r) => r.json())
-        .then((data: { timestamp: number; open: number; high: number; low: number; close: number }[]) => {
+        .then((data: any) => {
           if (cancelled) return;
-          if (!Array.isArray(data) || data.length === 0) {
-            setChartData([]);
-            setChartLoading(false);
-            return;
+          let points: ChartPoint[] = [];
+          if (timeframe === "live" && Array.isArray(data)) {
+            // /prices → { timestamp, ewma, price }
+            for (const row of data) {
+              const usd = Number(row.ewma ?? row.price ?? 0);
+              const ts = Number(row.timestamp ?? 0);
+              if (!(usd > 0) || !(ts > 0)) continue;
+              points = applyLivePrice(points, usd, bucketSec, ts);
+            }
+          } else if (Array.isArray(data)) {
+            points = data.map((d: any) => ({
+              timestamp: d.timestamp,
+              price: d.close,
+              open: d.open,
+              high: d.high,
+              low: d.low,
+              close: d.close,
+            }));
+            points.sort((a, b) => a.timestamp - b.timestamp);
           }
-          const points: ChartPoint[] = data.map((d) => ({
-            timestamp: d.timestamp,
-            price: d.close,
-            open: d.open,
-            high: d.high,
-            low: d.low,
-            close: d.close,
-          }));
-          points.sort((a, b) => a.timestamp - b.timestamp);
+
+          // Seed with current live oracle price
+          const live = oracle.price / 1_000_000;
+          if (live > 0) {
+            points = applyLivePrice(points, live, bucketSec, Math.floor(Date.now() / 1000));
+          }
+
           setChartData(points);
+          setTickCount(points.length);
           setChartLoading(false);
         })
         .catch(() => {
@@ -558,27 +628,48 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
           }
         });
     };
+
     load();
-    const id = setInterval(load, 5 * 60 * 1000);
-    return () => { cancelled = true; clearInterval(id); };
+    const id = setInterval(load, timeframe === "live" ? 30_000 : 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed on TF/market; live price merges separately
   }, [timeframe, priceApiMarket]);
 
-  // Create/update lightweight-charts
+  // Append every live oracle tick into the chart series
+  useEffect(() => {
+    const live = oracle.price / 1_000_000;
+    if (!(live > 0)) return;
+    if (live === lastLiveRef.current && chartData.length > 0) return;
+    lastLiveRef.current = live;
+    const bucketSec = TF_CONFIG[timeframe].bucketSec;
+    const nowSec = oracle.lastUpdated > 0 ? oracle.lastUpdated : Math.floor(Date.now() / 1000);
+    setChartData((prev) => {
+      const next = applyLivePrice(prev, live, bucketSec, nowSec);
+      setTickCount(next.length);
+      return next;
+    });
+  }, [oracle.price, oracle.lastUpdated, timeframe]);
+
+  // Create chart when we have enough points / mode / TF changes
   useEffect(() => {
     if (!containerRef.current || chartData.length < 2) return;
 
-    let lc: typeof import("lightweight-charts");
     let mounted = true;
+    let ro: ResizeObserver | null = null;
+    const dataSnapshot = chartData;
 
-    import("lightweight-charts").then((mod) => {
+    import("lightweight-charts").then((lc) => {
       if (!mounted || !containerRef.current) return;
-      lc = mod;
 
-      // Remove old chart
       if (chartRef.current) {
         chartRef.current.remove();
         chartRef.current = null;
         seriesRef.current = null;
+        priceLineRef.current = null;
+        entryLinesRef.current = [];
       }
 
       const chart = lc.createChart(containerRef.current!, {
@@ -597,21 +688,20 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
           vertLine: { color: "rgba(255,255,255,0.15)", width: 1, style: lc.LineStyle.Dashed, labelBackgroundColor: "#1a1a1a" },
           horzLine: { color: "rgba(255,255,255,0.15)", width: 1, style: lc.LineStyle.Dashed, labelBackgroundColor: "#1a1a1a" },
         },
-        rightPriceScale: {
-          borderColor: "rgba(255,255,255,0.06)",
-        },
+        rightPriceScale: { borderColor: "rgba(255,255,255,0.06)" },
         timeScale: {
           borderColor: "rgba(255,255,255,0.06)",
-          timeVisible: timeframe === "1h",
-          secondsVisible: false,
+          timeVisible: timeframe !== "1d",
+          secondsVisible: timeframe === "live",
         },
         handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
         handleScale: { mouseWheel: true, pinch: true, axisPressedMouseMove: true },
       });
 
       chartRef.current = chart;
+      const useCandle = chartMode === "candle" && timeframe !== "live";
 
-      if (chartMode === "candle") {
+      if (useCandle) {
         const series = chart.addSeries(lc.CandlestickSeries, {
           upColor: "#00ff41",
           downColor: "#ff3333",
@@ -620,14 +710,15 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
           wickUpColor: "#00ff41",
           wickDownColor: "#ff3333",
         });
-        const candleData = chartData.map((d, i) => ({
-          time: d.timestamp as any,
-          open: i === 0 ? d.open : chartData[i - 1].close,
-          high: d.high,
-          low: d.low,
-          close: d.close,
-        }));
-        series.setData(candleData);
+        series.setData(
+          dataSnapshot.map((d) => ({
+            time: d.timestamp as any,
+            open: d.open,
+            high: d.high,
+            low: d.low,
+            close: d.close,
+          }))
+        );
         seriesRef.current = series;
       } else {
         const series = chart.addSeries(lc.AreaSeries, {
@@ -636,70 +727,96 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
           topColor: "rgba(0,255,65,0.15)",
           bottomColor: "rgba(0,255,65,0)",
           crosshairMarkerBackgroundColor: "#00ff41",
+          priceFormat: { type: "price", precision: 2, minMove: 0.01 },
         });
-        series.setData(chartData.map((d) => ({ time: d.timestamp as any, value: d.close })));
+        series.setData(dataSnapshot.map((d) => ({ time: d.timestamp as any, value: d.close })));
         seriesRef.current = series;
       }
 
-      // Live price line
       const livePrice = oracle.price / 1_000_000;
       if (livePrice > 0 && seriesRef.current) {
-        seriesRef.current.createPriceLine({
+        priceLineRef.current = seriesRef.current.createPriceLine({
           price: livePrice,
           color: "rgba(0,255,65,0.5)",
           lineWidth: 1,
           lineStyle: lc.LineStyle.Dashed,
           axisLabelVisible: true,
-          title: "",
+          title: "LIVE",
         });
 
-        // Position entry lines with PnL
+        entryLinesRef.current = [];
         const marketPositions = positions.filter((p) => p.oracle === selectedOracleAddress);
         for (const pos of marketPositions) {
           const entry = pos.entryPrice / 1_000_000;
           const collateral = pos.collateral / 1_000_000;
           const notional = pos.notional / 1_000_000;
           const priceDelta = pos.direction === "Long" ? livePrice - entry : entry - livePrice;
-          const pnl = (priceDelta / entry) * notional;
+          const pnl = entry > 0 ? (priceDelta / entry) * notional : 0;
           const pnlPct = collateral > 0 ? (pnl / collateral) * 100 : 0;
           const isProfit = pnl >= 0;
           const color = pos.direction === "Long" ? "#00ff41" : "#ff3333";
-          const pnlStr = `${isProfit ? "+" : ""}$${pnl.toFixed(2)} (${isProfit ? "+" : ""}${pnlPct.toFixed(1)}%)`;
-          seriesRef.current.createPriceLine({
+          const line = seriesRef.current.createPriceLine({
             price: entry,
             color,
             lineWidth: 1,
             lineStyle: lc.LineStyle.Dotted,
             axisLabelVisible: true,
-            title: `${pos.direction[0]}${pos.leverage}x ${pnlStr}`,
+            title: `${pos.direction[0]}${pos.leverage}x ${isProfit ? "+" : ""}$${pnl.toFixed(2)} (${isProfit ? "+" : ""}${pnlPct.toFixed(1)}%)`,
           });
+          entryLinesRef.current.push(line);
         }
       }
 
       chart.timeScale().fitContent();
-
-      // Resize observer
-      const ro = new ResizeObserver(() => {
+      ro = new ResizeObserver(() => {
         if (containerRef.current && chartRef.current) {
           chartRef.current.applyOptions({ width: containerRef.current.clientWidth });
         }
       });
       ro.observe(containerRef.current!);
-
-      return () => ro.disconnect();
     });
 
     return () => {
       mounted = false;
+      ro?.disconnect();
       if (chartRef.current) {
         chartRef.current.remove();
         chartRef.current = null;
         seriesRef.current = null;
+        priceLineRef.current = null;
+        entryLinesRef.current = [];
       }
     };
-  }, [chartData, chartMode, timeframe, oracle.price, positions, selectedOracleAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartMode, timeframe, priceApiMarket, chartData.length >= 2, positions, selectedOracleAddress]);
 
-  const timeframes: Timeframe[] = ["1h", "1d"];
+  // Push live bar updates into existing series without full rebuild
+  useEffect(() => {
+    if (!seriesRef.current || chartData.length === 0) return;
+    const last = chartData[chartData.length - 1];
+    const useCandle = chartMode === "candle" && timeframe !== "live";
+    try {
+      if (useCandle) {
+        seriesRef.current.update({
+          time: last.timestamp as any,
+          open: last.open,
+          high: last.high,
+          low: last.low,
+          close: last.close,
+        });
+      } else {
+        seriesRef.current.update({ time: last.timestamp as any, value: last.close });
+      }
+      if (priceLineRef.current && last.close > 0) {
+        priceLineRef.current.applyOptions({ price: last.close });
+      }
+    } catch {
+      /* series not ready */
+    }
+  }, [chartData, chartMode, timeframe]);
+
+  const timeframes: Timeframe[] = ["live", "1h", "1d"];
+  const liveUsd = oracle.price / 1_000_000;
 
   return (
     <div>
@@ -707,56 +824,58 @@ function ChartSection({ oracle, priceApiMarket = "WL500-PERP", marketId, marketI
         {timeframes.map((tf) => (
           <button
             key={tf}
-            onClick={() => setTimeframe(tf)}
+            onClick={() => {
+              setTimeframe(tf);
+              if (tf === "live") setChartMode("line");
+            }}
             className={`px-2.5 py-1 text-[10px] uppercase transition-colors ${
               timeframe === tf
                 ? "text-long bg-long/10"
                 : "text-secondary hover:text-primary"
             }`}
           >
-            {tf}
+            {tf === "live" ? "LIVE" : tf}
           </button>
         ))}
+        <span className="ml-2 text-[9px] text-secondary font-mono hidden sm:inline">
+          {tickCount > 0 ? `${tickCount} pts` : "—"}
+          {liveUsd > 0 ? ` · $${liveUsd.toFixed(2)}` : ""}
+        </span>
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setChartMode("line")}
             className={`px-2 py-1 text-[10px] transition-colors ${
-              chartMode === "line" ? "text-long bg-long/10" : "text-secondary hover:text-primary"
+              chartMode === "line" || timeframe === "live" ? "text-long bg-long/10" : "text-secondary hover:text-primary"
             }`}
             title="Line chart"
           >
             ━
           </button>
           <button
-            onClick={() => setChartMode("candle")}
+            onClick={() => timeframe !== "live" && setChartMode("candle")}
             className={`px-2 py-1 text-[10px] transition-colors ${
-              chartMode === "candle" ? "text-long bg-long/10" : "text-secondary hover:text-primary"
-            }`}
+              chartMode === "candle" && timeframe !== "live" ? "text-long bg-long/10" : "text-secondary hover:text-primary"
+            } ${timeframe === "live" ? "opacity-40" : ""}`}
             title="Candlestick chart"
+            disabled={timeframe === "live"}
           >
             ┃╋
           </button>
         </div>
       </div>
       <div className="h-[200px] md:h-[280px] relative">
-        {chartLoading ? (
+        {chartLoading && chartData.length < 2 ? (
           <div className="flex items-center justify-center h-full text-[11px] text-secondary">
             Loading chart...
           </div>
         ) : chartData.length < 2 ? (
-          marketId === "WL500" ? (
-            <div className="flex flex-col items-center justify-center h-full px-6 text-center gap-2">
-              <div className="text-[13px] font-bold text-primary tracking-wide">The S&P 500 of Luxury Watches</div>
-              <div className="text-[11px] text-secondary leading-relaxed max-w-[360px]">
-                Tracks the combined market value of the top 500 luxury watches. Updated continuously.
-              </div>
-              <div className="text-[9px] text-secondary/50 mt-1">Chart will appear as price history builds</div>
+          <div className="flex flex-col items-center justify-center h-full px-6 text-center gap-2">
+            <div className="text-[11px] text-secondary">Collecting live prices…</div>
+            <div className="text-[9px] text-secondary/50">
+              Chart builds as oracle ticks arrive ({tickCount} so far)
+              {liveUsd > 0 ? ` · now $${liveUsd.toFixed(2)}` : ""}
             </div>
-          ) : (
-            <div className="flex items-center justify-center h-full text-[11px] text-secondary">
-              Collecting price history...
-            </div>
-          )
+          </div>
         ) : (
           <>
             <div ref={containerRef} className="w-full h-full" />
@@ -931,22 +1050,22 @@ function OrderEntry({
     if (slInput) {
       const sl = parseFloat(slInput);
       if (side === "Long" && sl >= currentPrice) {
-        setTxStatus({ type: "error", msg: "Stop-loss for longs must be below the current price ($" + currentPrice.toFixed(2) + ")" });
+        setTxStatus({ type: "error", msg: "Stop-loss for longs must be below the current price ($" + formatUsdExact(currentPrice) + ")" });
         return;
       }
       if (side === "Short" && sl <= currentPrice) {
-        setTxStatus({ type: "error", msg: "Stop-loss for shorts must be above the current price ($" + currentPrice.toFixed(2) + ")" });
+        setTxStatus({ type: "error", msg: "Stop-loss for shorts must be above the current price ($" + formatUsdExact(currentPrice) + ")" });
         return;
       }
     }
     if (tpInput) {
       const tp = parseFloat(tpInput);
       if (side === "Long" && tp <= currentPrice) {
-        setTxStatus({ type: "error", msg: "Take-profit for longs must be above the current price ($" + currentPrice.toFixed(2) + ")" });
+        setTxStatus({ type: "error", msg: "Take-profit for longs must be above the current price ($" + formatUsdExact(currentPrice) + ")" });
         return;
       }
       if (side === "Short" && tp >= currentPrice) {
-        setTxStatus({ type: "error", msg: "Take-profit for shorts must be below the current price ($" + currentPrice.toFixed(2) + ")" });
+        setTxStatus({ type: "error", msg: "Take-profit for shorts must be below the current price ($" + formatUsdExact(currentPrice) + ")" });
         return;
       }
     }
@@ -975,18 +1094,21 @@ function OrderEntry({
         })
         .rpc();
 
-      setTxStatus({ type: "success", msg: `${side} position opened at $${currentPriceUsd.toFixed(2)}` });
+      setTxStatus({ type: "success", msg: `${side} position opened at $${formatUsdExact(currentPriceUsd)}` });
       incrementTradeCount();
-      addNotification("success", `${side} Position Opened`, `$${positionSizeUsdc.toFixed(2)} at $${currentPriceUsd.toFixed(2)} (${leverage}x)`);
+      addNotification("success", `${side} Position Opened`, `$${positionSizeUsdc.toFixed(2)} at $${formatUsdExact(currentPriceUsd)} (${leverage}x)`);
       setCollateralInput("");
       setSlInput("");
       setTpInput("");
-      setTimeout(onRefresh, 2000);
-      // Switch to positions tab on mobile, scroll on desktop
+      // Immediate + staggered refreshes so the positions bar appears quickly
+      onRefresh();
+      setTimeout(onRefresh, 400);
+      setTimeout(onRefresh, 1200);
+      setTimeout(onRefresh, 2500);
       if (onPositionOpened) onPositionOpened();
       setTimeout(() => {
         document.getElementById("positions-table")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 2500);
+      }, 600);
     } catch (e: any) {
       setTxStatus({ type: "error", msg: e?.message ?? "Transaction failed" });
       addNotification("error", "Open Position Failed", e?.message ?? "Transaction failed");
@@ -1249,7 +1371,7 @@ function OrderEntry({
           </div>
           <input
             type="number"
-            placeholder={`$${currentPriceUsd.toFixed(2)}`}
+            placeholder={`$${formatUsdExact(currentPriceUsd)}`}
             className="field-input text-[11px] py-2"
           />
           <div className="text-[9px] text-secondary/60">
@@ -1338,8 +1460,8 @@ function OrderEntry({
       {/* Calculated fields */}
       <div className="border border-border p-2.5 bg-bg text-[10px] space-y-1.5">
         <CalcRow label="Position Size" value={`$${positionSizeUsdc.toFixed(2)}`} />
-        <CalcRow label="Entry Price" value={`$${currentPriceUsd.toFixed(2)}`} />
-        <CalcRow label="Liq Price" value={collateralUsdc > 0 ? `$${liqPrice.toFixed(2)}` : "—"} color="text-short" />
+        <CalcRow label="Entry Price" value={`$${formatUsdExact(currentPriceUsd)}`} />
+        <CalcRow label="Liq Price" value={collateralUsdc > 0 ? `$${formatUsdExact(liqPrice)}` : "—"} color="text-short" />
         <CalcRow label="Fee (2%)" value={`$${openFeeUsdc.toFixed(4)}`} />
       </div>
 
@@ -1508,7 +1630,8 @@ function PositionRow({
       }).rpc();
       addNotification("success", `SL/TP Updated — #${pos.index}`, `SL: ${slInput || "none"} / TP: ${tpInput || "none"}`);
       setExpandedIdx(null);
-      setTimeout(onRefresh, 2000);
+      margin.refresh();
+      setTimeout(() => { margin.refresh(); onRefresh(); }, 1500);
     } catch (e: any) {
       addNotification("error", "SL/TP Failed", e?.message ?? "Failed");
     } finally {
@@ -1538,7 +1661,8 @@ function PositionRow({
       }
       setMarginMode("idle");
       setMarginInput("");
-      setTimeout(onRefresh, 2000);
+      margin.refresh();
+      setTimeout(() => { margin.refresh(); onRefresh(); }, 1500);
     } catch (e: any) {
       addNotification("error", `${marginMode === "add" ? "Add" : "Remove"} Margin Failed`, e?.message ?? "Failed");
     } finally {
@@ -1551,9 +1675,9 @@ function PositionRow({
       setExpandedIdx(null);
     } else {
       setExpandedIdx(pos.index);
-      setSlInput(pos.slPrice ? rawToPrice(pos.slPrice).toFixed(2) : "");
-      setTpInput(pos.tpPrice ? rawToPrice(pos.tpPrice).toFixed(2) : "");
-      setMarginMode("idle");
+      setSlInput(pos.slPrice ? formatUsdExact(rawToPrice(pos.slPrice)) : "");
+      setTpInput(pos.tpPrice ? formatUsdExact(rawToPrice(pos.tpPrice)) : "");
+      setMarginMode("add");
       setMarginInput("");
       setTimeout(() => {
         rowRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1574,9 +1698,9 @@ function PositionRow({
           {pos.direction[0]}{pos.leverage}x
         </span>
         <span className="text-primary">${rawToUsdc(pos.notional).toFixed(2)}</span>
-        <span className="text-primary">${entryUsd.toFixed(2)}</span>
-        <span className="text-primary">{markPriceRaw > 0 ? `$${markPriceUsd.toFixed(2)}` : "..."}</span>
-        <span className="text-short">${liq.toFixed(2)}</span>
+        <span className="text-primary">${formatUsdExact(entryUsd)}</span>
+        <span className="text-primary">{markPriceRaw > 0 ? `$${formatUsdExact(markPriceUsd)}` : "..."}</span>
+        <span className="text-short">${formatUsdExact(liq)}</span>
         <span className={isProfit ? "text-long" : "text-short"}>
           {isProfit ? "+" : ""}${pnl.toFixed(2)} <span className="text-[9px] opacity-70">({isProfit ? "+" : ""}{pnlPct.toFixed(1)}%)</span>
         </span>
@@ -1603,6 +1727,35 @@ function PositionRow({
       {/* Desktop expanded panel */}
       {isExpanded && (
         <div className="hidden md:block px-4 py-3 bg-bg border-b border-border/30">
+          <div className="flex items-center gap-2 mb-3">
+            <button
+              onClick={() => setConfirmClose(true)}
+              disabled={loading || markPriceRaw === 0}
+              className="text-[10px] btn-red py-1 px-3 disabled:opacity-40"
+            >
+              Exit position
+            </button>
+            <button
+              onClick={() => setMarginMode("add")}
+              className={`text-[10px] py-1 px-3 border ${marginMode === "add" ? "border-long text-long" : "border-border text-secondary"}`}
+            >
+              Add margin
+            </button>
+            <button
+              onClick={() => setMarginMode("remove")}
+              className={`text-[10px] py-1 px-3 border ${marginMode === "remove" ? "border-short text-short" : "border-border text-secondary"}`}
+            >
+              Remove margin
+            </button>
+            {confirmClose && (
+              <div className="flex gap-1 items-center ml-2">
+                <button onClick={handleClose} disabled={loading} className="text-[10px] btn-red py-1 px-2">
+                  {loading ? "..." : "Confirm exit"}
+                </button>
+                <button onClick={() => setConfirmClose(false)} className="text-[10px] text-secondary px-1">Cancel</button>
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-4 gap-4">
             {/* Position Info */}
             <div className="space-y-1 text-[11px]">
@@ -1629,7 +1782,7 @@ function PositionRow({
 
             {/* SL/TP */}
             <div className="space-y-1 text-[11px]">
-              <div className="text-[9px] text-secondary uppercase mb-1">SL: {pos.slPrice ? `$${rawToPrice(pos.slPrice).toFixed(2)}` : "none"} / TP: {pos.tpPrice ? `$${rawToPrice(pos.tpPrice).toFixed(2)}` : "none"}</div>
+              <div className="text-[9px] text-secondary uppercase mb-1">SL: {pos.slPrice ? `$${formatUsdExact(rawToPrice(pos.slPrice))}` : "none"} / TP: {pos.tpPrice ? `$${formatUsdExact(rawToPrice(pos.tpPrice))}` : "none"}</div>
               <div className="grid grid-cols-2 gap-1">
                 <input type="number" step="0.01" value={slInput} onChange={(e) => setSlInput(e.target.value)}
                   placeholder="SL" className="field-input text-[10px] py-1" />
@@ -1645,16 +1798,6 @@ function PositionRow({
             {/* Margin Management */}
             <div className="space-y-1">
               <div className="text-[9px] text-secondary uppercase mb-1">Margin</div>
-              <div className="flex gap-1">
-                <button onClick={() => setMarginMode("add")}
-                  className={`flex-1 text-[9px] py-0.5 border ${marginMode === "add" ? "border-long text-long" : "border-border text-secondary"}`}>
-                  Add
-                </button>
-                <button onClick={() => setMarginMode("remove")}
-                  className={`flex-1 text-[9px] py-0.5 border ${marginMode === "remove" ? "border-short text-short" : "border-border text-secondary"}`}>
-                  Remove
-                </button>
-              </div>
               {marginMode !== "idle" && (
                 <>
                   <input type="number" step="0.01" value={marginInput} onChange={(e) => setMarginInput(e.target.value)}
@@ -1726,20 +1869,49 @@ function PositionRow({
         </div>
         {/* Row 2: Entry, Mark, Size */}
         <div className="flex items-center gap-3 text-[10px]">
-          <span className="text-secondary">Entry <span className="text-primary">${entryUsd.toFixed(2)}</span></span>
-          <span className="text-secondary">Mark <span className="text-primary">{markPriceRaw > 0 ? `$${markPriceUsd.toFixed(2)}` : "..."}</span></span>
+          <span className="text-secondary">Entry <span className="text-primary">${formatUsdExact(entryUsd)}</span></span>
+          <span className="text-secondary">Mark <span className="text-primary">{markPriceRaw > 0 ? `$${formatUsdExact(markPriceUsd)}` : "..."}</span></span>
           <span className="text-secondary">Size <span className="text-primary">${rawToUsdc(pos.notional).toFixed(0)}</span></span>
-          <span className="text-secondary">Liq <span className="text-short">${liq.toFixed(2)}</span></span>
+          <span className="text-secondary">Liq <span className="text-short">${formatUsdExact(liq)}</span></span>
         </div>
       </div>
 
       {/* Mobile expanded panel */}
       {isExpanded && (
         <div className="px-3 py-2 bg-bg border-b border-border/30 space-y-2">
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); setConfirmClose(true); }}
+              disabled={loading || markPriceRaw === 0}
+              className="flex-1 text-[10px] btn-red py-1.5 disabled:opacity-40"
+            >
+              Exit
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setMarginMode(marginMode === "add" ? "idle" : "add"); }}
+              className={`flex-1 text-[10px] py-1.5 border ${marginMode === "add" ? "border-long text-long" : "border-border text-secondary"}`}
+            >
+              +Margin
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setMarginMode(marginMode === "remove" ? "idle" : "remove"); }}
+              className={`flex-1 text-[10px] py-1.5 border ${marginMode === "remove" ? "border-short text-short" : "border-border text-secondary"}`}
+            >
+              -Margin
+            </button>
+          </div>
+          {confirmClose && (
+            <div className="flex gap-2">
+              <button onClick={handleClose} disabled={loading} className="flex-1 text-[10px] btn-red py-1.5">
+                {loading ? "..." : "Confirm exit"}
+              </button>
+              <button onClick={() => setConfirmClose(false)} className="text-[10px] text-secondary px-3">Cancel</button>
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-2 text-[10px]">
-            <div><span className="text-secondary">Entry </span><span className="text-primary">${entryUsd.toFixed(2)}</span></div>
-            <div><span className="text-secondary">Mark </span><span className="text-primary">{markPriceRaw > 0 ? `$${markPriceUsd.toFixed(2)}` : "..."}</span></div>
-            <div><span className="text-secondary">Liq </span><span className="text-short">${liq.toFixed(2)}</span></div>
+            <div><span className="text-secondary">Entry </span><span className="text-primary">${formatUsdExact(entryUsd)}</span></div>
+            <div><span className="text-secondary">Mark </span><span className="text-primary">{markPriceRaw > 0 ? `$${formatUsdExact(markPriceUsd)}` : "..."}</span></div>
+            <div><span className="text-secondary">Liq </span><span className="text-short">${formatUsdExact(liq)}</span></div>
           </div>
           <div className="grid grid-cols-3 gap-2 text-[10px]">
             <div><span className="text-secondary">Size </span><span className="text-primary">${rawToUsdc(pos.notional).toFixed(2)}</span></div>
@@ -1747,8 +1919,8 @@ function PositionRow({
             <div><span className="text-secondary">Open </span><span className="text-primary">{timeOpenStr}</span></div>
           </div>
           <div className="text-[10px]">
-            <span className="text-secondary">SL: </span><span className="text-primary">{pos.slPrice ? `$${rawToPrice(pos.slPrice).toFixed(2)}` : "none"}</span>
-            <span className="text-secondary ml-3">TP: </span><span className="text-primary">{pos.tpPrice ? `$${rawToPrice(pos.tpPrice).toFixed(2)}` : "none"}</span>
+            <span className="text-secondary">SL: </span><span className="text-primary">{pos.slPrice ? `$${formatUsdExact(rawToPrice(pos.slPrice))}` : "none"}</span>
+            <span className="text-secondary ml-3">TP: </span><span className="text-primary">{pos.tpPrice ? `$${formatUsdExact(rawToPrice(pos.tpPrice))}` : "none"}</span>
           </div>
           <div className="grid grid-cols-2 gap-1">
             <input type="number" step="0.01" value={slInput} onChange={(e) => setSlInput(e.target.value)}
@@ -1760,16 +1932,6 @@ function PositionRow({
             className="btn-outline w-full text-[9px] py-1 active">
             {loading ? "..." : "Set SL/TP"}
           </button>
-          <div className="flex gap-1">
-            <button onClick={() => setMarginMode(marginMode === "add" ? "idle" : "add")}
-              className={`flex-1 text-[9px] py-0.5 border ${marginMode === "add" ? "border-long text-long" : "border-border text-secondary"}`}>
-              +Margin
-            </button>
-            <button onClick={() => setMarginMode(marginMode === "remove" ? "idle" : "remove")}
-              className={`flex-1 text-[9px] py-0.5 border ${marginMode === "remove" ? "border-short text-short" : "border-border text-secondary"}`}>
-              -Margin
-            </button>
-          </div>
           {marginMode !== "idle" && (
             <div className="flex gap-1">
               <input type="number" step="0.01" value={marginInput} onChange={(e) => setMarginInput(e.target.value)}
@@ -1796,21 +1958,34 @@ function PositionsTable({
   margin,
   onRefresh,
   fullHeight,
+  focusIdx,
+  onFocusConsumed,
 }: {
   positions: Position[];
   protocol: ReturnType<typeof useProtocolState>;
   margin: ReturnType<typeof useMarginAccount>;
   onRefresh: () => void;
   fullHeight?: boolean;
+  focusIdx?: number | null;
+  onFocusConsumed?: () => void;
 }) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const count = positions.length;
   const needsScroll = !fullHeight && count >= 4;
 
+  useEffect(() => {
+    if (focusIdx == null) return;
+    setExpandedIdx(focusIdx);
+    onFocusConsumed?.();
+  }, [focusIdx, onFocusConsumed]);
+
   return (
     <div id="positions-table" className="border-t border-border bg-panel">
       <div className="px-4 py-1.5 border-b border-border flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider text-secondary">Open Positions ({count})</span>
+        <span className="text-[10px] uppercase tracking-wider text-secondary">
+          Open Positions ({count}){count === 0 ? " — syncing…" : ""}
+        </span>
+        <span className="text-[9px] text-secondary/60 hidden md:inline">Click a row to exit or add margin</span>
       </div>
 
       <div
@@ -1832,20 +2007,24 @@ function PositionsTable({
         {/* Mobile header */}
         <div className="md:hidden flex justify-between text-[9px] uppercase text-secondary px-3 h-[24px] items-center border-b border-border/50 sticky top-0 bg-panel z-10">
           <span>Position</span>
-          <span>PnL</span>
+          <span>PnL · tap to manage</span>
         </div>
 
-        {positions.map((pos) => (
-          <PositionRow
-            key={pos.index}
-            pos={pos}
-            protocol={protocol}
-            margin={margin}
-            onRefresh={onRefresh}
-            expandedIdx={expandedIdx}
-            setExpandedIdx={setExpandedIdx}
-          />
-        ))}
+        {positions.length === 0 ? (
+          <div className="px-4 py-6 text-center text-[11px] text-secondary">Loading position from chain…</div>
+        ) : (
+          positions.map((pos) => (
+            <PositionRow
+              key={pos.index}
+              pos={pos}
+              protocol={protocol}
+              margin={margin}
+              onRefresh={onRefresh}
+              expandedIdx={expandedIdx}
+              setExpandedIdx={setExpandedIdx}
+            />
+          ))
+        )}
       </div>
     </div>
   );

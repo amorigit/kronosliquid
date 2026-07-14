@@ -15,8 +15,8 @@ export type OracleReading = {
 export type OracleHealth = "fresh" | "degraded" | "stale";
 
 export type OracleData = {
-  price: number;        // raw u64 (divide by 1_000_000 for USD)
-  lastUpdated: number;  // unix timestamp
+  price: number; // raw u64 (divide by 1_000_000 for USD)
+  lastUpdated: number; // unix timestamp
   stalenessThreshold: number;
   readings: OracleReading[];
   isLoading: boolean;
@@ -28,13 +28,6 @@ export type OracleData = {
 
 const PRICE_API = process.env.NEXT_PUBLIC_PRICE_API || "/api/keeper";
 
-// ── Build oracle→marketId lookup from MARKETS ────────────────────────────────
-const oracleToMarketId = new Map<string, string>();
-for (const m of MARKETS) {
-  oracleToMarketId.set(m.oracleAddress, m.priceApiMarket);
-}
-
-// ── Shared oracle cache ─────────────────────────────────────────────────────
 type CachedOracle = {
   price: number;
   lastUpdated: number;
@@ -45,6 +38,12 @@ type CachedOracle = {
 
 const oracleCache = new Map<string, CachedOracle>();
 const oracleSubscribers = new Map<string, Set<() => void>>();
+/** Last known good price — prevents ticker flashing to empty between polls. */
+const lastGoodPrice = new Map<string, number>();
+
+const historyCache = new Map<string, OracleReading[]>();
+const historySubscribers = new Map<string, Set<() => void>>();
+const historyIntervals = new Map<string, ReturnType<typeof setInterval>>();
 
 function notifySubscribers(key: string) {
   oracleSubscribers.get(key)?.forEach((cb) => cb());
@@ -54,7 +53,48 @@ function notifyAllSubscribers() {
   oracleSubscribers.forEach((subs) => subs.forEach((cb) => cb()));
 }
 
-// ── Bulk price polling from keeper API (1 HTTP call for all markets) ────────
+function notifyHistorySubs(key: string) {
+  historySubscribers.get(key)?.forEach((cb) => cb());
+}
+
+/** Merge server rows into existing history without wiping newer live ticks. */
+function mergeHistory(marketId: string, incoming: OracleReading[]) {
+  if (!incoming.length) return;
+  const existing = historyCache.get(marketId) ?? [];
+  const byTs = new Map<number, number>();
+  for (const r of existing) byTs.set(r.timestamp, r.price);
+  for (const r of incoming) {
+    if (r.price > 0 && r.timestamp > 0) byTs.set(r.timestamp, r.price);
+  }
+  const merged = Array.from(byTs.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([timestamp, price]) => ({ timestamp, price }));
+  const maxPts = 5000;
+  historyCache.set(
+    marketId,
+    merged.length > maxPts ? merged.slice(merged.length - maxPts) : merged
+  );
+}
+
+function appendLiveTick(marketId: string, priceRaw: number, ts: number) {
+  if (!(priceRaw > 0) || !(ts > 0)) return;
+  const hist = historyCache.get(marketId) ?? [];
+  const last = hist[hist.length - 1];
+  if (!last || last.timestamp < ts) {
+    hist.push({ price: priceRaw, timestamp: ts });
+  } else if (last.timestamp === ts) {
+    hist[hist.length - 1] = { price: priceRaw, timestamp: ts };
+  } else if (priceRaw !== last.price) {
+    hist.push({ price: priceRaw, timestamp: Math.max(ts, last.timestamp + 1) });
+  } else {
+    return;
+  }
+  const maxPts = 5000;
+  if (hist.length > maxPts) hist.splice(0, hist.length - maxPts);
+  historyCache.set(marketId, hist);
+  notifyHistorySubs(marketId);
+}
+
 let bulkPollInterval: ReturnType<typeof setInterval> | null = null;
 let bulkPollStarted = false;
 
@@ -62,13 +102,15 @@ async function fetchAllPrices() {
   try {
     const res = await fetch(`${PRICE_API}/prices/all`);
     if (!res.ok) return;
-    const data: Record<string, { price: number; ewma: number; lastUpdateTime: number }> = await res.json();
+    const data: Record<string, { price: number; ewma: number; lastUpdateTime: number }> =
+      await res.json();
 
     for (const [marketId, info] of Object.entries(data)) {
-      // Find oracle address for this market ID
       const market = MARKETS.find((m) => m.priceApiMarket === marketId);
       if (!market) continue;
+      if (!(info.price > 0)) continue;
       const key = market.oracleAddress;
+
       oracleCache.set(key, {
         price: info.price,
         lastUpdated: info.lastUpdateTime,
@@ -76,10 +118,15 @@ async function fetchAllPrices() {
         error: null,
         fetchedAt: Date.now(),
       });
+      lastGoodPrice.set(key, info.price);
+
+      const ts =
+        info.lastUpdateTime > 0 ? info.lastUpdateTime : Math.floor(Date.now() / 1000);
+      appendLiveTick(marketId, info.price, ts);
     }
     notifyAllSubscribers();
   } catch {
-    // keep existing cache on error
+    // keep existing cache — never clear prices on error
   }
 }
 
@@ -87,11 +134,9 @@ function startBulkPolling() {
   if (bulkPollStarted) return;
   bulkPollStarted = true;
   fetchAllPrices();
-  bulkPollInterval = setInterval(fetchAllPrices, 30_000);
+  bulkPollInterval = setInterval(fetchAllPrices, 5_000);
 }
 
-// ── On-chain RPC fetch for a single oracle (used when trading) ──────────────
-// Only fetched on-demand, not on a timer. Call fetchOracleOnChain() explicitly.
 const rpcFetchInFlight = new Set<string>();
 
 async function fetchOracleOnChain(key: string, connection: Connection) {
@@ -101,32 +146,28 @@ async function fetchOracleOnChain(key: string, connection: Connection) {
     const pubkey = new PublicKey(key);
     const program = getReadonlyProgram(connection);
     const oracle = await (program.account as any).oracleAccount.fetch(pubkey);
+    const price = oracle.price.toNumber();
     oracleCache.set(key, {
-      price: oracle.price.toNumber(),
+      price,
       lastUpdated: oracle.lastUpdated.toNumber(),
       stalenessThreshold: oracle.stalenessThreshold.toNumber(),
       error: null,
       fetchedAt: Date.now(),
     });
+    if (price > 0) lastGoodPrice.set(key, price);
     notifySubscribers(key);
   } catch (e: any) {
     const prev = oracleCache.get(key);
     if (prev && prev.price > 0) {
-      oracleCache.set(key, { ...prev, error: e?.message ?? "Fetch failed", fetchedAt: Date.now() });
+      oracleCache.set(key, {
+        ...prev,
+        error: e?.message ?? "Fetch failed",
+        fetchedAt: Date.now(),
+      });
     }
   } finally {
     rpcFetchInFlight.delete(key);
   }
-}
-
-// ── Shared history cache ────────────────────────────────────────────────────
-
-const historyCache = new Map<string, OracleReading[]>();
-const historySubscribers = new Map<string, Set<() => void>>();
-const historyIntervals = new Map<string, ReturnType<typeof setInterval>>();
-
-function notifyHistorySubs(key: string) {
-  historySubscribers.get(key)?.forEach((cb) => cb());
 }
 
 function startHistoryPolling(marketParam: string) {
@@ -136,12 +177,18 @@ function startHistoryPolling(marketParam: string) {
     try {
       const now = Math.floor(Date.now() / 1000);
       const dayAgo = now - 86400;
-      const res = await fetch(`${PRICE_API}/prices?market=${marketParam}&from=${dayAgo}&to=${now}`);
+      const res = await fetch(
+        `${PRICE_API}/prices?market=${marketParam}&from=${dayAgo}&to=${now}`
+      );
       if (!res.ok) return;
       const rows: { ewma: number; timestamp: number }[] = await res.json();
-      historyCache.set(
+      if (!Array.isArray(rows) || rows.length === 0) return; // never wipe live history
+      mergeHistory(
         marketParam,
-        rows.map((r) => ({ price: Math.round(r.ewma * 1_000_000), timestamp: r.timestamp }))
+        rows.map((r) => ({
+          price: Math.round(Number(r.ewma) * 1_000_000),
+          timestamp: Number(r.timestamp),
+        }))
       );
     } catch {
       // keep existing
@@ -150,7 +197,7 @@ function startHistoryPolling(marketParam: string) {
   };
 
   fetchOnce();
-  historyIntervals.set(marketParam, setInterval(fetchOnce, 60_000));
+  historyIntervals.set(marketParam, setInterval(fetchOnce, 30_000));
 }
 
 function stopHistoryPollingIfUnused(key: string) {
@@ -162,7 +209,41 @@ function stopHistoryPollingIfUnused(key: string) {
   }
 }
 
-// ── Hook ────────────────────────────────────────────────────────────────────
+/**
+ * % change vs start of local calendar day (falls back to nearest reading).
+ */
+export function dayChangePercent(currentRaw: number, readings: OracleReading[]): number {
+  const current = currentRaw / 1_000_000;
+  if (!(current > 0) || !readings.length) return 0;
+
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const dayStart = Math.floor(start.getTime() / 1000);
+
+  let openRaw = 0;
+  for (let i = readings.length - 1; i >= 0; i--) {
+    if (readings[i].timestamp <= dayStart) {
+      openRaw = readings[i].price;
+      break;
+    }
+  }
+  if (!(openRaw > 0)) {
+    let best = readings[0];
+    let bestDist = Math.abs(best.timestamp - dayStart);
+    for (const r of readings) {
+      const d = Math.abs(r.timestamp - dayStart);
+      if (d < bestDist) {
+        best = r;
+        bestDist = d;
+      }
+    }
+    openRaw = best.price;
+  }
+
+  const open = openRaw / 1_000_000;
+  if (!(open > 0)) return 0;
+  return ((current - open) / open) * 100;
+}
 
 export function useOracle(
   oracleAddress?: string,
@@ -175,27 +256,22 @@ export function useOracle(
   const [, setTick] = useState(0);
   const rerender = () => setTick((t) => t + 1);
 
-  // Start bulk polling (one call for all markets via keeper API)
   useEffect(() => {
     startBulkPolling();
   }, []);
 
-  // Subscribe to oracle cache updates
   useEffect(() => {
     if (!oracleSubscribers.has(key)) oracleSubscribers.set(key, new Set());
     oracleSubscribers.get(key)!.add(rerender);
-
     return () => {
       oracleSubscribers.get(key)?.delete(rerender);
     };
   }, [key]);
 
-  // Subscribe to history cache updates
   useEffect(() => {
     if (!historySubscribers.has(marketParam)) historySubscribers.set(marketParam, new Set());
     historySubscribers.get(marketParam)!.add(rerender);
     startHistoryPolling(marketParam);
-
     return () => {
       historySubscribers.get(marketParam)?.delete(rerender);
       stopHistoryPollingIfUnused(marketParam);
@@ -203,35 +279,44 @@ export function useOracle(
   }, [marketParam]);
 
   const cached = oracleCache.get(key);
-  const price = cached?.price ?? 0;
+  const fallback = lastGoodPrice.get(key) ?? 0;
+  const price = cached?.price && cached.price > 0 ? cached.price : fallback;
   const lastUpdated = cached?.lastUpdated ?? 0;
   const stalenessThreshold = cached?.stalenessThreshold ?? 1800;
   const error = cached?.error ?? null;
-  const isLoading = !cached;
+  const isLoading = !(price > 0);
   const readings = historyCache.get(marketParam) ?? [];
 
-  const secondsSinceUpdate = lastUpdated > 0 ? Math.floor(Date.now() / 1000 - lastUpdated) : -1;
+  const secondsSinceUpdate =
+    lastUpdated > 0 ? Math.floor(Date.now() / 1000 - lastUpdated) : -1;
   const isStale = secondsSinceUpdate > stalenessThreshold;
 
   let health: OracleHealth = "fresh";
   if (secondsSinceUpdate > 15 * 60) health = "stale";
   else if (secondsSinceUpdate > 5 * 60) health = "degraded";
 
-  return { price, lastUpdated, stalenessThreshold, readings, isLoading, isStale, health, secondsSinceUpdate, error };
+  return {
+    price,
+    lastUpdated,
+    stalenessThreshold,
+    readings,
+    isLoading,
+    isStale,
+    health,
+    secondsSinceUpdate,
+    error,
+  };
 }
 
-/** Get the 24h % change for a market from the cached history. */
+/** Day % change for sorting / binder cards. */
 export function getMarketChange(oracleAddress: string, priceApiMarket: string): number {
   const cached = oracleCache.get(oracleAddress);
-  const readings = historyCache.get(priceApiMarket);
-  if (!cached || !readings || readings.length < 2) return 0;
-  const currentPrice = cached.price / 1_000_000;
-  const oldest = readings[0].price / 1_000_000;
-  if (oldest <= 0) return 0;
-  return ((currentPrice - oldest) / oldest) * 100;
+  const fallback = lastGoodPrice.get(oracleAddress) ?? 0;
+  const price = cached?.price && cached.price > 0 ? cached.price : fallback;
+  const readings = historyCache.get(priceApiMarket) ?? [];
+  return dayChangePercent(price, readings);
 }
 
-/** Fetch the latest on-chain oracle price via RPC (for trading accuracy). */
 export function useOracleRefresh() {
   const { connection } = useConnection();
   return (oracleAddress: string) => fetchOracleOnChain(oracleAddress, connection);

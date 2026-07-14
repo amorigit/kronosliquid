@@ -1,18 +1,22 @@
 # Kronos — Build & Deploy Handoff
 
-**Document version:** 4.7
+**Document version:** 4.8
 **Date:** 2026-07-14
 **Status:** **DEVnet mainnet-parity** (test SOL / test USDC). Live oracle feeds: Yahoo metals +
 curated watch mids (`keeper/feeds.json`) + WL500 basket; ramp ≤15%/tick. Crank, mint USDC, app
-via Cloudflare tunnels. Mainnet keypair `6pYT…` reserved — not deployed.
+via Cloudflare tunnels. Ticker shows live prices without reset; % = **day change** (local midnight).
+Mainnet keypair `6pYT…` reserved — not deployed.
 
+> **This file is the project handbook.** Update it on every meaningful change (see
+> `.cursor/rules/update-handoff.mdc`). Prefer bumping the document version and dating the
+> changelog note in §0.2 / §7 ops notes over letting it drift.
 
 > This supersedes v3.0 (local-validator only). The original code-review plan is preserved at
 > [`HANDOFF-original-review.md`](./HANDOFF-original-review.md) (Tier 1/2 Rust fix list + QA checklist).
 
 ---
 
-## 0. KNOWN ISSUES (as of 2026-07-14 v4.4, ordered by severity)
+## 0. KNOWN ISSUES (as of 2026-07-14 v4.8, ordered by severity)
 
 All P0/P1 items from v4.1 are **RESOLVED** — details in §0.1 below. What remains:
 
@@ -37,25 +41,27 @@ continuously since ~2026-06-30 (rate limit + intermittent DNS/RPC). Wallet sits 
 **~5.35 SOL** as of 2026-07-14. Use [faucet.solana.com](https://faucet.solana.com) for large
 top-ups; cron will keep trying.
 
-### P3 — WL500 methodology undefined
+### P3 — WL500 is a simple equal-weight basket
 
-WL500 was re-seeded from ~$47,600 down to **$5,000** (ramped ≤15%/update; user decision
-2026-07-02). There is still no constituent list or index formula — the level is arbitrary.
+`/wl500` documents 19 watch constituents at equal weight and a **$5,000** level. Not a
+formal index methodology — level/weights remain product decisions, not on-chain formula.
 
 ### P3 — Misc
 
-- History retention is 48 h at 30 s granularity (in-memory + `keeper/history.json`); 1d candles
-  only become meaningful after a couple of days of uptime.
+- History retention is 48 h (keeper `history.json` + app live ticks). Day-% needs a reading
+  at/near local midnight; until then `dayChangePercent` falls back to the nearest reading.
 - GitHub Pages has `https_enforced: false` (site also serves over plain HTTP).
 - Next.js app auth APIs (signup/login) need Postgres + JWT env vars that don't exist locally —
-  email auth fails; guest/wallet mode works. App is local-only by decision (2026-07-02).
+  email auth fails; guest/wallet mode works. App is Mac-mini + Cloudflare tunnel by decision.
 - Devnet wallet balance ~5.35 SOL (keeper burn ≈ 0.02–0.05 SOL/day — fine for months).
+- Cloudflare **quick tunnel** URLs change when `kronos-*-tunnel` restarts — always
+  `cat app/public-app-url.txt` / `keeper/public-api-url.txt`.
 
 ### 0.1 Resolved in v4.2 (2026-07-02)
 
-- **P0 oracle-deviation freeze** — keeper rewritten: no more Yahoo spot; all markets random-walk
-  from their current on-chain price, every update clamped to ±15% (< the ~20% on-chain cap), and
-  failed batches fall back to per-market transactions. All 24/24 markets push cleanly.
+- **P0 oracle-deviation freeze** — keeper rewritten with ±15%/tick ramp + per-market retry so
+  `OraclePriceDeviation` cannot freeze the book. (v4.2 used random-walk; **v4.7+ uses live
+  feeds** — see §0.2 / §8 — still ramped ≤15%/tick.)
 - **P1 old Pokémon server dependency** — `app/vercel.json` rewrites to `157.180.67.25:3001`
   removed (server is not ours; decision 2026-07-02). The app now proxies `/api/keeper/*` and
   `/api/v1/*` to the **local keeper API** (`localhost:3001`) via `app/next.config.js` rewrites.
@@ -68,6 +74,21 @@ WL500 was re-seeded from ~$47,600 down to **$5,000** (ramped ≤15%/update; user
 - **Latent PDA bug** — `open_position`/`close_position` derived `MarketState` PDAs from the short
   display id (e.g. `"WL500"`) instead of the on-chain market_id (`"WL500-PERP"`); trading on any
   non-default market would have failed. Fixed to use `priceApiMarket` everywhere.
+
+### 0.2 Resolved / shipped since v4.4 (2026-07-14)
+
+- **Live oracle feeds** — `keeper/price-feeds.js` + `keeper/feeds.json`: Yahoo metals (gold/silver/
+  platinum), curated watch mids, WL500 equal-weight basket; `/health` → `price_mode: "live"`;
+  on-chain pushes still ramp ≤15%/tick.
+- **DEVnet full product** — Mint test USDC (`CollateralPanel`); SwapModal → mint; `kronos-crank`
+  (funding / liquidate / SL-TP); `/daily-volume` from trade indexer.
+- **Positions UX** — margin `onAccountChange` + immediate refresh after open; click row to
+  expand exit / add-margin panel.
+- **Price display** — `formatUsdExact` / `formatPrice` use **2 decimal places**.
+- **Live chart** — LIVE timeframe appends ticks; keeper history poll ~10 s.
+- **Ticker stability + day % (v4.8)** — `useOracle` keeps `lastGoodPrice` (no flash to `—. —`);
+  merges server history with live ticks (never wipe on poll); `dayChangePercent()` vs local
+  midnight open. Header ticker, BinderCard, trade page, LandingAuth all use day %.
 
 ---
 
@@ -275,7 +296,7 @@ Vercel login was unavailable; hosting is **this Mac mini + Cloudflare quick tunn
 | # | Step | Status |
 |---|------|--------|
 | B1 | Public keeper/API | **DONE** — `kronos-keeper` + `kronos-api-tunnel` (pm2). URL in `keeper/public-api-url.txt` |
-| B2 | Public Next.js app | **DONE** — `kronos-app` (`next start :3000`) + `kronos-app-tunnel`. **App URL:** see `app/public-app-url.txt` (current: `https://teaching-reducing-establish-thickness.trycloudflare.com`). Proxies `/api/keeper/*` → `127.0.0.1:3001` |
+| B2 | Public Next.js app | **DONE** — `kronos-app` (`next start :3000`) + `kronos-app-tunnel`. **App URL:** always `cat app/public-app-url.txt` (quick-tunnel URL rotates). Proxies `/api/keeper/*` → `127.0.0.1:3001` |
 | B3 | Email auth (Postgres + JWT) | **DEFERRED** — guest / session-wallet / browser wallet work without DB. Signup/login APIs need Postgres env when you want email |
 | B4 | Enforce HTTPS on kronosliquid.xyz Pages | **BLOCKED** — GitHub returns “certificate does not exist yet”; DNS A records point at Pages. Re-try `https_enforced` after GitHub provisions the cert, or wait/re-add custom domain in repo Settings → Pages |
 
@@ -290,13 +311,20 @@ cd app && npm run build && pm2 restart kronos-app
 pm2 save
 ```
 
-**DEVnet live prices (2026-07-14):** `price-feeds.js` + `feeds.json`; `/health` reports `price_mode: "live"`.
+**DEVnet live prices (2026-07-14):** `keeper/price-feeds.js` + `keeper/feeds.json`; `/health`
+reports `price_mode: "live"`. Yahoo metals; curated watch mids; WL500 basket; ramp ≤15%/tick.
 
-**DEVnet full-feature (2026-07-14):** Mint test USDC in CollateralPanel; SwapModal redirects to mint; `kronos-crank` settles funding / tries liq+SL-TP; `/daily-volume` from trades indexer. App: `cat app/public-app-url.txt`.
+**DEVnet full-feature (2026-07-14):** Mint test USDC in CollateralPanel; SwapModal redirects to
+mint; `kronos-crank` settles funding / tries liq+SL-TP; `/daily-volume` from trades indexer.
 
-**Mainnet** remains optional later (keypair `6pYTo53Br89ji26huJKRiTyaQCF8eeTpsSSZmsaMRPxy` in `keys/mainnet/`). Run `./scripts/prepare-mainnet-check.sh` before C1+.
+**App ticker / oracle UI (v4.8):** `app/src/hooks/useOracle.ts` — stable last-good price, merged
+history, `dayChangePercent` for day move. Rebuild: `cd app && npm run build && pm2 restart kronos-app`.
 
-**2026-07-14 follow-up:** mainnet preflight script added (`scripts/prepare-mainnet-check.sh` — 8 pass / 2 warn). Pages HTTPS still blocked (no cert yet). Public app still serving via Cloudflare tunnel.
+**Mainnet** remains optional later (keypair `6pYTo53Br89ji26huJKRiTyaQCF8eeTpsSSZmsaMRPxy` in
+`keys/mainnet/`). Run `./scripts/prepare-mainnet-check.sh` before C1+.
+
+**2026-07-14 follow-up:** mainnet preflight script (`scripts/prepare-mainnet-check.sh` — 8 pass /
+2 warn). Pages HTTPS still blocked. Public app via Cloudflare quick tunnel (URL rotates).
 
 Do these **in order**. Devnet program is `--final` and **cannot** be reused.
 
@@ -309,7 +337,7 @@ Do these **in order**. Devnet program is `--final` and **cannot** be reused.
 | **C4** | Deploy | Prefer **upgradeable** first for bake-in, or `--final --use-quic` if you accept redeploy-on-bug. Cluster `mainnet-beta`, paid RPC recommended |
 | **C5** | Collateral mint | Point protocol at **real USDC** (`EPjFWdd5…Dt1v`), not the devnet test mint |
 | **C6** | Bootstrap | `initialize` → `initialize_pool` → `bootstrap-watch-markets.ts` with mainnet RPC/wallet; write new `markets.bootstrap.json`; `node scripts/gen-app-markets.js`; copy IDL |
-| **C7** | Real oracle feeds | Replace random walk: Chrono24/WatchCharts (or paid API) for watches; Yahoo/other for metals; keep ±15% ramp + per-market isolation |
+| **C7** | Real oracle feeds | **Partial on DEVnet** — Yahoo metals + curated `feeds.json` watches + WL500. Mainnet: paid Chrono24/WatchCharts (or similar); keep ±15% ramp + isolation |
 | **C8** | Keeper hosting | Move keeper off the Mac mini to a VPS; named Cloudflare tunnel or public HTTPS; pm2/systemd; alerts (Telegram already stubbed) |
 | **C9** | App cutover | Point production app env at mainnet program/PDAs/RPC; stable domain (`app.kronosliquid.xyz`); turn on HTTPS everywhere |
 | **C10** | Auth (optional) | Provision Postgres + `JWT_SECRET` + mailer if email accounts are required |
@@ -333,26 +361,27 @@ write-transaction rate limits. Key facts:
 - **Deploy-ready ping:** `scripts/devnet-deploy-ready-ping.sh` fires a macOS notification when
   balance ≥ 8 SOL.
 
-### Keeper v2 (as of 2026-07-02, running under pm2)
+### Keeper (v4.8 live feeds, running under pm2)
 
 `keeper/watch-keeper.js` runs as pm2 app **`kronos-keeper`** on the Mac mini
 (`pm2 status` / `pm2 logs kronos-keeper`; logs in `keeper/logs/`). Config in `keeper/.env`
 (gitignored: Helius RPC URL, wallet path; see `keeper/.env.example`). Behavior:
 
-- **All 24 markets** — bounded random walk seeded from each oracle's current on-chain price
-  (±0.6%/tick, mean-reverting, clamped 0.5×–1.5× of seed). **Synthetic demo prices** — the
-  Yahoo commodity feed was removed by decision (2026-07-02) after it triggered the deviation
-  freeze.
-- Every update is hard-clamped to **±15%** of the last pushed price (on-chain cap is ~20%),
-  so `OraclePriceDeviation` can no longer occur.
-- **WL500** ramped from ~$47.6k to **$5,000** (`WL500_TARGET`, ≤15%/update) and now walks there.
-- Pushes 24 updates every 6.5 s in 3 transactions of 8; if a batch fails, each market retries
-  in its own transaction (failure isolation). 429-retry with backoff; chunked startup reads.
-- **HTTP API on port 3001**: `/prices/all`, `/prices`, `/candles` (1m–1d), `/health`, `/ping`,
-  plus stubs for `/trades`, `/leaderboard`, `/stats`, `/spins`. History: 30 s granularity,
-  48 h retention, persisted to `keeper/history.json` every 5 min.
-- The Next.js app reaches it via `app/next.config.js` rewrites (`/api/keeper/*` and
-  `/api/v1/*` → `http://localhost:3001`, overridable with `KEEPER_API_URL`).
+- **Price mode: live** (`price-feeds.js` + `feeds.json`). `/health` → `"price_mode":"live"`.
+  - **Metals** — Yahoo Finance (gold / silver / platinum).
+  - **Watches** — curated mids in `keeper/feeds.json` (edit to refresh Chrono24-style refs).
+  - **WL500** — basket from watch constituents (~$5,000 level).
+  - Targets refresh ~every 3 min; on-chain push still ramps **≤15%/tick** (on-chain cap ~20%).
+  - Random walk remains only as **fallback** if live targets unavailable.
+- Pushes all markets in batched txs; batch failure → per-market retry. 429 backoff.
+- **HTTP API on port 3001**: `/prices/all`, `/prices`, `/candles`, `/health`, `/ping`, trade
+  indexer routes (`/trades`, `/stats`, `/leaderboard`, `/daily-volume`), `/spins` stub.
+  History persisted to `keeper/history.json` (app also appends live ticks client-side).
+- App rewrites: `app/next.config.js` → `http://localhost:3001` (`KEEPER_API_URL` override).
+- **Crank:** pm2 `kronos-crank` — funding settle + liquidation / SL-TP attempts.
+
+**pm2 processes (expected online):** `kronos-keeper`, `kronos-crank`, `kronos-app`,
+`kronos-api-tunnel`, `kronos-app-tunnel`.
 
 **Boot persistence (DONE 2026-07-14):** user LaunchAgent
 `~/Library/LaunchAgents/com.kronos.pm2.plist` runs `pm2 resurrect` at login (no sudo).
@@ -391,19 +420,18 @@ Then re-run the bootstrap scripts with `ANCHOR_PROVIDER_URL=https://api.mainnet-
 ## 9. Git history
 
 ```
-(local, unpushed) 47255b7 Ship keeper v4.3: trade indexer, Pokémon sweep, and oracle fixes.
-(uncommitted) v4.4 — pm2 LaunchAgent boot persistence + full-deploy roadmap
-67d0ea6 Remove Pokemon branding, wire devnet keeper with live commodity prices  (pushed; live on Pages)
+(uncommitted) v4.8 — ticker last-good price, dayChangePercent, positions UX, 2dp prices
+9fad861 Ship live DEVnet oracle feeds: Yahoo metals, curated watches, WL500 basket.
+f01d468 Ship full DEVnet product: mint test USDC, crank keeper, and volume wiring.
+8b63940 Ship Mac mini public app hosting, WL500 methodology, and mainnet preflight.
+f69aac2 Document v4.4 full-deploy roadmap and keeper boot persistence.
+47255b7 Ship keeper v4.3: trade indexer, Pokémon sweep, and oracle fixes.
+67d0ea6 Remove Pokemon branding, wire devnet keeper with live commodity prices
 83677e3 Add keeper scripts, watch image tooling, and header updates.
 610022b Ship local watch photos, live charts, and keeper tooling to the static site.
 9308ccc Bootstrap watch markets on-chain, wire UI to chain, apply Tier 1 fixes
 ec420b2 Add current build/deploy handoff; preserve original code review.
 5129857 Build Kronos program: fix payout stack overflow, sync new program ID.
-2ce84bb Fix Kronos domain/config values and convert Pokemon domain copy to luxury watches.
-aefef44 Add Kronos on-chain protocol: Anchor program, SDK, keeper, and Next.js app.
-dcf2c8a Rebrand to Kronos and configure kronosliquid.xyz for GitHub Pages.
-13df6df Rebrand site to watchliquid.lol and add GitHub Pages CNAME.
-d8de126 Add Watch Liquid static site.
 ```
 
 The vendored protocol was copied **without** upstream git history (no `origin`, no fork link).
@@ -417,9 +445,23 @@ The vendored protocol was copied **without** upstream git history (no `origin`, 
 2. **Devnet can be reset by Solana Labs** — rare, but if it happens all on-chain state is wiped.
    Addresses are deterministic so re-bootstrap will produce the same PDAs; the program keypair
    (`target/deploy/kronos-keypair.json`, gitignored) must be backed up to reuse the same program ID.
-3. **Keeper depends on this Mac mini** — pm2 restarts it on crash, but boot persistence needs
-   the one-time sudo `pm2 startup` command (§8.5), and the machine sleeping stops price pushes
-   and the history API.
+3. **Keeper depends on this Mac mini** — pm2 + LaunchAgent (`com.kronos.pm2`) resurrect on login;
+   machine sleep still stops price pushes and the history API.
 4. **Program is non-upgradeable** (`--final` on devnet). Any bug fix requires a new deploy with a
    new program ID, plus updating all env vars / addresses.ts defaults.
-5. **Watch mids are curated** — edit `keeper/feeds.json` to refresh Chrono24-style refs; metals are live Yahoo. Ramp ≤15%/tick when far from target.
+5. **Watch mids are curated** — edit `keeper/feeds.json` to refresh Chrono24-style refs; metals
+   are live Yahoo. Ramp ≤15%/tick when far from target.
+6. **Quick-tunnel URLs rotate** — do not hardcode; read `app/public-app-url.txt` /
+   `keeper/public-api-url.txt`.
+
+---
+
+## 11. Handbook changelog (recent)
+
+| Ver | Date | Notes |
+|-----|------|-------|
+| **4.8** | 2026-07-14 | Ticker stability + day %; live-feed keeper docs; positions UX; always-update rule |
+| 4.7 | 2026-07-14 | Live feeds (Yahoo + feeds.json + WL500); DEVnet parity status |
+| 4.6 | 2026-07-14 | Mint test USDC, crank, daily volume |
+| 4.5 | 2026-07-14 | Public Next.js app via Mac mini + Cloudflare tunnels |
+| 4.4 | 2026-07-14 | pm2 LaunchAgent + full-deploy roadmap |

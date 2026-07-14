@@ -1,0 +1,31 @@
+---
+description: Always update HANDOFF.md (project handbook) after meaningful changes
+alwaysApply: true
+---
+
+# Update the handbook (`HANDOFF.md`)
+
+`HANDOFF.md` is the living Kronos handbook. **After every meaningful change in this repo, update it in the same turn** — do not wait for the user to ask.
+
+## When to update
+
+Update for any of:
+
+- Product / UX behavior (ticker, positions, charts, mint USDC, etc.)
+- Keeper / oracle / crank / feeds / API routes
+- pm2 processes, tunnels, public URLs, ops commands
+- On-chain addresses, markets, deploy/bootstrap steps
+- Known issues resolved or newly discovered
+- Decisions that change roadmap status (Phase A/B/C)
+
+Skip for typos-only, pure formatting, or drive-by refactors with no user-visible or ops impact.
+
+## How to update
+
+1. Bump **Document version** (e.g. 4.8 → 4.9) and set **Date**.
+2. Refresh the top **Status** line if the operating picture changed.
+3. Add a short bullet under **§0.2** (or a new §0.x) for what shipped / fixed.
+4. Patch the relevant section (§7 ops, §8 keeper, §9 git, §10 risks) so it stays accurate — remove stale claims (e.g. “random walk only” when live feeds are on).
+5. Add a row to **§11 Handbook changelog**.
+
+Keep entries concise and factual. Prefer “what an operator/agent needs next” over narrative.
